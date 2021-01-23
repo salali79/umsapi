@@ -88,6 +88,14 @@ class StudentController extends Controller
 
     protected function respondWithToken($token, $std)
     {
+        //'finalTranscript',
+      $std->load('faculty', 'department', 'contact',
+                 'emergency', 'medicals', 'folderType',
+                 'studentFiles', 'deposites', 'studentRegisterWay',
+                 'registerParams',  'finance',
+                 'financeDetails', 'hourPrice', 'studentRegistration',
+                 'financialBalance', 'modifiedCourses'
+                );
       return response()->json([
         'status' => 'success',
         'message' => 'token response',
