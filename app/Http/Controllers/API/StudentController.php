@@ -20,7 +20,6 @@ use App\Models\StudentDepositRequest;
 use Carbon\Carbon;
 use Session;
 use DB;
-use Mail;
 
 class StudentController extends Controller
 {
@@ -96,8 +95,10 @@ class StudentController extends Controller
        return JWTAuth::parseToken()->authenticate();
     }
 
-    public function reset_password_student(ResetPasswordRequest $request) {
-        $validated = $request->validated();
+    public function reset_password_student(Request $request) {
+
+        $validated = $request->validated(
+        );
 		$std = Student::where('username', auth('student')->user()->username)->update([
 				'password' => bcrypt($validated->password)
         ]);
@@ -110,49 +111,5 @@ class StudentController extends Controller
         ]);
 	}
     ///////////////////////////////////////////////////////////////////////////////
-    public function deposite(DepositeRequest $request)
-    {
-        $validated = $request->validated();
-        $token = $request->stud_token;
-        $data = [
-            'token' => $request->stud_token,
-            'bank_id' => $request->bank_id,
-            'study_year_id' => $request->study_year_id,
-            'semester_id' => $request->semester_id,
-            'requested_hours' => $request->requested_hours,
-            'student_id' => $request->student_id,
-            'request_status' => '0'
-        ];
-        if(! $token = JWTAuth::parseToken()->authenticate())
-        {
-            return response()->json
-            ([
-                'status' => 'error',
-                'message' => 'not authorized',
-                'data' => [],
-                'action'=> ''
-             ]);
-        } else {
-            $std_deposite = StudentDepositRequest::create($data);
-            return response()->json
-           ([
-               'status' => 'success',
-               'message' => 'deposite request',
-               'data' => [],
-               'action'=> 'store'
-            ]);
-        }
-    }
-    public function student_deposite(Request $request)
-    {
-        //Session::get('toke');
-        $headers = apache_request_headers();
-        $request->headers->set('Authorization', $headers['Authorization']);
-        $token = $request->headers->get('Authorization');
-        JWTAuth::setToken($token);
-        $std = auth('student')->user();
-        return response()->json([
-            'deposites'=> $std
-        ]);
-    }
+
 }
