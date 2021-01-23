@@ -97,7 +97,6 @@ class StudentController extends Controller
     }
 
     public function reset_password_student(ResetPasswordRequest $request) {
-
 		$validated = $request->validated();
 		$std = Student::where('username', auth('student')->user()->username)->update([
 				'password' => bcrypt($validated->password)
