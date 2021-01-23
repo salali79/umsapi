@@ -10,7 +10,7 @@ class StudyYearController extends Controller
 {
     public function index()
     {
-        $years = StudyYear::all();
+        $years = StudyYear::all()->sortByDesc('code');
         return response()->json([
             'status' => 'success',
             'message' => 'return all years successfully',
