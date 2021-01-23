@@ -44,7 +44,7 @@ class StudentDepositRequestController extends Controller
             'student_id' => $request->student_id,
             'request_status' => '0'
         ];
-        if(! $token = JWTAuth::parseToken()->authenticate())
+        /*if(! $token = JWTAuth::parseToken()->authenticate())
         {
             return response()->json
             ([
@@ -53,7 +53,7 @@ class StudentDepositRequestController extends Controller
                 'data' => [],
                 'action'=> ''
              ]);
-        } else {
+        } else {*/
             $std_deposite = StudentDepositRequest::create($data);
             return response()->json
            ([
@@ -62,6 +62,6 @@ class StudentDepositRequestController extends Controller
                'data' => [],
                'action'=> 'store'
             ]);
-        }
+        //}
     }
 }

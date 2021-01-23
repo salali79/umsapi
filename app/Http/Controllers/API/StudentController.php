@@ -20,6 +20,7 @@ use App\Models\StudentDepositRequest;
 use Carbon\Carbon;
 use Session;
 use DB;
+use Mail;
 
 class StudentController extends Controller
 {
@@ -95,10 +96,9 @@ class StudentController extends Controller
        return JWTAuth::parseToken()->authenticate();
     }
 
-    public function reset_password_student(Request $request) {
+    public function reset_password_student(DepositeRequest $request) {
 
-        $validated = $request->validated(
-        );
+        $validated = $request->validated();
 		$std = Student::where('username', auth('student')->user()->username)->update([
 				'password' => bcrypt($validated->password)
         ]);
