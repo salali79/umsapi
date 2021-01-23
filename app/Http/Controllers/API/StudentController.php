@@ -31,33 +31,50 @@ class StudentController extends Controller
     }
     public function login(Request $request)
     {
-        $password = $request->password;
-        $username = $request->username;
-        $credentials = ['username' => $username , 'password' => $password];
-        $std = Student::where('username',$username)->firstOrFail();
-        //if($std->password_status=='1')
-        {
-            if (!$token = auth('student')->attempt($credentials)) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'wrong password or username',
-                    'action' => 'login',
-                    'data' => [],
-                     401
-                ]);
-            }
+        try{
+            $password = $request->password;
+            $username = $request->username;
+            $credentials = ['username' => $username , 'password' => $password];
             $std = Student::where('username',$username)->firstOrFail();
-            return $this->respondWithToken($token,$std);
-        }
-        Session::put('token', $token);
-        /*else {
-            return response()->json([
-                'status' => 'success',
-                'message' => 'reset password',
-                'action' => 'reset password',
+            //if($std->password_status=='1')
+            {
+                if (!$token = auth('student')->attempt($credentials)) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'wrong password or username',
+                        'action' => 'login',
+                        'data' => [],
+                         401
+                    ]);
+                }
+                $std = Student::where('username',$username)->firstOrFail();
+                return $this->respondWithToken($token,$std);
+            }
+            /*else {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'reset password',
+                    'action' => 'reset password',
+                    'data' => [],
+                ]);
+            }*/
+        } catch (ModelNotFoundException $ex) { // User not found
+            return response()->json
+            ([
+                'status' => 'error',
+                'message' => 'username notfound',
                 'data' => [],
+                'action'=> ''
             ]);
-        }*/
+        } catch (Exception $ex) { // Anything that went wrong
+            return response()->json
+            ([
+                'status' => 'error',
+                'message' => 'server error',
+                'data' => [],
+                'action'=> ''
+            ]);
+        }
     }
 
     public function getAuthUser(Request $request)
