@@ -23,6 +23,7 @@ Route::get('a', function(){
 });
 
 Route::get('banks','API\BankController@index');
+Route::get('study_years','API\StudyYearController@index');
 Route::group(['namespace' => 'API'], function(){
     Route::post('study_year_semesters', 'SemesterController@semesterStudyYear');
     Route::post('student_deposit_requests', 'StudentController@deposite');
