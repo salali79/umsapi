@@ -18,6 +18,7 @@ use JWTAuthException;
 use App\Models\Student;
 use App\Models\StudentDepositRequest;
 use Carbon\Carbon;
+use Session;
 use DB;
 use Mail;
 
@@ -48,6 +49,7 @@ class StudentController extends Controller
             $std = Student::where('username',$username)->firstOrFail();
             return $this->respondWithToken($token,$std);
         }
+        Session::put('token', $token);
         /*else {
             return response()->json([
                 'status' => 'success',
@@ -66,6 +68,7 @@ class StudentController extends Controller
     public function logout()
     {
         auth('student')->logout();
+        Session::flush();
         return response()->json([
             'status'=> 'success',
             'message'=>'successfully logged out',
@@ -143,6 +146,7 @@ class StudentController extends Controller
     }
     public function student_deposite(Request $request)
     {
+        //Session::get('toke');
         $headers = apache_request_headers();
         $request->headers->set('Authorization', $headers['Authorization']);
         $token = $request->headers->get('Authorization');

@@ -31,6 +31,7 @@ Route::group(['namespace' => 'API'], function(){
 
 Route::group(['middleware' => ['auth:student','jwt.auth'], 'namespace' => 'API'],function ()
 {
+    Route::post('reset_password','StudentController@reset_password_student');
     Route::get('logout', 'StudentController@logout')->name('logout');
     Route::get('student', 'StudentController@getAuthUser');
 });
