@@ -31,7 +31,7 @@ class StudentDepositRequestController extends Controller
             'deposites'=> $std
         ]);
     }
-    public function create(DepositeRequest $request)
+    public function store(DepositeRequest $request)
     {
         $validated = $request->validated();
         $token = $request->stud_token;

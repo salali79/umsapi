@@ -96,13 +96,13 @@ class StudentController extends Controller
        return JWTAuth::parseToken()->authenticate();
     }
 
-    public function reset_password_student(DepositeRequest $request) {
+    public function reset_password_student(ResetPasswordRequest $request) {
 
         $validated = $request->validated();
 		$std = Student::where('username', auth('student')->user()->username)->update([
-				'password' => bcrypt($validated->password)
+				'password' => bcrypt($request->password)
         ]);
-		auth('student')->attempt(['username' => auth('student')->user()->username, 'password' => $validated->password], true);
+		auth('student')->attempt(['username' => auth('student')->user()->username, 'password' => $request->password], true);
         return response()->json([
             'status' => 'success',
             'message' => 'reset password successfully',
