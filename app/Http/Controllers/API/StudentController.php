@@ -26,7 +26,7 @@ class StudentController extends Controller
 {
     public function __construct()
     {
-      $this->middleware('auth:student', ['except' => ['login','getToken','reset_password', 'deposite']]);
+      $this->middleware('auth:student', ['except' => ['login','getToken','reset_password', 'deposite', 'student_deposite']]);
       $this->guard = "student";
     }
     public function login(Request $request)
