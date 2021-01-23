@@ -28,7 +28,7 @@ class StudentDepositRequestController extends Controller
         JWTAuth::setToken($token);
         $std = auth('student')->user();
         return response()->json([
-            'deposites'=> $std->deposites
+            'deposites'=> $std->deposites->toArray()
         ]);
     }
     public function store(DepositeRequest $request)
