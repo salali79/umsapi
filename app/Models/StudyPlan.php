@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+
 class StudyPlan extends AppModel
 {
 

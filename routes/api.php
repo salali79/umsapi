@@ -29,6 +29,7 @@ Route::group(['namespace' => 'API'], function(){
     Route::post('study_year_semesters', 'SemesterController@semesterStudyYear');
     Route::get('student_deposit_requests', 'StudentDepositRequestController@index')->name('deposite');
     Route::post('student_deposit_request/store', 'StudentDepositRequestController@store');
+    Route::get('courses','CourseController@index');
 });
 
 Route::group(['middleware' => ['auth:student','jwt.auth'], 'namespace' => 'API'],function ()

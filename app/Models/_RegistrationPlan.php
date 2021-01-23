@@ -3,7 +3,6 @@
 namespace App\Models;
 
 
-
 class RegistrationPlan extends AppModel
 {
     protected $fillable =[

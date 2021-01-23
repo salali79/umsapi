@@ -66,14 +66,6 @@ class StudentController extends Controller
                 'data' => [],
                 'action'=> ''
             ]);
-        } catch (Exception $ex) { // Anything that went wrong
-            return response()->json
-            ([
-                'status' => 'error',
-                'message' => 'server error',
-                'data' => [],
-                'action'=> ''
-            ]);
         }
     }
 
@@ -114,18 +106,17 @@ class StudentController extends Controller
     }
 
     public function reset_password_student(ResetPasswordRequest $request) {
-
-        $validated = $request->validated();
-		$std = Student::where('username', auth('student')->user()->username)->update([
-				'password' => bcrypt($request->password)
-        ]);
-		auth('student')->attempt(['username' => auth('student')->user()->username, 'password' => $request->password], true);
-        return response()->json([
-            'status' => 'success',
-            'message' => 'reset password successfully',
-            'data' => [],
-            'action' => 'reset password'
-        ]);
+            $validated = $request->validated();
+            $std = Student::where('username', auth('student')->user()->username)->update([
+                    'password' => bcrypt($request->password)
+            ]);
+            auth('student')->attempt(['username' => auth('student')->user()->username, 'password' => $request->password], true);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'reset password successfully',
+                'data' => [],
+                'action' => 'reset password'
+            ]);
 	}
     ///////////////////////////////////////////////////////////////////////////////
 

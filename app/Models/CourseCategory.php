@@ -3,7 +3,6 @@
 namespace App\Models;
 
 
-
 class CourseCategory extends AppModel
 {
     protected $fillable =[

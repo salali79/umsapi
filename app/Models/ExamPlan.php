@@ -3,7 +3,6 @@
 namespace App\Models;
 
 
-
 class ExamPlan extends AppModel
 {
     protected $fillable =[
