@@ -11,6 +11,12 @@ class BankController extends Controller
 {
     public function index()
     {
-        return Bank::all();
+        $banks = Bank::all();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'return all banks successfully',
+            'data' => $banks,
+            'action' => 'index'
+        ]);
     }
 }
