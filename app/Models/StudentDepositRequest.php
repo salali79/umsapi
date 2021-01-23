@@ -5,7 +5,7 @@ namespace App\Models;
 
 class StudentDepositRequest extends AppModel
 {
-    protected $fillable = ['student_id', 'bank_id', 'study_year_id', 'requested_hours', 'request_status',
+    protected $fillable = ['student_id', 'bank_id', 'office_id', 'study_year_id', 'requested_hours', 'request_status',
         'created_by','updated_by','deleted_by'];
 
     public function student(){

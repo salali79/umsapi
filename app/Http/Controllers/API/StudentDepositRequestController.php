@@ -28,7 +28,7 @@ class StudentDepositRequestController extends Controller
         JWTAuth::setToken($token);
         $std = auth('student')->user();
         return response()->json([
-            'deposites'=> $std
+            'deposites'=> $std->deposites
         ]);
     }
     public function store(DepositeRequest $request)
@@ -38,6 +38,7 @@ class StudentDepositRequestController extends Controller
         $data = [
             'token' => $request->stud_token,
             'bank_id' => $request->bank_id,
+            'office_id' => $request->office_id,
             'study_year_id' => $request->study_year_id,
             'semester_id' => $request->semester_id,
             'requested_hours' => $request->requested_hours,
