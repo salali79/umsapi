@@ -11,12 +11,11 @@ class CourseController extends Controller
 {
     public function index()
     {
-        $study_plans = StudyPlan::paginate(10);
-        $res = array();
-        foreach($study_plans as $study_plan)
-        {
-            array_push($res, $study_plan->courses());
-        }
+        $study_plan = StudyPlan::latest()->first();
+        $res = $study_plan->courses()->toArray();
+        array_slice($res,1,10); 
         return $res;
     }
+
+
 }
