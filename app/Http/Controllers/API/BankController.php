@@ -19,4 +19,5 @@ class BankController extends Controller
             'action' => 'index'
         ]);
     }
+    
 }

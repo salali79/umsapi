@@ -140,9 +140,9 @@ class Student extends Authenticatable implements JWTSubject
     }
     public static function StudentStudyYear($student_id){
         $student = Student::find($student_id);
-        $studyYear = StudyYear::
-        where('beginning','<=',$student->registration_date)
-            ->where('end','>=',$student->registration_date)
+        $studyYear = StudyYear::  
+            where('beginning','<=', date("d-m-Y", strtotime(($student->registration_date))))
+            ->where('end','>=', date("d-m-Y", strtotime(($student->registration_date))))
             ->first();
         return $studyYear ;
 

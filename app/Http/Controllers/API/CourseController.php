@@ -9,8 +9,9 @@ use App\Models\Course;
 
 class CourseController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        if(!is_null($request->lang)) app()->setLocale($request->lang);
         $study_plan = StudyPlan::latest()->first();
         $res = $study_plan->courses()->toArray();
         array_slice($res,1,10); 

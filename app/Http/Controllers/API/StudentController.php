@@ -29,6 +29,15 @@ class StudentController extends Controller
       $this->middleware('auth:student', ['except' => ['login','getToken','reset_password', 'deposite', 'student_deposite']]);
       $this->guard = "student";
     }
+    public function current_student(Request $request)
+    {
+        $headers = apache_request_headers();
+        $request->headers->set('Authorization', $headers['Authorization']);
+        $token = $request->headers->get('Authorization');
+        JWTAuth::setToken($token);
+        $std = auth('student')->user();
+        return $std;
+    }
     public function login(Request $request)
     {
         try{
@@ -124,7 +133,4 @@ class StudentController extends Controller
                 'action' => 'reset password'
             ]);
 	}
-    //////////////////////////////////////////--profile--/////////////////////////////////////
-
-
 }

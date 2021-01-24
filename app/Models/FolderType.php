@@ -17,7 +17,7 @@ class FolderType extends AppModel
 
     public function papers()
     {
-      return $this->belongsToMany(FolderFile::class);
+      return $this->belongsToMany(FolderFile::class, 'folder_file_id', 'folder');
     }
     public function studyYear(){
 

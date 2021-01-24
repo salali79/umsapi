@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class DepositeRequest extends FormRequest
+class ContactInfoRequest extends FormRequest
 {
     protected function failedValidation(Validator $validator)
     {
@@ -32,10 +32,7 @@ class DepositeRequest extends FormRequest
     public function rules()
     {
         return [
-            'bank_id' =>'required',
-            'study_year_id' =>'required',
-            'semester_id' =>'required',
-            'requested_hours' =>'required',
+            //
         ];
     }
 }
