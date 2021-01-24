@@ -34,9 +34,9 @@ class StudentDepositRequestController extends Controller
     public function store(DepositeRequest $request)
     {
         $validated = $request->validated();
-        $token = $request->stud_token;
+        $token = $request->token;
         $data = [
-            'token' => $request->stud_token,
+            'token' => $request->token,
             'bank_id' => $request->bank_id,
             'office_id' => $request->office_id,
             'study_year_id' => $request->study_year_id,
@@ -61,7 +61,7 @@ class StudentDepositRequestController extends Controller
                'status' => 'success',
                'message' => 'deposite request',
                'data' => [],
-               'action'=> 'login'
+               'action'=> 'store'
             ]);
         //}
     }

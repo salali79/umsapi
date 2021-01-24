@@ -88,7 +88,7 @@ class StudentController extends Controller
 
     protected function respondWithToken($token, $std)
     {
-        //'finalTranscript',
+      //'finalTranscript',
       $std->load('faculty', 'department', 'contact',
                  'emergency', 'medicals', 'folderType',
                  'studentFiles', 'deposites', 'studentRegisterWay',
@@ -100,10 +100,8 @@ class StudentController extends Controller
         'status' => 'success',
         'message' => 'token response',
         'id' => $std->id,
-        'response' => [
-            'student' => $std->toArray(),
-            'token' => $token
-        ],
+        'student' => $std->toArray(),
+        'token' => $token,
         'action' => 'response'
       ]);
     }
@@ -126,6 +124,7 @@ class StudentController extends Controller
                 'action' => 'reset password'
             ]);
 	}
-    ///////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////--profile--/////////////////////////////////////
+
 
 }
