@@ -29,7 +29,6 @@ Route::group(['namespace' => 'API'], function(){
     Route::post('study_year_semesters', 'SemesterController@semesterStudyYear');
     Route::get('student_deposit_requests', 'StudentDepositRequestController@index')->name('deposite');
     Route::post('student_deposit_request/store', 'StudentDepositRequestController@store');
-    Route::get('courses','CourseController@index');
     Route::get('profile', 'StudentProfileController@info');
     /////////////////--profile--/////////////////
     /*Route::get('personal_info', 'StudentProfileController@personal_info');
@@ -39,6 +38,8 @@ Route::group(['namespace' => 'API'], function(){
     Route::get('folders', 'FolderController@index');
     Route::post('files', 'FolderController@files');
     Route::get('student_files', 'FolderController@exist_files');*/
+    Route::get('courses','CourseController@index');
+    Route::get('student_courses', 'CourseController@student_courses');
 });
 
 Route::group(['middleware' => ['auth:student','jwt.auth'], 'namespace' => 'API'],function ()

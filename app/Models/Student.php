@@ -154,7 +154,6 @@ class Student extends Authenticatable implements JWTSubject
         $study_plan = $study_year->studyPlan ;
         return $study_plan ;
     }
-
     public function hourPrice(){
         return $this->hasOne(StudentHourPrice::class);
     }
