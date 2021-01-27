@@ -1,9 +1,9 @@
 <?php
 
 namespace App\Models;
-
-
 use Astrotomic\Translatable\Translatable;
+
+
 class FolderType extends AppModel
 {
     use Translatable ;
@@ -17,7 +17,7 @@ class FolderType extends AppModel
 
     public function papers()
     {
-      return $this->belongsToMany(FolderFile::class, 'folder_file_id', 'folder');
+      return $this->belongsToMany(FolderFile::class, 'folder_file_folder_type', 'folder_type_id', 'folder_file_id');
     }
     public function studyYear(){
 

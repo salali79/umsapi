@@ -39,11 +39,8 @@ class FolderController extends Controller
     public function files(Request $request)
     {
         if(!is_null($request->lang)) app()->setLocale($request->lang);
-        $folder = FolderType::with('papers')->get();
-        //find($request->folder_type_id)->firstOrFail();
-        dd($folder);
-        $res = $folder->papers();
-        dd($res);
+        $folder = FolderType::find($request->folder_type_id)->firstOrFail();
+        $res = $folder->papers;
         return response()->json([
             'status' => 'success',
             'message' => 'personal info',
