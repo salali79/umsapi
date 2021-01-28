@@ -17,11 +17,18 @@ class RegistrationPlanController extends Controller
 {
     public function courses()
     {
-        $reg = RegistrationPlan::with(['registrationCourses' => function($q){
-            $q->with('course');
-        }])->find(1);
-        //with(['studyYearSemester', 'faculty', 'department'])
-        //$reg;
+    /*"id": 1,
+    "study_year_semester_id": 10,
+    "study_plan_id": 9,
+    "faculty_id": 5,
+    "department_id": 2,*/
+        $reg = RegistrationPlan::select('id', 'study_year_semester_id','study_plan_id', 'faculty_id', 'department_id')
+        ->with(['registrationCourses' => function($registrationCourse){
+            $registrationCourse->with('course')->select('id', 'code');
+        }])->select('id', 'course_id')
+        //->with([''])
+        ->find(1);
+        
         return $reg;
     }
 }
