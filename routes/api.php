@@ -48,3 +48,12 @@ Route::group(['middleware' => ['auth:student','jwt.auth'], 'namespace' => 'API']
     Route::get('logout', 'StudentController@logout')->name('logout');
     Route::get('student', 'StudentController@getAuthUser');
 });
+
+Route::fallback(function(){
+    return response()->json([
+        'status' => 'error',
+        'message' => 'Route not found',
+        'data' => [],
+        'action'=> ''
+    ], 404);
+});

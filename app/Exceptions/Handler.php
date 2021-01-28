@@ -55,10 +55,10 @@ class Handler extends ExceptionHandler
             return response()->json
             ([
                 'status' => 'error',
-                'message' => 'not found',
+                'message' => 'Entry for '.str_replace('App\\', '', $exception->getModel()).' not found',
                 'data' => [],
                 'action'=> ''
-            ]);
+            ], 422);
         }
 
         return parent::render($request, $exception);
