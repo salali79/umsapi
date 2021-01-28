@@ -32,7 +32,7 @@ class RegistrationPlanController extends Controller
             }])->select('id','registration_plan_id', 'course_id');
         }])
         ->find(1);
-        $course_group = RegistrationCourseGroup::find(1)->with('lectures');
+        $course_group = RegistrationCourseGroup::with('lectures')->find(1);
         return $course_group;
         
         return $reg;
