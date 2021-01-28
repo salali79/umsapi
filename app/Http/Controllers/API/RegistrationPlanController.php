@@ -12,6 +12,7 @@ use JWTAuth;
 use JWTAuthException;
 use App\Models\RegistrationPlan;
 use App\Models\Course;
+use App\Models\RegistrationCourseGroup;
 
 class RegistrationPlanController extends Controller
 {
