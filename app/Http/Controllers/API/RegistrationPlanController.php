@@ -21,10 +21,16 @@ class RegistrationPlanController extends Controller
         ->with(['registrationCourses' => function($registrationCourse){
             $registrationCourse->with(['course' => function($course){
                 $course->select('id', 'code');
+            }, 'courseGroups' => function($courseGroup){
+                $courseGroup->select('name', 'capacity')->with(['lectures', function($lecture){
+                    $lecture->select('day', 'start_time','end_time','place');
+                }]);
+            }, 'courseCategories' => function($courseCategorie){
+                $courseCategorie->select('name', 'capacity')->with(['lectures', function($lecture){
+                    $lecture->select('day', 'start_time','end_time','place');
+                }]);
             }])->select('id','registration_plan_id', 'course_id');
         }])
-        //->select('id', 'course_id')
-        //->with([''])
         ->find(1);
         
         return $reg;
