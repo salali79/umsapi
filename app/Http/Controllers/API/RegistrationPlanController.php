@@ -20,8 +20,8 @@ class RegistrationPlanController extends Controller
         $reg = RegistrationPlan::select('id', 'study_year_semester_id','study_plan_id', 'faculty_id', 'department_id')
         ->with(['registrationCourses' => function($registrationCourse){
             $registrationCourse->with(['course' => function($course){
-                $course -> select('id', 'code');
-            }])->select('id', 'course_id');
+                $course->select('id', 'code');
+            }])->select('id','registration_plan_id', 'course_id');
         }])
         //->select('id', 'course_id')
         //->with([''])
