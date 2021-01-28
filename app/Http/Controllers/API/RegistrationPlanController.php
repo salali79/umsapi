@@ -23,8 +23,9 @@ class RegistrationPlanController extends Controller
             $registrationCourse->with(['course' => function($course){
                     $course->select('id', 'code');
                 }, 'courseGroups' => function($courseGroup){
-                    $courseGroup->select('id', 'name', 'capacity', 'registration_course_id')
-                    ->with('lectures');
+                    $courseGroup->select('id', 'name', 'capacity', 'registration_course_id')->with('lectures', function($lecture){
+                        $lecture->select('id', 'registration_course_group_id', 'day', 'start_time','end_time','place');
+                    });
                 }, 'courseCategories' => function($courseCategorie){
                     $courseCategorie->select('id', 'name', 'capacity', 'registration_course_id')->with(['lectures' => function($lecture){
                         $lecture->select('id', 'registration_course_category_id', 'day', 'start_time','end_time','place');
@@ -32,8 +33,6 @@ class RegistrationPlanController extends Controller
             }])->select('id','registration_plan_id', 'course_id');
         }])
         ->find(1);
-       // $course_group = RegistrationCourseGroup::with('lectures')->find(1);
-        //return $course_group;
         
         return $reg;
     }
