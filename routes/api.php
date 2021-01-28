@@ -40,6 +40,7 @@ Route::group(['namespace' => 'API'], function(){
     Route::get('student_files', 'FolderController@exist_files');*/
     Route::get('courses','CourseController@index');
     Route::get('student_courses', 'CourseController@student_courses');
+    Route::get('registration_plan', 'RegistrationPlanController@courses');
 });
 
 Route::group(['middleware' => ['auth:student','jwt.auth'], 'namespace' => 'API'],function ()
