@@ -17,11 +17,11 @@ class RegistrationPlanController extends Controller
 {
     public function courses()
     {
-        $reg = RegistrationPlan::find(1);
-        //with(['studyYearSemester', 'faculty', 'department'])
-        $reg->with(['registrationCourses' => function($q){
+        $reg = RegistrationPlan::with(['registrationCourses' => function($q){
             $q->with('course');
-        }]);
+        }])->find(1);
+        //with(['studyYearSemester', 'faculty', 'department'])
+        //$reg;
         return $reg;
     }
 }
