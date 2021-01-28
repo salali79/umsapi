@@ -18,7 +18,7 @@ class RegistrationPlanController extends Controller
     public function courses()
     {
         $reg = RegistrationPlan::find(1);
-        $reg->load('studyYearSemester', 'faculty', 'department')->with(['registrationCourses' => function($q){
+        $reg->with(['studyYearSemester', 'faculty', 'department'])->with(['registrationCourses' => function($q){
             $q->with('course');
         }]);
         return $reg;
