@@ -10,6 +10,7 @@ class RegistrationPlan extends AppModel
         'study_year_semester_id','study_plan_id','faculty_id',
         'department_id', 'created_by','updated_by','deleted_by','status'] ;
 
+    protected $appends = ['study_year'];
     public function studyYearSemester(){
         return $this->belongsTo(StudyYearSemester::class);
     }
@@ -22,22 +23,24 @@ class RegistrationPlan extends AppModel
     public function registrationCourses(){
         return $this->hasMany(RegistrationCourse::class);
     }
-    public function studyYear(){
-        $this->studyYearSemester->studyYear;
+    public function getStudyYearAttribute(){
+        return $this->studyYearSemester->studyYear;
     }
     public function studyPlan(){
         if(! $this->department_id == null)
         {
-            $study_plan = $this->studyYear->studyPlans
+            $study_plan = $this->study_year->studyPlans
             ->where('faculty_id','=',$this->faculty_id)
             ->where('department_id', '=', $this->department_id);
+            //return $study_plan;
         }
         else 
         {
-            $study_plan = $this->studyYear->studyPlans
+            $study_plan = $this->study_year->studyPlans
             ->where('faculty_id','=',$this->faculty_id);
+            //return $study_plan;
         }
-        return $study_plan->first();
+        return $study_plan;
     }
     public function studyPlanCourses($study_year_id,$faculty_id ,$department_id = null){
         $study_year = StudyYear::find($study_year_id);

@@ -21,9 +21,9 @@ class RegistrationPlanController extends Controller
             $registrationCourse->with(['course' => function($course){
                     $course->select('id', 'code');
                 }, 'courseGroups' => function($courseGroup){
-                    $courseGroup->select('id', 'name', 'capacity', 'registration_course_id')->with('lectures', function($lecture){
+                    $courseGroup->select('id', 'name', 'capacity', 'registration_course_id')->with(['lectures' => function($lecture){
                         $lecture->select('id', 'registration_course_group_id', 'day', 'start_time','end_time','place');
-                    });
+                    }]);
                 }, 'courseCategories' => function($courseCategorie){
                     $courseCategorie->select('id', 'name', 'capacity', 'registration_course_id')->with(['lectures' => function($lecture){
                         $lecture->select('id', 'registration_course_category_id', 'day', 'start_time','end_time','place');
@@ -35,6 +35,8 @@ class RegistrationPlanController extends Controller
         
         //return $reg->studyPlan()->details[5]->prerequisite_courses;
         $pre_courses = array();
+        $year = $reg->studyPlan();
+        //return $year;
         foreach($reg->studyPlan()->details as $detail)
         {
             $pre_courses[$detail->course_id] = array();
