@@ -27,8 +27,16 @@ class RegistrationPlan extends AppModel
     }
     public function studyPlan(){
         if(! $this->department_id == null)
-        $study_plan = $this->studyYear->studyPlans->where('faculty_id','=',$this->faculty_id)->where('department_id', '=', $this->department_id);
-        else $study_plan = $this->studyYear->studyPlans->where('faculty_id','=',$this->faculty_id);
+        {
+            $study_plan = $this->studyYear->studyPlans
+            ->where('faculty_id','=',$this->faculty_id)
+            ->where('department_id', '=', $this->department_id);
+        }
+        else 
+        {
+            $study_plan = $this->studyYear->studyPlans
+            ->where('faculty_id','=',$this->faculty_id);
+        }
         return $study_plan->first();
     }
     public function studyPlanCourses($study_year_id,$faculty_id ,$department_id = null){

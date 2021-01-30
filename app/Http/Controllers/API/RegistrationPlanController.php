@@ -31,7 +31,7 @@ class RegistrationPlanController extends Controller
             }])->select('id','registration_plan_id', 'course_id');
         }
         ])
-        ->find(2);
+        ->find(1);
         
         //return $reg->studyPlan()->details[5]->prerequisite_courses;
         $pre_courses = array();
