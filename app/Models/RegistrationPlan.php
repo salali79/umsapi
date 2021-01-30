@@ -23,7 +23,7 @@ class RegistrationPlan extends AppModel
         return $this->hasMany(RegistrationCourse::class);
     }
     public function studyYear(){
-        return $this->belongsTo(StudyYear::class);
+        $this->studyYearSemester->studyYear;
     }
     public function studyPlan(){
         if(! $this->department_id == null)
