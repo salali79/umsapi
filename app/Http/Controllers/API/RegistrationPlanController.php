@@ -16,8 +16,6 @@ class RegistrationPlanController extends Controller
 {
     public function courses()
     {
-        $r = RegistrationPlan::find(1);
-        //dd($r->studyPlan());
         $reg = RegistrationPlan::select('id', 'study_year_semester_id','study_year_id','study_plan_id', 'faculty_id', 'department_id')
         ->with(['registrationCourses' => function($registrationCourse){
             $registrationCourse->with(['course' => function($course){
