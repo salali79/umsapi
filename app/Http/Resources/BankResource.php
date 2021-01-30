@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class DepositeResource extends JsonResource
+class BankResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -14,6 +14,12 @@ class DepositeResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return[
+            'status' => 'success',
+            'message' => 'bank resource',
+            'data' => $this,
+            'action' => ''
+        ];
+        //return parent::toArray($request);
     }
 }

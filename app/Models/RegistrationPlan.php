@@ -22,8 +22,14 @@ class RegistrationPlan extends AppModel
     public function registrationCourses(){
         return $this->hasMany(RegistrationCourse::class);
     }
+    public function studyYear(){
+        return $this->belongsTo(StudyYear::class);
+    }
     public function studyPlan(){
-        return $this->studyYear->studyPlan;
+        if(! $this->department_id == null)
+        $study_plan = $this->studyYear->studyPlans->where('faculty_id','=',$this->faculty_id)->where('department_id', '=', $this->department_id);
+        else $study_plan = $this->studyYear->studyPlans->where('faculty_id','=',$this->faculty_id);
+        return $study_plan->first();
     }
     public function studyPlanCourses($study_year_id,$faculty_id ,$department_id = null){
         $study_year = StudyYear::find($study_year_id);

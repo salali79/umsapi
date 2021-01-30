@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class TokenResource extends JsonResource
+class SemesterStudyYearResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,7 +16,7 @@ class TokenResource extends JsonResource
     {
         return[
             'status' => 'success',
-            'message' => 'token resource',
+            'message' => 'semester study year resource',
             'data' => $this,
             'action' => ''
         ];

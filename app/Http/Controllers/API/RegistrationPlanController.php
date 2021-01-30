@@ -4,7 +4,6 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Response;
 use Auth;
 use Validator;
 use JWTFactory;
@@ -12,13 +11,14 @@ use JWTAuth;
 use JWTAuthException;
 use App\Models\RegistrationPlan;
 use App\Models\Course;
-use App\Models\RegistrationCourseGroup;
 
 class RegistrationPlanController extends Controller
 {
     public function courses()
     {
-        $reg = RegistrationPlan::select('id', 'study_year_semester_id','study_plan_id', 'faculty_id', 'department_id')
+        $r = RegistrationPlan::find(1);
+        //dd($r->studyPlan());
+        $reg = RegistrationPlan::select('id', 'study_year_semester_id','study_year_id','study_plan_id', 'faculty_id', 'department_id')
         ->with(['registrationCourses' => function($registrationCourse){
             $registrationCourse->with(['course' => function($course){
                     $course->select('id', 'code');
@@ -31,9 +31,21 @@ class RegistrationPlanController extends Controller
                         $lecture->select('id', 'registration_course_category_id', 'day', 'start_time','end_time','place');
                     }]);
             }])->select('id','registration_plan_id', 'course_id');
-        }])
-        ->find(1);
+        }
+        ])
+        ->find(2);
         
+        //return $reg->studyPlan()->details[5]->prerequisite_courses;
+        $pre_courses = array();
+        foreach($reg->studyPlan()->details as $detail)
+        {
+            $pre_courses[$detail->course_id] = array();
+            foreach($detail->prerequisite_courses as $pre_req_course)
+            {
+                array_push($pre_courses[$detail->course_id], $pre_req_course->id);
+            }
+        }
+        $reg['pre_courses'] = $pre_courses;
         return $reg;
     }
 }
