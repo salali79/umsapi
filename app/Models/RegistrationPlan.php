@@ -32,13 +32,11 @@ class RegistrationPlan extends AppModel
             $study_plan = $this->study_year->studyPlans
             ->where('faculty_id','=',$this->faculty_id)
             ->where('department_id', '=', $this->department_id);
-            //return $study_plan;
         }
         else 
         {
             $study_plan = $this->study_year->studyPlans
             ->where('faculty_id','=',$this->faculty_id);
-            //return $study_plan;
         }
         return $study_plan;
     }
