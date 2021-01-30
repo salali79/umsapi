@@ -38,7 +38,7 @@ class RegistrationPlan extends AppModel
             $study_plan = $this->study_year->studyPlans
             ->where('faculty_id','=',$this->faculty_id);
         }
-        return $study_plan;
+        return $study_plan->first();
     }
     public function studyPlanCourses($study_year_id,$faculty_id ,$department_id = null){
         $study_year = StudyYear::find($study_year_id);
