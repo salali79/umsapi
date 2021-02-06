@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Requests\RegisterCourseRequest as RegisterCourseRequest;
 use Response;
 use Auth;
 use Validator;
@@ -14,6 +15,11 @@ use App\Models\Student;
 
 class StudentProfileController extends Controller
 {
+    public function __construct()
+    {
+      $this->middleware('auth:student');
+      $this->guard = "student";
+    }
     public function current_student(Request $request)
     {
         if(!is_null($request->lang)) app()->setLocale($request->lang);
@@ -148,20 +154,34 @@ class StudentProfileController extends Controller
             'action' => ''
         ]);
     }
-    public function personal_info_add(PersonalInfoRequest $request)
+    public function register_course(RegisterCourseRequest $request)
     {
+        return $request;
+        return response()->json([
+            'status' => 'success',
+            'message' => 'register successfully',
+            'info' => $request,
+            'action' => ''
+        ]);
+    }
 
-    }
-    public function contact_info_add(ContactInfoRequest $request)
-    {
-        
-    }
-    public function emergency_info_add(EmergencyInfoRequest $request)
-    {
-        
-    }
-    public function registration_info_add(RegistrationInfoRequest $request)
-    {
-        
-    }
+    //new_name file delete_file path 
+    /*
+      [
+          'file'        => 'image',
+	      'path'        => 'students',
+          'delete_file' => Student::find($id)->logo
+      ]
+    */
+    public function upload($data = []) {
+
+		if (in_array('new_name', $data)) {
+			$new_name = $data['new_name'] === null? time():$data['new_name'];
+		}
+
+		if (request()->hasFile($data['file'])) {
+			Storage::has($data['delete_file'])? Storage::delete($data['delete_file']):'';
+			return request()->file($data['file'])->store($data['path']);
+		}
+	}
 }

@@ -31,16 +31,18 @@ Route::group(['namespace' => 'API'], function(){
     Route::post('student_deposit_request/store', 'StudentDepositRequestController@store');
     Route::get('profile', 'StudentProfileController@info');
     /////////////////--profile--/////////////////
-    /*Route::get('personal_info', 'StudentProfileController@personal_info');
+    Route::get('personal_info', 'StudentProfileController@personal_info');
     Route::get('contact_info', 'StudentProfileController@contact_info');
     Route::get('emergency_info', 'StudentProfileController@emergency_info');
     Route::get('registration_info', 'StudentProfileController@registration_info');
-    Route::get('folders', 'FolderController@index');
+    Route::post('register_course', 'StudentProfileController@register_course');
+    /*Route::get('folders', 'FolderController@index');
     Route::post('files', 'FolderController@files');
     Route::get('student_files', 'FolderController@exist_files');*/
     Route::get('courses','CourseController@index');
     Route::get('student_courses', 'CourseController@student_courses');
     Route::get('registration_plan', 'RegistrationPlanController@courses');
+
 });
 
 Route::group(['middleware' => ['auth:student','jwt.auth'], 'namespace' => 'API'],function ()

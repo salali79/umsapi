@@ -18,7 +18,7 @@ class ResetPasswordRequest extends FormRequest
                 ([
                     'status' => 'error',
                     'message' => 'password confirmation doesnot match',
-                    'data' => [],
+                    'data' => $errors,
                     'action'=> ''
                 ])
             );

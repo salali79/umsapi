@@ -3,8 +3,11 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
-class DepositeRequest extends FormRequest
+class RegisterCourseRequest extends FormRequest
 {
     protected function failedValidation(Validator $validator)
     {
@@ -23,7 +26,6 @@ class DepositeRequest extends FormRequest
 
         parent::failedValidation($validator);
     }
-
     public function authorize()
     {
         return true;
@@ -32,10 +34,9 @@ class DepositeRequest extends FormRequest
     public function rules()
     {
         return [
-            'bank_id' =>'required',
-            'study_year_id' =>'required',
-            'semester_id' =>'required',
-            'requested_hours' =>'required',
+            'course_id' => 'required',
+            'category_id' => 'required',
+            'group_id' => 'required'
         ];
     }
 }
