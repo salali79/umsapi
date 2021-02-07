@@ -48,6 +48,34 @@ class RegistrationPlanController extends Controller
             }
         }
         $reg['pre_courses'] = $pre_courses;
+
+
+        $courses_from_reg = array();
+        foreach($reg->registrationCourses as $registrationCourse)
+        {
+            array_push($courses_from_reg, $registrationCourse->course->id);
+        }
+        //return $courses_from_reg;
+
+        $courses_hours = array();
+        $plans = $reg->studyPlan->get();
+        foreach($courses_from_reg as $course_id)
+        {
+            foreach($plans as $plan)
+            {
+                dd($plan->courseDetails($course_id)->credit_hours);
+                //$courses_hours[$course_id] = 
+
+                $course_plans_details = $plan->courseDetails($course_id);
+                if($course_plans_details != null) break;
+            }
+            $courses_hours = $course_plans_details->credit_hours;
+            $courses[$course_id] = $courses_hours;
+        }
+        
+        return $courses_hours;
+        $reg['courses_hours'] = $courses_hours;
+
         return $reg;
     }
 }
