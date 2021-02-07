@@ -35,8 +35,28 @@ class RegistrationPlanController extends Controller
         ->find(1);
         
         //return $reg->studyPlan()->details[5]->prerequisite_courses;
+
+        $courses_from_reg = array();
+        foreach($reg->registrationCourses as $registrationCourse)
+        {
+            array_push($courses_from_reg, $registrationCourse->course->id);
+        }
+        
+        $open_courses = StudentOpenedCourse::all();
+        $opens = $open_courses->pluck('course_id')->toArray();
+        $filtered_courses = array();
+        foreach($courses_from_reg as $course_from_reg)
+        {
+            if(in_array($course_from_reg, $opens))
+            {
+                array_push($filtered_courses, $course_from_reg);
+            }
+        }
+        //return $filtered_courses;
+
+        $courses_from_reg = $filtered_courses;
+
         $pre_courses = array();
-        //return $reg->studyPlan;
         if($reg->studyPlan != null)
         {
             foreach($reg->studyPlan->details as $detail)
@@ -50,12 +70,6 @@ class RegistrationPlanController extends Controller
         }
         $reg['pre_courses'] = $pre_courses;
 
-
-        $courses_from_reg = array();
-        foreach($reg->registrationCourses as $registrationCourse)
-        {
-            array_push($courses_from_reg, $registrationCourse->course->id);
-        }
 
         $courses_hours = array();
         $courses = array();
@@ -72,16 +86,6 @@ class RegistrationPlanController extends Controller
         }
         $reg['courses_hours'] = $courses;
 
-        /*$open_courses = StudentOpenedCourse::all();
-        ->pluck('course_id');
-        dd($open_courses);
-        foreach($courses_from_reg as $course_from_reg)
-        {
-            if(in_array($course_from_reg, $open_courses))
-            {
-                dd($course_from_reg);
-            }
-        }*/
         return $reg;
     }
 }

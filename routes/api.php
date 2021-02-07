@@ -43,7 +43,7 @@ Route::group(['namespace' => 'API'], function(){
     Route::get('registration_plan', 'RegistrationPlanController@courses');
 
     Route::post('register_course', 'StudentProfileController@register_course');
-    Route::post('upload_image', 'StudentProfileController@upload_image');
+    //Route::post('upload_image', 'StudentProfileController@upload_image');
 
 });
 
@@ -62,5 +62,3 @@ Route::fallback(function(){
         'action'=> ''
     ], 404);
 });
-
-Route::get('data','TestController@open_table');
