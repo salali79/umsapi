@@ -36,7 +36,8 @@ class RegisterCourseRequest extends FormRequest
         return [
             'course_id' => 'required',
             'category_id' => 'required',
-            'group_id' => 'required'
+            'group_id' => 'required',
+            'registration_plan_id' => 'required'
         ];
     }
 }

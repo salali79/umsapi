@@ -19,6 +19,7 @@ use App\Models\FinanceAccount;
 use App\Models\FinanceAllowedHours;
 use App\Models\AcademicStatus;
 use App\Models\AcademicSupervision;
+use App\Models\StudentRegisteredCourse;
 
 class StudentProfileController extends Controller
 {
@@ -161,35 +162,74 @@ class StudentProfileController extends Controller
             'action' => ''
         ]);
     }
+
+    ///////////////////////////////////////////////////////////////////////////////////////
     public function register_course(RegisterCourseRequest $request)
     {
         $std = $this->current_student($request);
         $plans = $std->StudentStudyPlan()->get();
-        dd($plans->first());
-        $course_plans = $plans->where('course_id', $request->course_id)->first();
-        dd($course_plans);
-        //$course_plans_details = $course_plans->details;
-        //$course_hours = $course_plans_details->credit_hours;
+        //dd($plans->first());
+        foreach($plans as $plan)
+        {
+            $course_plans_details = $plan->courseDetails($request->course_id);
+            if($course_plans_details != null) break;
+            //dd($course_plans);
+        }
+        
+        $course_hours = $course_plans_details->credit_hours;
         //dd($course_hours);
 
-        $finance_allow_hours = $std->financeDetails->hours;
-        $academic_hours = AcademicSupervision::where('student_id',$std->id)->academicStatus->hours;
-   
+        $finance_account = FinanceAccount::where('student_id', $std->id)->first();
+        $finance_allowed = FinanceAllowedHours::where('finance_account_id', $finance_account->id)
+                           ->where('study_year_id', 12)
+                           ->where('semester_id', 2)
+                           ->first();
+
+        $finance_allow_hours = $finance_allowed->hours;
+        //dd($finance_allow_hours);
+
+
+        $academic_supervision = AcademicSupervision::where('student_id',$std->id)
+                          ->where('study_year_id', 12)
+                          ->where('semester_id', 2)
+                          ->first();
+        $academic_hours = $academic_supervision->academicStatus->hours;
+        //dd($academic_hours);
+
         $minimum = min($finance_allow_hours, $academic_hours);
-        
+
         $t = 1;
         $course_hours <= $minimum ? '':$t=0 ;
 
-        dd($finance_details);
-        return $course;
-        return $request;
-        return response()->json([
-            'status' => 'success',
-            'message' => 'register successfully',
-            'info' => $request,
-            'action' => ''
-        ]);
+        if($t == 1)
+        {
+            //student_id  course_id	registration_plan_id
+            // registration_course_category_id registration_course_group_id 
+            $student_registered_course = new StudentRegisteredCourse();
+
+            $student_registered_course->student_id = $std->id;
+            $student_registered_course->course_id = $request->course_id;
+            $student_registered_course->registration_course_category_id = $request->category_id;
+            $student_registered_course->registration_course_group_id = $request->group_id;
+            $student_registered_course->registration_plan_id = $request->registration_plan_id;
+
+            $student_registered_course->save();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'register successfully',
+                'info' => $student_registered_course,
+                'action' => ''
+            ]);
+        } else{
+            return response()->json([
+                'status' => 'error',
+                'message' => 'cross the finance or academic hours',
+                'info' => $student_registered_course,
+                'action' => ''
+            ]);
+        }
     }
+    ///////////////////////////////////////////////////////////////////////////////////////
     
     //http://127.0.0.1:8000/uploads/students/students_1612604821.jpg
     /*protected function upload_image($item = null, $img = null)
