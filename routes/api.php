@@ -22,6 +22,7 @@ Route::get('a', function(){
     dd('hi');
 });
 
+Route::get('registration_plan', 'API\RegistrationPlanController@courses');
 Route::get('banks','API\BankController@index');
 Route::get('study_years','API\StudyYearController@index');
 Route::group(['namespace' => 'API'], function(){
@@ -40,7 +41,6 @@ Route::group(['namespace' => 'API'], function(){
     Route::get('student_files', 'FolderController@exist_files');*/
     Route::get('courses','CourseController@index');
     Route::get('student_courses', 'CourseController@student_courses');
-    Route::get('registration_plan', 'RegistrationPlanController@courses');
 
     Route::post('register_course', 'StudentProfileController@register_course');
     //Route::post('upload_image', 'StudentProfileController@upload_image');

@@ -17,7 +17,8 @@ class RegistrationPlanController extends Controller
 {
     public function courses()
     {
-        $reg = RegistrationPlan::select('id', 'study_year_semester_id','study_plan_id', 'faculty_id', 'department_id')
+        $reg = RegistrationPlan::find(1);
+        /*select('id', 'study_year_semester_id','study_plan_id', 'faculty_id', 'department_id')
         ->with(['registrationCourses' => function($registrationCourse){
             $registrationCourse->with(['course' => function($course){
                     $course->select('id', 'code');
@@ -32,29 +33,22 @@ class RegistrationPlanController extends Controller
             }])->select('id','registration_plan_id', 'course_id');
         }
         ])
-        ->find(1);
+        ->find(1);*/
         
         //return $reg->studyPlan()->details[5]->prerequisite_courses;
 
+        
+        $open_courses = StudentOpenedCourse::all();
+        $opens = [218];
+        //$open_courses->pluck('course_id')->toArray();
         $courses_from_reg = array();
         foreach($reg->registrationCourses as $registrationCourse)
         {
-            array_push($courses_from_reg, $registrationCourse->course->id);
-        }
-        
-        $open_courses = StudentOpenedCourse::all();
-        $opens = $open_courses->pluck('course_id')->toArray();
-        $filtered_courses = array();
-        foreach($courses_from_reg as $course_from_reg)
-        {
-            if(in_array($course_from_reg, $opens))
+            if(in_array($registrationCourse->course_id, $opens))
             {
-                array_push($filtered_courses, $course_from_reg);
+                array_push($courses_from_reg, $registrationCourse->course_id);
             }
         }
-        //return $filtered_courses;
-
-        $courses_from_reg = $filtered_courses;
 
         $pre_courses = array();
         if($reg->studyPlan != null)
