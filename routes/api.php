@@ -62,3 +62,5 @@ Route::fallback(function(){
         'action'=> ''
     ], 404);
 });
+
+Route::get('data','TestController@open_table');

@@ -11,6 +11,7 @@ use JWTAuth;
 use JWTAuthException;
 use App\Models\RegistrationPlan;
 use App\Models\Course;
+use App\Models\StudentOpenedCourse;
 
 class RegistrationPlanController extends Controller
 {
@@ -55,27 +56,34 @@ class RegistrationPlanController extends Controller
         {
             array_push($courses_from_reg, $registrationCourse->course->id);
         }
-        //return $courses_from_reg;
 
         $courses_hours = array();
+        $courses = array();
         $plans = $reg->studyPlan->get();
         foreach($courses_from_reg as $course_id)
         {
             foreach($plans as $plan)
             {
-                dd($plan->courseDetails($course_id)->credit_hours);
-                //$courses_hours[$course_id] = 
-
                 $course_plans_details = $plan->courseDetails($course_id);
                 if($course_plans_details != null) break;
             }
             $courses_hours = $course_plans_details->credit_hours;
             $courses[$course_id] = $courses_hours;
         }
-        
-        return $courses_hours;
-        $reg['courses_hours'] = $courses_hours;
+        $reg['courses_hours'] = $courses;
 
+        /*$open_courses = StudentOpenedCourse::all();
+        ->pluck('course_id');
+        dd($open_courses);
+        foreach($courses_from_reg as $course_from_reg)
+        {
+            if(in_array($course_from_reg, $open_courses))
+            {
+                dd($course_from_reg);
+            }
+        }*/
         return $reg;
     }
 }
+
+
