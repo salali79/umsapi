@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\RegisterCourseRequest as RegisterCourseRequest;
+use Intervention\Image\ImageManagerStatic as Image;
 use Response;
 use Auth;
 use Validator;
@@ -12,6 +13,12 @@ use JWTFactory;
 use JWTAuth;
 use JWTAuthException;
 use App\Models\Student;
+use App\Models\Course;
+use App\Models\studyPlanDetail;
+use App\Models\FinanceAccount;
+use App\Models\FinanceAllowedHours;
+use App\Models\AcademicStatus;
+use App\Models\AcademicSupervision;
 
 class StudentProfileController extends Controller
 {
@@ -156,6 +163,25 @@ class StudentProfileController extends Controller
     }
     public function register_course(RegisterCourseRequest $request)
     {
+        $std = $this->current_student($request);
+        $plans = $std->StudentStudyPlan()->get();
+        dd($plans->first());
+        $course_plans = $plans->where('course_id', $request->course_id)->first();
+        dd($course_plans);
+        //$course_plans_details = $course_plans->details;
+        //$course_hours = $course_plans_details->credit_hours;
+        //dd($course_hours);
+
+        $finance_allow_hours = $std->financeDetails->hours;
+        $academic_hours = AcademicSupervision::where('student_id',$std->id)->academicStatus->hours;
+   
+        $minimum = min($finance_allow_hours, $academic_hours);
+        
+        $t = 1;
+        $course_hours <= $minimum ? '':$t=0 ;
+
+        dd($finance_details);
+        return $course;
         return $request;
         return response()->json([
             'status' => 'success',
@@ -164,24 +190,32 @@ class StudentProfileController extends Controller
             'action' => ''
         ]);
     }
+    
+    //http://127.0.0.1:8000/uploads/students/students_1612604821.jpg
+    /*protected function upload_image($item = null, $img = null)
+    {
+        $image = $img ?? request('image') ;
+        if ($image) {
+            
+            $extension = $image->getClientOriginalExtension();
 
-    //new_name file delete_file path 
-    /*
-      [
-          'file'        => 'image',
-	      'path'        => 'students',
-          'delete_file' => Student::find($id)->logo
-      ]
-    */
-    public function upload($data = []) {
+            $filenametostore = 'students_' . time() . '.' . $extension;
 
-		if (in_array('new_name', $data)) {
-			$new_name = $data['new_name'] === null? time():$data['new_name'];
-		}
+            if (!file_exists(public_path('uploads'))) {
+                mkdir(public_path('uploads'), 0755);
+            }
 
-		if (request()->hasFile($data['file'])) {
-			Storage::has($data['delete_file'])? Storage::delete($data['delete_file']):'';
-			return request()->file($data['file'])->store($data['path']);
-		}
-	}
+            if (!file_exists(public_path('uploads/students'))) {
+                mkdir(public_path('uploads' . '/students'), 0755);
+            }
+
+            $img = Image::make($image)->save(public_path('uploads/students/' . $filenametostore));
+            if($img){
+                return $filenametostore;
+            }
+        }
+        return false;
+
+    }*/
+
 }

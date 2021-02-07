@@ -35,10 +35,10 @@ class RegistrationPlanController extends Controller
         
         //return $reg->studyPlan()->details[5]->prerequisite_courses;
         $pre_courses = array();
-        //return $reg->studyPlan();
-        if($reg->studyPlan() != null)
+        //return $reg->studyPlan;
+        if($reg->studyPlan != null)
         {
-            foreach($reg->studyPlan()->details as $detail)
+            foreach($reg->studyPlan->details as $detail)
             {
                 $pre_courses[$detail->course_id] = array();
                 foreach($detail->prerequisite_courses as $pre_req_course)

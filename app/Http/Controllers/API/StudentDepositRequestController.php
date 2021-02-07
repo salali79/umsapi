@@ -20,6 +20,21 @@ use Carbon\Carbon;
 
 class StudentDepositRequestController extends Controller
 {
+    public function __construct()
+    {
+      $this->middleware('auth:student', ['except' => ['index']]);
+      $this->guard = "student";
+    }
+    public function current_student(Request $request)
+    {
+        if(!is_null($request->lang)) app()->setLocale($request->lang);
+        $headers = apache_request_headers();
+        $request->headers->set('Authorization', $headers['Authorization']);
+        $token = $request->headers->get('Authorization');
+        JWTAuth::setToken($token);
+        $std = auth('student')->user();
+        return $std;
+    }
     public function index(Request $request)
     {
         $headers = apache_request_headers();
@@ -33,16 +48,15 @@ class StudentDepositRequestController extends Controller
     }
     public function store(DepositeRequest $request)
     {
-        $validated = $request->validated();
-        $token = $request->token;
+        //$token = $request->token;
         $data = [
-            'token' => $request->token,
+            //'token' => $request->token,
             'bank_id' => $request->bank_id,
             'office_id' => $request->office_id,
-            'study_year_id' => $request->study_year_id,
-            'semester_id' => $request->semester_id,
+            'study_year_id' => '',
+            'semester_id' => '',
             'requested_hours' => $request->requested_hours,
-            'student_id' => $request->student_id,
+            'student_id' => $this->current_student()->id,
             'request_status' => '0'
         ];
         /*if(! $token = JWTAuth::parseToken()->authenticate())

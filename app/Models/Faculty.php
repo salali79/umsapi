@@ -15,6 +15,14 @@ class Faculty extends AppModel
    protected $fillable  =['logo','code','color','created_by','updated_by','deleted_by' ];
 
 
+   protected static function boot() {
+
+        parent::boot();
+        static::deleting(function($faculty) {
+            $faculty->translations()->delete();
+        });
+    }
+
    public function departments()
    {
     return $this->hasMany(Department::class);

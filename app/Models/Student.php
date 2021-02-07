@@ -149,9 +149,26 @@ class Student extends Authenticatable implements JWTSubject
     }
     public function StudentStudyPlan(){
         $stud_study_year =  $this->academic_number[0].$this->academic_number[1] ;
-        $study_year = StudyYear::
-        query()->where('code','like',$stud_study_year.'%')->first();
-        $study_plan = $study_year->studyPlan ;
+
+        $study_year = StudyYear::where('code','like',$stud_study_year.'%')->first();
+
+        $study_plan = $study_year->studyPlans
+            ->where('faculty_id','=',$this->faculty_id)
+            ->where('department_id','=',$this->department_id)->first() ;
+
+        if($study_plan == null) {
+            $study_years = StudyYear::where('code','<',intval($study_year->code))->orderBy('code','desc')->pluck('id');
+
+            foreach ($study_years as $study_year_id){
+
+                $last_study_plans = StudyPlan::where('faculty_id','=',$this->faculty_id)
+                    ->where('department_id','=',$this->department_id)
+                    ->where('study_year_id',$study_year_id)->first();
+                if ($last_study_plans != null)
+                    return $last_study_plans ;
+            }
+        }
+        else
         return $study_plan ;
     }
     public function hourPrice(){

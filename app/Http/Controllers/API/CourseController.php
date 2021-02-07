@@ -12,6 +12,7 @@ use JWTAuth;
 use JWTAuthException;
 use App\Models\Student;
 use App\Models\Course;
+use App\Models\StudyPlan;
 
 
 class CourseController extends Controller
