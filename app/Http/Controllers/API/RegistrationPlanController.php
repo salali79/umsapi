@@ -21,6 +21,12 @@ class RegistrationPlanController extends Controller
       $this->middleware('auth:student');
       $this->guard = "student";
     }
+    function studyYearSemesterId(){
+        $study_year_semester = StudyYearSemester::where('study_year_id',20)
+            ->where('semester_id',2)->first();
+        return $study_year_semester->id ;
+
+    }
     function current_student(Request $request)
     {
         if(!is_null($request->lang)) app()->setLocale($request->lang);
@@ -38,7 +44,7 @@ class RegistrationPlanController extends Controller
 
         $registration_plan = RegistrationPlan::where('faculty_id',$student->faculty_id)
              ->where('department_id',$student->department_id)
-             ->where('study_year_semester_id',studyYearSemesterId())->first();
+             ->where('study_year_semester_id',$this->studyYearSemesterId())->first();
 
 
         $registration_plan_courses =  $registration_plan->registrationCourses;
