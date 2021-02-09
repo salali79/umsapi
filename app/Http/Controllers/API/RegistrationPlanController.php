@@ -77,7 +77,7 @@ class RegistrationPlanController extends Controller
 
                              ];
                          });
-                         return ['name' => $group->name , 'capacity' => $group->capacity ,'lectures' => $lectures];
+                         return ['id'=> $group->id, 'name' => $group->name , 'capacity' => $group->capacity ,'lectures' => $lectures];
                      });
                      $categories = $registration_course->courseCategories->map(function ($category){
                          $lectures = $category->lectures->map(function ($lecture){
@@ -90,7 +90,7 @@ class RegistrationPlanController extends Controller
                              ];
                          });
                          return [
-                             'name' => $category->name , 'capacity' => $category->capacity ,'lectures' => $lectures];
+                            'id'=> $category->id, 'name' => $category->name , 'capacity' => $category->capacity ,'lectures' => $lectures];
                      });
                      $reg_course = $course;
                      $reg_course['groups_count'] = $registration_course->groups_count;
@@ -107,7 +107,7 @@ class RegistrationPlanController extends Controller
 
                 'academic_allowed_hours' => 15,
                 'finance_allowed_hours' => 18,
-                 'registration_courses' => $registration_course_arr
+                'registration_courses' => $registration_course_arr
                  
              ];
               

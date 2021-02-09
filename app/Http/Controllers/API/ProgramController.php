@@ -49,9 +49,10 @@ class ProgramController extends Controller
     public function get_course_conflict()
     {
         $program = ProgramSchedule::find(2);
-        $year = "2021"; $month="2"; $day="sunday"; $tz="11:00";
-        return $program->isOpenAt(Carbon::now);
-        //return $program->isOpenAt(new DateTime('2021-26-09 12:00'));
-        //isOpenOn('sunday');
+        //dd($program->free_hours);
+        $hours = json_encode($program->free_hours, JSON_UNESCAPED_SLASHES);
+        $hours =  preg_replace('/\\\"/',"\"", $hours);
+        return $hours;
+        return $program->isOpenOn('sunday');
     }
 }
