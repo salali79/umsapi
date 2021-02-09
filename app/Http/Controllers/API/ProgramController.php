@@ -54,4 +54,12 @@ class ProgramController extends Controller
         }*/
         $program->save();
     }
+    public function get_course_conflict()
+    {
+        $program = ProgramSchedule::find(1);
+        $year = "2021"; $month="2"; $day="sunday"; $tz="11:00";
+        return $program->isOpenAt(\Carbon::createFromDate($year, $month, $day, $tz));
+        //return $program->isOpenAt(new DateTime('2021-26-09 12:00'));
+        //isOpenOn('sunday');
+    }
 }
