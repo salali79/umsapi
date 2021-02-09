@@ -21,10 +21,20 @@ class RegistrationPlanController extends Controller
       $this->middleware('auth:student');
       $this->guard = "student";
     }
+    function current_student(Request $request)
+    {
+        if(!is_null($request->lang)) app()->setLocale($request->lang);
+        $headers = apache_request_headers();
+        $request->headers->set('Authorization', $headers['Authorization']);
+        $token = $request->headers->get('Authorization');
+        JWTAuth::setToken($token);
+        $std = auth('student')->user();
+        return $std;
+    }
     public function index(Request $request)
     {
 
-        $student = current_student($request); 
+        $student = $this->current_student($request);
 
         $registration_plan = RegistrationPlan::where('faculty_id',$student->faculty_id)
              ->where('department_id',$student->department_id)
@@ -119,10 +129,10 @@ class RegistrationPlanController extends Controller
             }])->select('id','registration_plan_id', 'course_id');
         }
         ])
-        ->find(1);       
+        ->find(1);
         //return $reg->studyPlan()->details[5]->prerequisite_courses;
 
-        
+
         $open_courses = StudentOpenedCourse::all();
         $opens = $open_courses->pluck('course_id')->toArray();
         $courses_from_reg = array();
@@ -148,7 +158,7 @@ class RegistrationPlanController extends Controller
                 }
             }
         }*/
-        
+
 
 
         $courses = array();
