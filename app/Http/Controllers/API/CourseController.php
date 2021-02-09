@@ -17,16 +17,7 @@ use App\Models\StudyPlan;
 
 class CourseController extends Controller
 {
-    public function current_student(Request $request)
-    {
-        if(!is_null($request->lang)) app()->setLocale($request->lang);
-        $headers = apache_request_headers();
-        $request->headers->set('Authorization', $headers['Authorization']);
-        $token = $request->headers->get('Authorization');
-        JWTAuth::setToken($token);
-        $std = auth('student')->user();
-        return $std;
-    }
+
     public function index(Request $request)
     {
         if(!is_null($request->lang)) app()->setLocale($request->lang);
@@ -38,7 +29,7 @@ class CourseController extends Controller
 
     public function student_courses(Request $request)
     {
-        $std = $this->current_student($request);
+        $std = current_student($request);
         $non_dep = 0; $non_faculty = 0;
         $faculty_id = $std->faculty == null?  $non_faculty = 1:$std->faculty->id; 
         $department_id = $std->department == null?  $non_dep = 1:$std->department->id; 

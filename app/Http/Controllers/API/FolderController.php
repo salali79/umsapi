@@ -15,16 +15,7 @@ use App\Models\Student;
 
 class FolderController extends Controller
 {
-    public function current_student(Request $request)
-    {
-        if(!is_null($request->lang)) app()->setLocale($request->lang);
-        $headers = apache_request_headers();
-        $request->headers->set('Authorization', $headers['Authorization']);
-        $token = $request->headers->get('Authorization');
-        JWTAuth::setToken($token);
-        $std = auth('student')->user();
-        return $std;
-    }
+
     public function index(Request $request)
     {
         if(!is_null($request->lang)) app()->setLocale($request->lang);
@@ -50,7 +41,7 @@ class FolderController extends Controller
     }
     public function exist_files(Request $request)
     {
-        $std = $this->current_student($request);
+        $std = current_student($request);
         if(!is_null($std))
         return response()->json([
             'status' => 'success',

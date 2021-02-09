@@ -216,4 +216,15 @@ class Student extends Authenticatable implements JWTSubject
     {
         return [];
     }
+    public function studentOpenedCourses(){
+        return $this->hasMany(StudentOpenedCourse::class);
+    }
+    public function studentRegisteredCourses(){
+        return $this->hasMany(StudentRegisteredCourse::class);
+    }
+    public function StudentCourseHours($course_id){
+        $study_plan = $this->StudentStudyPlan();
+        $course = $study_plan->courseDetails($course_id);
+        return $course->credit_hours;
+    }
 }

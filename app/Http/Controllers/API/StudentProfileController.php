@@ -8,7 +8,6 @@ use App\Http\Requests\RegisterCourseRequest as RegisterCourseRequest;
 use Intervention\Image\ImageManagerStatic as Image;
 use Response;
 use Auth;
-use Validator;
 use JWTFactory;
 use JWTAuth;
 use JWTAuthException;
@@ -20,27 +19,21 @@ use App\Models\FinanceAllowedHours;
 use App\Models\AcademicStatus;
 use App\Models\AcademicSupervision;
 use App\Models\StudentRegisteredCourse;
+use App\Models\RegistrationCGL;
+use App\Models\RegistrationCCL;
 
 class StudentProfileController extends Controller
 {
-    public function __construct()
+    protected $request;
+    public function __construct(Request $request)
     {
       $this->middleware('auth:student');
       $this->guard = "student";
-    }
-    public function current_student(Request $request)
-    {
-        if(!is_null($request->lang)) app()->setLocale($request->lang);
-        $headers = apache_request_headers();
-        $request->headers->set('Authorization', $headers['Authorization']);
-        $token = $request->headers->get('Authorization');
-        JWTAuth::setToken($token);
-        $std = auth('student')->user();
-        return $std;
+      $this->request = $request;
     }
     public function info(Request $request)
     {
-        $std = $this->current_student($request);
+        $std = current_student($request);
         $std->load('faculty', 'department', 'contact',
         'emergency', 'medicals', 'folderType',
         'studentFiles'
@@ -49,7 +42,7 @@ class StudentProfileController extends Controller
     }
     public function personal_info(Request $request)
     {
-        $std = $this->current_student($request);
+        $std = current_student($request);
         $res = '{}';
         if(!is_null($std))
         {
@@ -80,7 +73,7 @@ class StudentProfileController extends Controller
     }
     public function contact_info(Request $request)
     {
-        $std = $this->current_student($request);
+        $std = current_student($request);
         $res = '{}';
         if(!is_null($std->contact))
         {
@@ -113,7 +106,7 @@ class StudentProfileController extends Controller
     }
     public function emergency_info(Request $request)
     {
-        $std = $this->current_student($request)->emergency;
+        $std = current_student($request)->emergency;
         $res = '{}';
         if(!is_null($std->emergency))
         {
@@ -137,7 +130,7 @@ class StudentProfileController extends Controller
     }
     public function registration_info(Request $request)
     {
-        $std = $this->current_student($request);
+        $std = current_student($request);
         $res = '{}';
         if(!is_null($std)) 
         {
@@ -164,92 +157,106 @@ class StudentProfileController extends Controller
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
-    public function register_course(RegisterCourseRequest $request)
+    public function academic_allowed_hours()
     {
-        $std = $this->current_student($request);
-        $plans = $std->StudentStudyPlan()->get();
-        $finance_account = FinanceAccount::where('student_id', $std->id)->first();
-        $finance_allowed = FinanceAllowedHours::where('finance_account_id', $finance_account->id)
-                           ->where('study_year_id', 12)
+        $std = current_student($this->request);
+        $academic_supervision = AcademicSupervision::where('student_id',$std->id)
+                               ->where('study_year_id', 20)
+                               ->where('semester_id', 2)
+                               ->first();
+        $academic_hours = $academic_supervision->academicStatus->hours;
+        return response()->json([
+            'status' => 'success',
+            'academic_hours' => $academic_hours
+        ]);
+    }
+    public function finance_allowed_hours()
+    {
+        $std = current_student($this->request);
+        $finance_allowed = $std->financeDetails
+                           ->where('study_year_id', 20)
                            ->where('semester_id', 2)
                            ->first();
 
         $finance_allow_hours = $finance_allowed->hours;
-        $academic_supervision = AcademicSupervision::where('student_id',$std->id)
-                          ->where('study_year_id', 12)
-                          ->where('semester_id', 2)
-                          ->first();
-        $academic_hours = $academic_supervision->academicStatus->hours;
-        $minimum = min($finance_allow_hours, $academic_hours);
-        $all_hours = 0;
+        return response()->json([
+            'status' => 'success',
+            'finance_hours' => $finance_allow_hours
+        ]);
+    }
+    public function add_course(Request $request)
+    {
+        $std = current_student($request);
+        $plans = $std->StudentStudyPlan()->get();
         $t = 1;
-        $objects = $request->all();
-        foreach($objects as $object){
-            foreach($plans as $plan)
-            {
-                $course_plans_details = $plan->courseDetails($object->course_id);
-                if($course_plans_details != null) break;
-            }
-            $course_hours = $course_plans_details->credit_hours;
-            $all_hours = $all_hours + $course_hours;
-            $all_hours <= $minimum ? '':$t=0 ;
-            if($t == 0) break;
+        ///---CHECK HOURS---///
+        $finance_allow_hours = $this->finance_allowed_hours();
+        $academic_hours = $this->academic_allowed_hours();
+        $minimum = min($finance_allow_hours, $academic_hours);
+        dd($minimum);
+        foreach($plans as $plan)
+        {
+            $course_plans_details = $plan->courseDetails($request->course_id);
+            if($course_plans_details != null) break;
         }
+        $course_hours = $course_plans_details->credit_hours;
+        $course_hours <= $minimum ? '':$t=0 ;
+
+        ///---CHECK DATE---///
+        $registration_c_g_ls = RegistrationCGL::where('registration_course_category_id', $request->group_id);
+        $registration_c_c_ls = RegistrationCCL::where('registration_course_group_id', $request->category_id);
+        dd($registration_c_c_ls);
+        if($registration_c_g_ls != null)
+        {
+            
+        }
+
 
         if($t == 1)
         {
-            foreach($objects as $object)
-            {
-                $student_registered_course = new StudentRegisteredCourse();
-                $student_registered_course->student_id = $std->id;
-                $student_registered_course->course_id = $object->course_id;
-                $student_registered_course->registration_course_category_id = $object->category_id;
-                $student_registered_course->registration_course_group_id = $object->group_id;
-                $student_registered_course->registration_plan_id = $object->registration_plan_id;
-                $student_registered_course->save();
-            }
+            $student_registered_course = new StudentRegisteredCourse();
+            $student_registered_course->student_id = $std->id;
+            $student_registered_course->course_id = $request->course_id;
+            $student_registered_course->registration_course_category_id = $request->category_id;
+            $student_registered_course->registration_course_group_id = $request->group_id;
+            $student_registered_course->registration_plan_id = $request->registration_plan_id;
+            $student_registered_course->status = '2';
+            $student_registered_course->save();
             return response()->json([
                 'status' => 'success',
                 'message' => 'register successfully',
-                //'info' => $student_registered_course,
-                'action' => ''
             ]);
         } else{
             return response()->json([
                 'status' => 'error',
-                'message' => 'cross the finance or academic hours',
-                //'info' => $student_registered_course,
-                'action' => ''
+                'message' => 'conflict dates or cross the finance or academic hours',
             ]);
         }
     }
-    ///////////////////////////////////////////////////////////////////////////////////////
 
-    //http://127.0.0.1:8000/uploads/students/students_1612604821.jpg
-    /*protected function upload_image($item = null, $img = null)
+    public function final_add_course(Request $requests)
     {
-        $image = $img ?? request('image') ;
-        if ($image) {
-            
-            $extension = $image->getClientOriginalExtension();
-
-            $filenametostore = 'students_' . time() . '.' . $extension;
-
-            if (!file_exists(public_path('uploads'))) {
-                mkdir(public_path('uploads'), 0755);
-            }
-
-            if (!file_exists(public_path('uploads/students'))) {
-                mkdir(public_path('uploads' . '/students'), 0755);
-            }
-
-            $img = Image::make($image)->save(public_path('uploads/students/' . $filenametostore));
-            if($img){
-                return $filenametostore;
-            }
+        $std = current_student($requests);
+        //dd($requests[0]);
+        $requests = $requests->all();
+        foreach($requests as $request)
+        {
+            $student_registered_course = StudentRegisteredCourse::where('student_id', $std->id)
+                                        ->where('course_id', $request['course_id'])
+                                        ->where('registration_course_category_id', $request['category_id'])
+                                        ->where('registration_course_group_id', $request['group_id'])
+                                        ->where('registration_plan_id', $request['registration_plan_id']);
+            $student_registered_course->update(['status' => '1']);
         }
-        return false;
+        return response()->json([
+            'status' => 'success',
+            'message' => 'final register successfully',
+        ]);
+    }
 
-    }*/
+    public function delete_course(Request $request)
+    {
+        
+    }
 
 }

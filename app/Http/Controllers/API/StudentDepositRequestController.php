@@ -25,16 +25,6 @@ class StudentDepositRequestController extends Controller
       $this->middleware('auth:student', ['except' => ['index']]);
       $this->guard = "student";
     }
-    public function current_student(Request $request)
-    {
-        if(!is_null($request->lang)) app()->setLocale($request->lang);
-        $headers = apache_request_headers();
-        $request->headers->set('Authorization', $headers['Authorization']);
-        $token = $request->headers->get('Authorization');
-        JWTAuth::setToken($token);
-        $std = auth('student')->user();
-        return $std;
-    }
     public function index(Request $request)
     {
         $headers = apache_request_headers();
@@ -56,7 +46,7 @@ class StudentDepositRequestController extends Controller
             'study_year_id' => '',
             'semester_id' => '',
             'requested_hours' => $request->requested_hours,
-            'student_id' => $this->current_student()->id,
+            'student_id' => current_student()->id,
             'request_status' => '0'
         ];
         /*if(! $token = JWTAuth::parseToken()->authenticate())
