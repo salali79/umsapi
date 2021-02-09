@@ -9,14 +9,15 @@
     "license": "MIT",
     "require": {
         "php": "^7.2.5",
+        "astrotomic/laravel-translatable": "^11.9",
         "fideloper/proxy": "^4.2",
         "fruitcake/laravel-cors": "^1.0",
         "guzzlehttp/guzzle": "^6.3",
-        "laravel/framework": "^7.0",
         "intervention/image": "^2.5",
+        "laravel/framework": "^7.0",
         "laravel/tinker": "^2.0",
-        "tymon/jwt-auth": "^1.0",
-        "astrotomic/laravel-translatable": "^11.9"
+        "spatie/opening-hours": "^2.10",
+        "tymon/jwt-auth": "^1.0"
     },
     "require-dev": {
         "facade/ignition": "^2.0",

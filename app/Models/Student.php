@@ -105,8 +105,11 @@ class Student extends Authenticatable implements JWTSubject
             ->first();
         return $s_trans ;
      }
+    public function studentSemesterTranscript(){
+        return $this->hasMany(StudentSemesterTranscript::class);
+    }
     public function finalTranscript(){
-        return $this->hasOne(FinalTranscript::class);
+        return $this->hasOne(StudentFinalTranscript::class);
     }
      public function finance(){
         return $this->hasOne(FinanceAccount::class);
@@ -202,10 +205,20 @@ class Student extends Authenticatable implements JWTSubject
     public function getAGPA(){
         return 'AGPA2021';
     }
-    public function getAcademicAllowedHors(){
+    public function studentAcademicAllowedHours($study_year_id,$semester_id){
+        $student_academic  =  $this->academicSupervision
+            ->where('study_year_id',$study_year_id)
+            ->where('semester_id',$semester_id)->first();
+        $student_academic_hours = $student_academic ? $student_academic->academicStatus->hours : 0 ;
+        return $student_academic_hours;
 
     }
-    public function getFinancialAllowedHors(){
+    public function studentFinanceAllowedHours($study_year_id,$semester_id){
+        $student_finance =  $this->financeDetails
+            ->where('study_year_id',$study_year_id)
+            ->where('semester_id' , $semester_id)->first();
+        $student_finance_hours = $student_finance ? $student_finance->hours : 0 ;
+        return $student_finance_hours;
 
     }
     public function getJWTIdentifier()
@@ -215,6 +228,9 @@ class Student extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+    public function academicSupervision(){
+        return $this->hasMany(AcademicSupervision::class);
     }
     public function studentOpenedCourses(){
         return $this->hasMany(StudentOpenedCourse::class);

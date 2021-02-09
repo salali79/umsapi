@@ -48,6 +48,8 @@ Route::group(['namespace' => 'API'], function(){
     Route::post('register_course', 'StudentProfileController@add_course');
     Route::post('final_register_course', 'StudentProfileController@final_add_course');
     Route::post('delete_course', 'StudentProfileController@delete_course');
+
+    Route::post('add_course_time', 'ProgramController@add_course_time');
 });
 
 Route::group(['middleware' => ['auth:student','jwt.auth'], 'namespace' => 'API'],function ()

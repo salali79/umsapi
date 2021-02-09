@@ -160,7 +160,8 @@ class StudentProfileController extends Controller
     public function academic_allowed_hours()
     {
         $std = current_student($this->request);
-        $academic_supervision = AcademicSupervision::where('student_id',$std->id)
+
+        $academic_supervision = $std->academicSupervision
                                ->where('study_year_id', 20)
                                ->where('semester_id', 2)
                                ->first();
@@ -190,10 +191,10 @@ class StudentProfileController extends Controller
         $plans = $std->StudentStudyPlan()->get();
         $t = 1;
         ///---CHECK HOURS---///
-        $finance_allow_hours = $this->finance_allowed_hours();
-        $academic_hours = $this->academic_allowed_hours();
+        $finance_allow_hours = $this->finance_allowed_hours()->getData()->finance_hours;
+        $academic_hours = $this->academic_allowed_hours()->getData()->academic_hours;
         $minimum = min($finance_allow_hours, $academic_hours);
-        dd($minimum);
+
         foreach($plans as $plan)
         {
             $course_plans_details = $plan->courseDetails($request->course_id);
@@ -203,14 +204,20 @@ class StudentProfileController extends Controller
         $course_hours <= $minimum ? '':$t=0 ;
 
         ///---CHECK DATE---///
+        $categories_hours = array();
+        $groups_hours = array();
         $registration_c_g_ls = RegistrationCGL::where('registration_course_category_id', $request->group_id);
         $registration_c_c_ls = RegistrationCCL::where('registration_course_group_id', $request->category_id);
-        dd($registration_c_c_ls);
-        if($registration_c_g_ls != null)
+        $student_registered_courses = $std->studentRegisteredCourses;
+        foreach($student_registered_courses as $student_registered_course)
         {
-            
+            //registration_course_category_id 	registration_course_group_id
+            if(!is_null($student_registered_course->registration_course_category_id))
+            array_push($categories_hours, $student_registered_course->registration_course_category_id);
+            if(!is_null($student_registered_course->registration_course_group_id))
+            array_push($groups_hours, $student_registered_course->registration_course_group_id);
         }
-
+        
 
         if($t == 1)
         {
