@@ -98,7 +98,7 @@ class RegistrationPlanController extends Controller
                      $reg_course['groups'] = $groups;
                      $reg_course['categories'] = $categories;
 
-                     dd($reg_course);
+                     //dd($reg_course);
                      array_push($registration_course_arr,$reg_course);
 
              }
