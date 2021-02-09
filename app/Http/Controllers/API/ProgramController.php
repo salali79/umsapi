@@ -11,6 +11,7 @@ use Validator;
 use JWTFactory;
 use JWTAuth;
 use JWTAuthException;
+use Carbon\Carbon;
 
 class ProgramController extends Controller
 {
@@ -18,7 +19,7 @@ class ProgramController extends Controller
     public function add_course_time(Request $request)
     {
         $program = new ProgramSchedule();
-        $program->student_id="3472";
+        $program->student_id="3466";
         $free_hours = [
             'sunday' =>
              [$request['MOsun'].'-'.$request['MCsun'], $request['NOsun'].'-'.$request['NCsun']],
@@ -36,7 +37,6 @@ class ProgramController extends Controller
              [$request['MOsat'].'-'.$request['MCsat'], $request['NOsat'].'-'.$request['NCsatn']],
         ];
 
-        $program->save();
 
         $program->free_hours = json_encode($free_hours);
         /*if(count($opening) > 0){
@@ -50,7 +50,7 @@ class ProgramController extends Controller
     {
         $program = ProgramSchedule::find(1);
         $year = "2021"; $month="2"; $day="sunday"; $tz="11:00";
-        return $program->isOpenAt(\Carbon::createFromDate($year, $month, $day, $tz));
+        return $program->isOpenAt(Carbon::createFromDate($year, $month, $day, $tz));
         //return $program->isOpenAt(new DateTime('2021-26-09 12:00'));
         //isOpenOn('sunday');
     }

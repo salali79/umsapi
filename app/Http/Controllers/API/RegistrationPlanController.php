@@ -29,10 +29,9 @@ class RegistrationPlanController extends Controller
     public function index(Request $request)
     {
 
-        $student = Student::find(3481);
+        $student = Student::find(3466);
         //$this->current_student($request);
 
-        //dd($student);
         $registration_plan = RegistrationPlan::where('faculty_id',$student->faculty_id)
              ->where('department_id',$student->department_id)
              ->where('study_year_semester_id',$this->studyYearSemesterId())->first();
@@ -99,10 +98,25 @@ class RegistrationPlanController extends Controller
                      $reg_course['groups'] = $groups;
                      $reg_course['categories'] = $categories;
 
+                     dd($reg_course);
                      array_push($registration_course_arr,$reg_course);
 
              }
              }
+             $arr = [
+
+                'academic_allowed_hours' => 15,
+                'finance_allowed_hours' => 18,
+                 'registration_courses' => $registration_course_arr
+                 
+             ];
+              
+             
+             //$arr['registration_courses'] = $course;
+             //$arr['academic_allowed_hours'] = 0;
+             //$arr['finance_allowed_hours'] = 0;
+             //
+             return $arr;
              return $registration_course_arr;
         }
         else {

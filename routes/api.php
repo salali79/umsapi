@@ -49,7 +49,7 @@ Route::group(['namespace' => 'API'], function(){
     Route::post('delete_course', 'StudentProfileController@delete_course');
 
     Route::post('add_course_time', 'ProgramController@add_course_time');
-    Route::post('get_course_conflict', 'ProgramController@get_course_conflict');
+    Route::get('get_course_conflict', 'ProgramController@get_course_conflict');
 
     Route::get('registration_plan', 'RegistrationPlanController@index');
 });
