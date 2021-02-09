@@ -22,7 +22,6 @@ Route::get('a', function(){
     dd('hi');
 });
 
-Route::get('registration_plan', 'API\RegistrationPlanController@index');
 Route::get('banks','API\BankController@index');
 Route::get('study_years','API\StudyYearController@index');
 Route::group(['namespace' => 'API'], function(){
@@ -50,6 +49,9 @@ Route::group(['namespace' => 'API'], function(){
     Route::post('delete_course', 'StudentProfileController@delete_course');
 
     Route::post('add_course_time', 'ProgramController@add_course_time');
+    Route::post('get_course_conflict', 'ProgramController@get_course_conflict');
+
+    Route::get('registration_plan', 'RegistrationPlanController@index');
 });
 
 Route::group(['middleware' => ['auth:student','jwt.auth'], 'namespace' => 'API'],function ()

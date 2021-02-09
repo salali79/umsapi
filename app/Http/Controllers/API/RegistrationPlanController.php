@@ -13,24 +13,32 @@ use App\Models\RegistrationPlan;
 use App\Models\Course;
 use App\Models\StudentOpenedCourse;
 use App\Models\StudyYearSemester;
+use App\Models\Student;
 
 class RegistrationPlanController extends Controller
 {
-    public function __construct()
-    {
-      $this->middleware('auth:student');
-      $this->guard = "student";
+    protected $current_semester_id = 2;
+    protected $current_study_year_id = 20;
+
+    public function studyYearSemesterId(){
+        $study_year_semester = StudyYearSemester::where('study_year_id',$this->current_study_year_id)
+            ->where('semester_id',$this->current_semester_id)->first();
+        return $study_year_semester->id ;
+
     }
     public function index(Request $request)
     {
 
-        $student = current_student($request); 
+        $student = Student::find(3481);
+        //$this->current_student($request);
 
+        //dd($student);
         $registration_plan = RegistrationPlan::where('faculty_id',$student->faculty_id)
              ->where('department_id',$student->department_id)
-             ->where('study_year_semester_id',studyYearSemesterId())->first();
+             ->where('study_year_semester_id',$this->studyYearSemesterId())->first();
 
 
+        
         $registration_plan_courses =  $registration_plan->registrationCourses;
 
         $student_study_plan = $student->StudentStudyPlan();
@@ -38,15 +46,18 @@ class RegistrationPlanController extends Controller
 
         $student_opened_courses = $student->studentOpenedCourses;
 
+        
         $stud_opened_courses_ids = $student_opened_courses ? $student_opened_courses->pluck('course_id') : [];
         $reg_course = [];
         $registration_course_arr = [];
+        
         if (count($stud_opened_courses_ids) !=0 ){
 
              $student_registration_courses = $registration_plan_courses->whereIn('course_id',$stud_opened_courses_ids) ;
 
 
              foreach ($student_registration_courses as  $registration_course ){
+                //dd($registration_course->categories_count);
                  if ( (!$registration_course->groups_count == 0 || !$registration_course->categories_count == 0 )){
                      $course_credit_hours =  $student_study_plan->courseDetails($registration_course->course_id)->credit_hours;
                      $course_status = $student_opened_courses->where('course_id',$registration_course->course_id)->first()->course_status;
@@ -92,7 +103,6 @@ class RegistrationPlanController extends Controller
 
              }
              }
-
              return $registration_course_arr;
         }
         else {
@@ -119,10 +129,10 @@ class RegistrationPlanController extends Controller
             }])->select('id','registration_plan_id', 'course_id');
         }
         ])
-        ->find(1);       
+        ->find(1);
         //return $reg->studyPlan()->details[5]->prerequisite_courses;
 
-        
+
         $open_courses = StudentOpenedCourse::all();
         $opens = $open_courses->pluck('course_id')->toArray();
         $courses_from_reg = array();
@@ -148,7 +158,7 @@ class RegistrationPlanController extends Controller
                 }
             }
         }*/
-        
+
 
 
         $courses = array();

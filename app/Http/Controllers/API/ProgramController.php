@@ -6,6 +6,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Spatie\OpeningHours\OpeningHours;
 use App\Models\ProgramSchedule;
+use Auth;
+use Validator;
+use JWTFactory;
+use JWTAuth;
+use JWTAuthException;
 
 class ProgramController extends Controller
 {
@@ -15,9 +20,9 @@ class ProgramController extends Controller
         $program = new ProgramSchedule();
         $program->student_id="3472";
         $free_hours = [
-            'sunday' => 
+            'sunday' =>
              [$request['MOsun'].'-'.$request['MCsun'], $request['NOsun'].'-'.$request['NCsun']],
-            'monday' => 
+            'monday' =>
              [$request['MOmon'].'-'.$request['MCmon'], $request['NOmon'].'-'.$request['NCmon']],
             'tuesday' =>
              [$request['MOtus'].'-'.$request['MCtus'], $request['NOtus'].'-'.$request['NCtus']],
@@ -32,10 +37,21 @@ class ProgramController extends Controller
         ];
 
         $program->save();
-        if(count($free_hours) > 0){
+
+        $program->free_hours = json_encode($free_hours);
+        /*if(count($opening) > 0){
             $program->update([
                 'free_hours' => $opening ? : null,
-             ]); 
-        }
+             ]);
+        }*/
+        $program->save();
+    }
+    public function get_course_conflict()
+    {
+        $program = ProgramSchedule::find(1);
+        $year = "2021"; $month="2"; $day="sunday"; $tz="11:00";
+        return $program->isOpenAt(\Carbon::createFromDate($year, $month, $day, $tz));
+        //return $program->isOpenAt(new DateTime('2021-26-09 12:00'));
+        //isOpenOn('sunday');
     }
 }

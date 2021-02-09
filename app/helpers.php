@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 use App\Models\Student as Student;
 use App\Models\StudyYearSemester as StudyYearSemester;
@@ -31,12 +31,7 @@ if (!function_exists('current_semester_id')) {
     }
 }
 if  (!function_exists('studyYearSemesterId')) {
-    function studyYearSemesterId(){
-        $study_year_semester = StudyYearSemester::where('study_year_id',current_study_year_id())
-            ->where('semester_id',current_semester_id())->first();
-        return $study_year_semester->id ;
 
-    }
 }
 
 ?>
