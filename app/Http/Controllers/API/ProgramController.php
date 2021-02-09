@@ -14,7 +14,7 @@ class ProgramController extends Controller
     {
         $program = new ProgramSchedule();
         $program->student_id="3472";
-        $program->free_hours = [
+        $free_hours = [
             'sunday' => 
              [$request['MOsun'].'-'.$request['MCsun'], $request['NOsun'].'-'.$request['NCsun']],
             'monday' => 
@@ -30,11 +30,12 @@ class ProgramController extends Controller
             'saturday' =>
              [$request['MOsat'].'-'.$request['MCsat'], $request['NOsat'].'-'.$request['NCsatn']],
         ];
-        /*if(count($opening) > 0){
+
+        $program->save();
+        if(count($free_hours) > 0){
             $program->update([
                 'free_hours' => $opening ? : null,
              ]); 
-        }*/
-        $program->save();
+        }
     }
 }
