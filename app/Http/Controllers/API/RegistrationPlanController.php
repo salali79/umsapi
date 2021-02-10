@@ -200,9 +200,7 @@ class RegistrationPlanController extends Controller
         $t = 1;
         ///---CHECK HOURS---///
         $finance_allow_hours = $std->studentAcademicAllowedHours(20, 2);
-        //$this->finance_allowed_hours()->getData()->finance_hours;
         $academic_hours = $std->studentFinanceAllowedHours(20, 2);
-        //$this->academic_allowed_hours()->getData()->academic_hours;
         $minimum = min($finance_allow_hours, $academic_hours);
 
         foreach($plans as $plan)
