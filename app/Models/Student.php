@@ -243,4 +243,13 @@ class Student extends Authenticatable implements JWTSubject
         $course = $study_plan->courseDetails($course_id);
         return $course->credit_hours;
     }
+    public function StudentRegisteredCoursesHours(){
+        $hours = 0;
+        $registered_courses = $this->studentRegisteredCourses;
+        foreach ($registered_courses as $course){
+            $hours += $this->StudentCourseHours($course->course_id);
+        }
+        return $hours;
+
+    }
 }
