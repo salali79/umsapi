@@ -12,4 +12,8 @@ class StudentOpenedCourse extends AppModel
      public function course(){
          return $this->belongsTo(Course::class);
      }
+    public function isChosenForRegistration(){
+        $chosen = $this->student->studentRegisteredCourses->where('course_id',$this->course_id)->first() ? 1 : 0 ;
+        return $chosen ;
+    }
 }

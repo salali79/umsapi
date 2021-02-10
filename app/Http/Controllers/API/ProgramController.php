@@ -22,7 +22,6 @@ class ProgramController extends Controller
             $program = ProgramSchedule::find($id);
             $obj = $program->openingHours();
             return $program->free_hours['sunday'];
-            //return var_dump( $program->free_hours['sunday']);
         } catch(\Spatie\OpeningHours\Exceptions\OverlappingTimeRanges $ex){
             return "conflict";
         }
@@ -36,15 +35,14 @@ class ProgramController extends Controller
             $program = new ProgramSchedule();
             $program->student_id = $std->id; //3466
 
-            //dd($program);
             $tmp_hours = $program->free_hours;
             $id = $program->id;
             $program->free_hours =[
-                //$request['day'] => [$request['start'].'-'.$request['end']],
-                'sunday' =>
+                $request['day'] => [$request['start'].'-'.$request['end']],
+                /*'sunday' =>
                  [$request['MOsun'].'-'.$request['MCsun']],
                  'monday' =>
-                 [$request['MOmon'].'-'.$request['MCmon']],
+                 [$request['MOmon'].'-'.$request['MCmon']],*/
             ];
             $program->save();
             $id = $program->id;
@@ -60,10 +58,10 @@ class ProgramController extends Controller
 
 
         $hours = [
-            //$request['day'] => [$request['start'].'-'.$request['end']],
-            'sunday' =>
+            $request['day'] => [$request['start'].'-'.$request['end']],
+            /*'sunday' =>
             [$request['MOsun'].'-'.$request['MCsun'], $request['MOsun'].'-'.$request['MCsun']],
-            'friday' => [$request['MOfri'].'-'.$request['MCfri']],
+            'friday' => [$request['MOfri'].'-'.$request['MCfri']],*/
             ];
 
         $all_hours = array_merge($program->free_hours,$hours);

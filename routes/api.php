@@ -44,7 +44,7 @@ Route::group(['namespace' => 'API'], function(){
     Route::get('finance_allowed_hours', 'StudentProfileController@finance_allowed_hours');
     Route::get('academic_allowed_hours', 'StudentProfileController@academic_allowed_hours');
 
-    Route::post('register_course', 'StudentProfileController@add_course');
+    Route::post('register_course', 'RegistrationPlanController@store');
     Route::post('final_register_course', 'StudentProfileController@final_add_course');
     Route::post('delete_course', 'StudentProfileController@delete_course');
 
