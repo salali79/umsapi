@@ -44,15 +44,15 @@ Route::group(['namespace' => 'API'], function(){
     Route::get('finance_allowed_hours', 'StudentProfileController@finance_allowed_hours');
     Route::get('academic_allowed_hours', 'StudentProfileController@academic_allowed_hours');
 
+    Route::get('registration_plan', 'RegistrationPlanController@index');
     Route::post('register_course', 'RegistrationPlanController@store');
     Route::post('final_register_course', 'StudentProfileController@final_add_course');
-    Route::post('delete_course', 'StudentProfileController@delete_course');
+    Route::post('delete_course', 'RegistrationPlanController@delete');
 
     Route::post('add_course_time', 'ProgramController@add_course_time');
     Route::post('update_course_time', 'ProgramController@update_course_time');
     Route::get('get_course_conflict', 'ProgramController@get_course_conflict');
 
-    Route::get('registration_plan', 'RegistrationPlanController@index');
 });
 
 Route::group(['middleware' => ['auth:student','jwt.auth'], 'namespace' => 'API'],function ()

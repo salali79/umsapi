@@ -9,6 +9,8 @@ use Validator;
 use JWTFactory;
 use JWTAuth;
 use JWTAuthException;
+use Spatie\OpeningHours\OpeningHours;
+use App\Models\ProgramSchedule;
 use App\Models\RegistrationPlan;
 use App\Models\Course;
 use App\Models\StudentOpenedCourse;
@@ -172,7 +174,6 @@ class RegistrationPlanController extends Controller
 
     public function store(Request $request)
     {
-
         $std = $this->current_student($request);
         $plan = $std->StudentStudyPlan();
         $t = 1;
@@ -188,56 +189,61 @@ class RegistrationPlanController extends Controller
         $course = RegistrationCourse::where('course_id', $request->course_id)->first();
         $category_hours = array();
         $group_hours = array();
-        if(!is_null($course->courseGroups))
+        if(!is_null($course))
         {
-            $course_group = $course->courseGroups->where('id', $request->group_id)->first();
-            if(!is_null($course_group->lectures))
+            if(!is_null($course->courseGroups))
             {
-                $group_hours = $course_group->lectures->map( function($lecture){
-                    $start_time = substr($lecture->start_time,0,-3);
-                    $end_time = substr($lecture->end_time,0,-3);
-                    $day = $this->days[$lecture->day];
-                    $id = $lecture->id;
-                    return [
-                        'id' => $id,
-                        'day' => $day,
-                        'start' => $start_time,
-                        'end' => $end_time
-                    ];
-                });
-                $group_hours = $group_hours->toArray();
+                $course_group = $course->courseGroups->where('id', $request->group_id)->first();
+                if(!is_null($course_group))
+                {
+                    $group_hours = $course_group->lectures->map( function($lecture){
+                        $start_time = substr($lecture->start_time,0,-3);
+                        $end_time = substr($lecture->end_time,0,-3);
+                        $day = $this->days[$lecture->day];
+                        $id = $lecture->id;
+                        return [
+                            'id' => $id,
+                            'day' => $day,
+                            'start' => $start_time,
+                            'end' => $end_time
+                        ];
+                    });
+                    $group_hours = $group_hours->toArray();
+                }
             }
-        }
-        if(!is_null($course->ccourseCategories))
-        {
-            $course_category = $course->ccourseCategories->where('id', $request->category_id);
-            if(!is_null($course_category->lectures))
+            if(!is_null($course->courseCategories))
             {
-                $category_hours = $course_category->lectures->map( function($lecture){
-
-                    $start_time = substr($lecture->start_time,0,-3);
-                    $end_time = substr($lecture->end_time,0,-3);
-                    $day = $this->days[$lecture->day];
-                    $id = $lecture->id;
-                    return [
-                        'id' => $id,
-                        'day' => $day,
-                        'start' => $start_time,
-                        'end' => $end_time
-                    ];
-                });
-                $category_hours = $category_hours->toArray();
+                $course_category = $course->courseCategories->where('id', $request->category_id)->first();
+                if(!is_null($course_category))
+                {
+                    $category_hours = $course_category->lectures->map( function($lecture){
+    
+                        $start_time = substr($lecture->start_time,0,-3);
+                        $end_time = substr($lecture->end_time,0,-3);
+                        $day = $this->days[$lecture->day];
+                        $id = $lecture->id;
+                        return [
+                            'id' => $id,
+                            'day' => $day,
+                            'start' => $start_time,
+                            'end' => $end_time
+                        ];
+                    });
+                    $category_hours = $category_hours->toArray();
+                }
             }
         }
         $hours = array_merge($group_hours, $category_hours);
 
         $ProgramController = new ProgramController();
         $conflicted_course = null;
+        //dd($hours);
         foreach($hours as $hour)
         {
             //dd($hour);
             $res = $ProgramController->add_course_time($hour, $std);
             $res = json_decode($res->getContent(), true);
+            //var_dump($res);
             if($res['status'] == 'error')
             {
                 $t=0;
@@ -267,6 +273,71 @@ class RegistrationPlanController extends Controller
             ]);
         }
 
+    }
+
+    public function delete(Request $request)
+    {
+        $course = RegistrationCourse::where('course_id', $request->course_id)->first();
+        $category_hours = array();
+        $group_hours = array();
+        if(!is_null($course))
+        {
+            if(!is_null($course->courseGroups))
+            {
+                $course_group = $course->courseGroups;
+                dd($course_group->lectures);
+                if(!is_null($course_group))
+                {
+                    $group_hours = $course_group->lectures->map( function($lecture){
+                        $start_time = substr($lecture->start_time,0,-3);
+                        $end_time = substr($lecture->end_time,0,-3);
+                        $day = $this->days[$lecture->day];
+                        $id = $lecture->id;
+                        return [
+                            'id' => $id,
+                            'day' => $day,
+                            'start' => $start_time,
+                            'end' => $end_time
+                        ];
+                    });
+                    $group_hours = $group_hours->toArray();
+                }
+            }
+            if(!is_null($course->courseCategories))
+            {
+                $course_category = $course->courseCategories;
+                //->where('id', $request->category_id)->first();
+                if(!is_null($course_category))
+                {
+                    $category_hours = $course_category->lectures->map( function($lecture){
+    
+                        $start_time = substr($lecture->start_time,0,-3);
+                        $end_time = substr($lecture->end_time,0,-3);
+                        $day = $this->days[$lecture->day];
+                        $id = $lecture->id;
+                        return [
+                            'id' => $id,
+                            'day' => $day,
+                            'start' => $start_time,
+                            'end' => $end_time
+                        ];
+                    });
+                    $category_hours = $category_hours->toArray();
+                }
+            }
+        }
+        $hours = array_merge($group_hours, $category_hours);
+        $std = $this->current_student($request);
+        $program = ProgramSchedule::where('student_id', $std->id)->first();
+        $object = $program->free_hours; 
+        //return ($program->free_hours);
+
+        dd($hours);
+        foreach($hours as $hour)
+        {
+            dd($object[$hour['day']]);
+
+        }
     }
 }
 

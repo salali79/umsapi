@@ -72,6 +72,7 @@ class ProgramController extends Controller
         ];
 
         $all_hours = array_merge($program->free_hours,$hours);
+        dd($all_hours);
         $tmp_hours = $program->free_hours;
         $id = $program->id;
         $program->update([
