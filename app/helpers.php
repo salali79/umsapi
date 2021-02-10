@@ -30,8 +30,5 @@ if (!function_exists('current_semester_id')) {
         return 2;
     }
 }
-if  (!function_exists('studyYearSemesterId')) {
-
-}
 
 ?>

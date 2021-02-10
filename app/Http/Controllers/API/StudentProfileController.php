@@ -209,14 +209,14 @@ class StudentProfileController extends Controller
         $registration_c_g_ls = RegistrationCGL::where('registration_course_category_id', $request->group_id);
         $registration_c_c_ls = RegistrationCCL::where('registration_course_group_id', $request->category_id);
         $student_registered_courses = $std->studentRegisteredCourses;
-        foreach($student_registered_courses as $student_registered_course)
+        /*foreach($student_registered_courses as $student_registered_course)
         {
             //registration_course_category_id 	registration_course_group_id
             if(!is_null($student_registered_course->registration_course_category_id))
             array_push($categories_hours, $student_registered_course->registration_course_category_id);
             if(!is_null($student_registered_course->registration_course_group_id))
             array_push($groups_hours, $student_registered_course->registration_course_group_id);
-        }
+        }*/
         
 
         if($t == 1)

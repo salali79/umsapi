@@ -17,55 +17,81 @@ use App\Models\Student;
 
 class RegistrationPlanController extends Controller
 {
-    protected $current_semester_id = 2;
-    protected $current_study_year_id = 20;
+    public $current_study_year_id = 20 ;
+    public $current_semester_id = 2 ;
 
+    public function __construct(Request $request)
+    {
+      $this->middleware('auth:student');
+      $this->guard = "student";
+    }
     public function studyYearSemesterId(){
+
         $study_year_semester = StudyYearSemester::where('study_year_id',$this->current_study_year_id)
             ->where('semester_id',$this->current_semester_id)->first();
         return $study_year_semester->id ;
 
     }
+    function current_student(Request $request)
+    {
+        if(!is_null($request->lang)) app()->setLocale($request->lang);
+        $headers = apache_request_headers();
+        $request->headers->set('Authorization', $headers['Authorization']);
+        $token = $request->headers->get('Authorization');
+        JWTAuth::setToken($token);
+        $std = auth('student')->user();
+        return $std;
+    }
     public function index(Request $request)
     {
 
-        $student = Student::find(3466);
-        //$this->current_student($request);
+        $student = $this->current_student($request);
+        //Student::find(3466); //authenticated user
+
+
+        $student_finance_hours = $student->studentFinanceAllowedHours($this->current_study_year_id,$this->current_semester_id);
+        $student_academic_hours = $student->studentAcademicAllowedHours($this->current_study_year_id,$this->current_semester_id);
 
         $registration_plan = RegistrationPlan::where('faculty_id',$student->faculty_id)
              ->where('department_id',$student->department_id)
              ->where('study_year_semester_id',$this->studyYearSemesterId())->first();
 
 
-        
         $registration_plan_courses =  $registration_plan->registrationCourses;
 
-        $student_study_plan = $student->StudentStudyPlan();
+
+
+         $student_study_plan = $student->StudentStudyPlan();
 
 
         $student_opened_courses = $student->studentOpenedCourses;
+        $student_registered_courses = $student->studentRegisteredCourses ;
 
-        
         $stud_opened_courses_ids = $student_opened_courses ? $student_opened_courses->pluck('course_id') : [];
         $reg_course = [];
         $registration_course_arr = [];
-        
         if (count($stud_opened_courses_ids) !=0 ){
 
              $student_registration_courses = $registration_plan_courses->whereIn('course_id',$stud_opened_courses_ids) ;
 
 
              foreach ($student_registration_courses as  $registration_course ){
-                //dd($registration_course->categories_count);
                  if ( (!$registration_course->groups_count == 0 || !$registration_course->categories_count == 0 )){
                      $course_credit_hours =  $student_study_plan->courseDetails($registration_course->course_id)->credit_hours;
+
                      $course_status = $student_opened_courses->where('course_id',$registration_course->course_id)->first()->course_status;
+
+                     //$chosen = $student_opened_courses->where('course_id',$registration_course->course_id)->first()->isChosenForRegistration();
+
                      $course = [
                          'course_id' => $registration_course->course_id,
                          'course_code' => $registration_course->course->code ,
                          'course_name' => $registration_course->course->name ,
                          'course_credit_hours' => $course_credit_hours ,
-                         'course_status' => $course_status]  ;
+                         'course_status' => $course_status 
+                         //'chosen' => $chosen 
+                         ]  ;
+
                      $groups =  $registration_course->courseGroups->map(function ($group){
 
                          $lectures = $group->lectures->map(function ($lecture){
@@ -77,7 +103,7 @@ class RegistrationPlanController extends Controller
 
                              ];
                          });
-                         return ['id'=> $group->id, 'name' => $group->name , 'capacity' => $group->capacity ,'lectures' => $lectures];
+                         return ['id' => $group->id , 'name' => $group->name , 'capacity' => $group->capacity ,'lectures' => $lectures];
                      });
                      $categories = $registration_course->courseCategories->map(function ($category){
                          $lectures = $category->lectures->map(function ($lecture){
@@ -90,7 +116,7 @@ class RegistrationPlanController extends Controller
                              ];
                          });
                          return [
-                            'id'=> $category->id, 'name' => $category->name , 'capacity' => $category->capacity ,'lectures' => $lectures];
+                             'id' => $category->id ,  'name' => $category->name , 'capacity' => $category->capacity ,'lectures' => $lectures];
                      });
                      $reg_course = $course;
                      $reg_course['groups_count'] = $registration_course->groups_count;
@@ -98,33 +124,27 @@ class RegistrationPlanController extends Controller
                      $reg_course['groups'] = $groups;
                      $reg_course['categories'] = $categories;
 
-                     //dd($reg_course);
                      array_push($registration_course_arr,$reg_course);
 
              }
              }
-             $arr = [
 
-                'academic_allowed_hours' => 15,
-                'finance_allowed_hours' => 18,
-                'registration_courses' => $registration_course_arr
-                 
-             ];
-              
-             
-             //$arr['registration_courses'] = $course;
-             //$arr['academic_allowed_hours'] = 0;
-             //$arr['finance_allowed_hours'] = 0;
-             //
-             return $arr;
-             return $registration_course_arr;
+             return [
+                 'finance_allowed_hours' => $student_finance_hours,
+                 'academic_allowed_hours' => $student_academic_hours ,
+                 'registration_courses' => $registration_course_arr,
+                 ];
         }
         else {
                 return [];
             }
-
     }
 
+    
+    
+    
+    
+    
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
     public function courses()
     {
