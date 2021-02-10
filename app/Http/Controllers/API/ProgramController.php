@@ -20,9 +20,9 @@ class ProgramController extends Controller
     {
         try{
             $program = ProgramSchedule::find($id);
-            dd($program);
             $obj = $program->openingHours();
-            return var_dump( $program->free_hours['sunday']);
+            return $program->free_hours['sunday'];
+            //return var_dump( $program->free_hours['sunday']);
         } catch(\Spatie\OpeningHours\Exceptions\OverlappingTimeRanges $ex){
             return "conflict";
         }
@@ -37,7 +37,7 @@ class ProgramController extends Controller
             $program->student_id = $std->id; //3466
 
             //dd($program);
-            $program_tmp = $program;
+            $tmp_hours = $program->free_hours;
             $id = $program->id;
             $program->free_hours =[
                 //$request['day'] => [$request['start'].'-'.$request['end']],
@@ -46,15 +46,13 @@ class ProgramController extends Controller
                  'monday' =>
                  [$request['MOmon'].'-'.$request['MCmon']],
             ];
-            $program_tmp = $program;
-            $id = $program->id;
-            dd($program->id);
             $program->save();
+            $id = $program->id;
             $conflict = $this->test_schedule_conflict($id);
             if($conflict == "conflict") 
             {
                 $program->update([
-                    'free_hours' => $program_tmp->free_hours ?: null,
+                    'free_hours' => $tmp_hours ?: null,
                 ]);
             }
             return $program->free_hours;
@@ -69,7 +67,7 @@ class ProgramController extends Controller
             ];
 
         $all_hours = array_merge($program->free_hours,$hours);
-        $program_tmp = $program;
+        $tmp_hours = $program->free_hours;
         $id = $program->id;
         $program->update([
             'free_hours' => $all_hours ?: null,
@@ -78,7 +76,7 @@ class ProgramController extends Controller
         if($conflict == "conflict") 
         {
             $program->update([
-                'free_hours' => $program_tmp->free_hours ?: null,
+                'free_hours' => $tmp_hours ?: null,
             ]);
         }
         return $program->free_hours;
