@@ -212,37 +212,46 @@ class RegistrationPlanController extends Controller
         $course_hours <= $minimum ? '':$t=0 ;
 
         ///---CHECK DATE---///
-        /*$course = RegistrationCourse::where('course_id', $request->course_id)->first();
-        $course_group = $course->courseGroups->where('id', $request->group_id)->first();
-        $course_category = $course->ccourseCategories->where('id', $request->category_id);
-        $group_hours = $course_group->lectures->map( function($lecture){
-            $start_time = date('g:i', strtotime($lecture->start_time));
-            $end_time = date('g:i', strtotime($lecture->end_time));
-            $day = $lecture->day;
-            $id = $lecture->id;
-            return [
-                'id' => $id,
-                'day' => $day,
-                'start' => $start_time,
-                'end' => $end_time
-            ];
-        });
-        $category_hours = $course_category->lectures->map( function($lecture){
-            $start_time = date('g:i', strtotime($lecture->start_time));
-            $end_time = date('g:i', strtotime($lecture->end_time));
-            $day = $lecture->day;
-            $id = $lecture->id;
-            return [
-                'id' => $id,
-                'day' => $day,
-                'start' => $start_time,
-                'end' => $end_time
-            ];
-        });
+        $course = RegistrationCourse::where('course_id', $request->course_id)->first();
+        $category_hours = 0;
+        $group_hours = 0;
+        if(!is_null($course->courseGroups))
+        {
+            $course_group = $course->courseGroups->where('id', $request->group_id)->first();
+            $group_hours = $course_group->lectures->map( function($lecture){
+                $start_time = date('g:i', strtotime($lecture->start_time));
+                $end_time = date('g:i', strtotime($lecture->end_time));
+                $day = $lecture->day;
+                $id = $lecture->id;
+                return [
+                    'id' => $id,
+                    'day' => $day,
+                    'start' => $start_time,
+                    'end' => $end_time
+                ];
+            });
+        }
+        if(!is_null($course->ccourseCategories))
+        {
+            $course_category = $course->ccourseCategories->where('id', $request->category_id);
+            $category_hours = $course_category->lectures->map( function($lecture){
+                $start_time = date('g:i', strtotime($lecture->start_time));
+                $end_time = date('g:i', strtotime($lecture->end_time));
+                $day = $lecture->day;
+                $id = $lecture->id;
+                return [
+                    'id' => $id,
+                    'day' => $day,
+                    'start' => $start_time,
+                    'end' => $end_time
+                ];
+            });
+        }
 
+        //$hours = array_merge($group_hours, $category_hours);
+        //dd($hours);
 
-        dd($group_hours);*/
-
+        $t = 1;
         if($t == 1)
         {
             $student_registered_course = new StudentRegisteredCourse();
@@ -250,7 +259,8 @@ class RegistrationPlanController extends Controller
             $student_registered_course->course_id = $request->course_id;
             $student_registered_course->registration_course_category_id = $request->category_id;
             $student_registered_course->registration_course_group_id = $request->group_id;
-            $student_registered_course->registration_plan_id = $request->registration_plan_id;
+            $student_registered_course->registration_plan_id = 1;
+            //$request->registration_plan_id;
             $student_registered_course->status = '2';
             $student_registered_course->save();
             return response()->json([
