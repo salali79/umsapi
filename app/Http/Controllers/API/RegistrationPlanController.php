@@ -303,7 +303,7 @@ class RegistrationPlanController extends Controller
     {
         $std = $this->current_student($request);
         $course_id = $request->course_id;
-        $course = StudentRegisteredCourse::where('student_id', $std->id)->where('course_id', $course_id);
+        $course = StudentRegisteredCourse::where('student_id', $std->id)->where('course_id', $course_id)->first();
         if(!is_null($course))
         {
             $course->forceDelete();
