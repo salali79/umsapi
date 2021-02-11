@@ -303,6 +303,101 @@ class RegistrationPlanController extends Controller
         {
             $course->forceDelete();
         }
+        ///---HANDLE HOURS---///
+        $reminded_courses = StudentRegisteredCourse::where('student_id', $std->id)->get();
+        $groups = array();
+        $categories = array();
+        foreach ($reminded_courses as $reminded_course)
+        {
+            $reminded_course->registration_course_category_id ?
+                array_push($categories, $reminded_course->registration_course_category_id) : '';
+            $reminded_course->registration_course_group_id ?
+                array_push($groups, $reminded_course->registration_course_group_id) : '';
+        }
+
+        $program  = ProgramSchedule::where('student_id', $std->id);
+        $t = 1;
+        if(!is_null($program))
+        {
+            $program->forceDelete();
+            $category_hours = array();
+            $group_hours = array();
+            $hours = array();
+
+            foreach($groups as $group)
+            {
+                $course_group = RegistrationCourseGroup::where('id', $group)->first();
+                //$check_capacity = $course_group->registered_student_count < $course_group->capacity;
+                if(!is_null($course_group))
+                {
+                    $group_hours = $course_group->lectures->map( function($lecture){
+                        $start_time = substr($lecture->start_time,0,-3);
+                        $end_time = substr($lecture->end_time,0,-3);
+                        $day = $this->days[$lecture->day];
+                        $id = $lecture->id;
+                        return [
+                            'id' => $id,
+                            'day' => $day,
+                            'start' => $start_time,
+                            'end' => $end_time
+                        ];
+                    });
+                    $group_hours = $group_hours->toArray();
+                    array_push($hours,$group_hours);
+                }
+            }
+            foreach($categories as $category)
+            {
+                $course_category = RegistrationCourseCategory::where('id', $category)->first();
+                //$check_capacity = $course_category->registered_student_count < $course_category->capacity;
+                if(!is_null($course_category))
+                {
+                    $category_hours = $course_category->lectures->map( function($lecture){
+
+                        $start_time = substr($lecture->start_time,0,-3);
+                        $end_time = substr($lecture->end_time,0,-3);
+                        $day = $this->days[$lecture->day];
+                        $id = $lecture->id;
+                        return [
+                            'id' => $id,
+                            'day' => $day,
+                            'start' => $start_time,
+                            'end' => $end_time
+                        ];
+                    });
+                    $category_hours = $category_hours->toArray();
+                    array_push($hours,$category_hours);
+                }
+            }
+
+            //$hours = array_merge($group_hours, $category_hours);
+            $ProgramController = new ProgramController();
+            $conflicted_course = null;
+            $check_hours = 0;
+            foreach($hours as $hour)
+            {
+                //dd($hour[0]['day']);
+                $res = $ProgramController->add_course_time($hour[0], $std);
+                $res = json_decode($res->getContent(), true);
+                if($res['status'] == 'error')
+                {
+                    $t=0;
+                    break;
+                }
+                $check_hours = 1;
+            }
+        }
+
+        if($t == 1)
+        {
+            return response()->json([
+                'status' => 'success'
+            ]);
+        } else{
+            return response()->json([
+                'status' => 'error'
+            ]);
+        }
 
     }
 }

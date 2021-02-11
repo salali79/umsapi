@@ -27,12 +27,12 @@ class ProgramController extends Controller
         ];
 
         $ds1 = array();
-        foreach($obj1 as $key=>$value)  
+        foreach($obj1 as $key=>$value)
         {
             array_push($ds1, $key);
         }
         $ds2 = array();
-        foreach($obj2 as $key=>$value) 
+        foreach($obj2 as $key=>$value)
         {
             array_push($ds2, $key);
         }
@@ -79,7 +79,7 @@ class ProgramController extends Controller
             $program->save();
             $id = $program->id;
             //$this->test_schedule_conflict($id);
-            if($conflict == "conflict") 
+            if($conflict == "conflict")
             {
                 $program->update([
                     'free_hours' => $tmp_hours ?: null,
@@ -100,17 +100,17 @@ class ProgramController extends Controller
         $hours = [
             $request['day'] => [$request['start'].'-'.$request['end']]
         ];
-    
-        
+
+
         $day = $request['day'];
         $t = 0;
-        foreach($program->free_hours as $key=>$value)  
+        foreach($program->free_hours as $key=>$value)
         {
             if($key == $day) $t = 1;
         }
-        
+
         $all_hours = $t ? array_merge($program->free_hours[$request['day']] ? :[], $hours[$request['day']]) : $hours[$request['day']];
-        
+
         $tmp_hours = $program->free_hours;
         $id = $program->id;
         $edited_hours = $tmp_hours;
@@ -121,10 +121,10 @@ class ProgramController extends Controller
             'free_hours' => $edited_hours
             //[$request['day'] => $all_hours]
         ]);
-        
+
         //dd($program->free_hours);
         $conflict = $this->test_schedule_conflict($id);
-        if($conflict == "conflict") 
+        if($conflict == "conflict")
         {
             //dd('conflict');
             $program->update([
