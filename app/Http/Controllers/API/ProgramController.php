@@ -21,21 +21,51 @@ class ProgramController extends Controller
       $this->middleware('auth:student');
       $this->guard = "student";
     }
+    public function object_merge($obj1 = [], $obj2 = [])
+    {
+        $obj = [
+        ];
+
+        $ds1 = array();
+        foreach($obj1 as $key=>$value)  
+        {
+            array_push($ds1, $key);
+        }
+        $ds2 = array();
+        foreach($obj2 as $key=>$value) 
+        {
+            array_push($ds2, $key);
+        }
+
+        foreach($ds1 as $ds)
+        {
+            $obj[$ds] = $obj1[$ds];
+        }
+        foreach($ds2 as $ds)
+        {
+            //$obj[$ds] ? dd($obj[$ds]):dd('hi') ;
+            $obj[$ds] ? array_merge($obj[$ds],$obj2[$ds]):$obj2[$ds];
+            dd($obj[$ds]);
+            dd(array_merge($obj[$ds],$obj2[$ds]));
+        }
+
+        return $obj;
+    }
     public function test_schedule_conflict($id)
     {
         try{
             $program = ProgramSchedule::find($id);
             $obj = $program->openingHours();
+            //dd($program->free_hours);
             return $program->id;
-            //free_hours['sunday'];
         } catch(\Spatie\OpeningHours\Exceptions\OverlappingTimeRanges $ex){
             return "conflict";
         }
     }
     public function add_course_time($request = [], $std=null)
     {
-        //$std = Student::find(3466);
         $program = ProgramSchedule::where('student_id', $std->id)->first();
+        $conflict = "";
         if(is_null($program))
         {
             $program = new ProgramSchedule();
@@ -48,7 +78,7 @@ class ProgramController extends Controller
             ];
             $program->save();
             $id = $program->id;
-            $conflict = $this->test_schedule_conflict($id);
+            //$this->test_schedule_conflict($id);
             if($conflict == "conflict") 
             {
                 $program->update([
@@ -70,17 +100,33 @@ class ProgramController extends Controller
         $hours = [
             $request['day'] => [$request['start'].'-'.$request['end']]
         ];
-
-        $all_hours = array_merge($program->free_hours,$hours);
-        dd($all_hours);
+    
+        
+        $day = $request['day'];
+        $t = 0;
+        foreach($program->free_hours as $key=>$value)  
+        {
+            if($key == $day) $t = 1;
+        }
+        
+        $all_hours = $t ? array_merge($program->free_hours[$request['day']] ? :[], $hours[$request['day']]) : $hours[$request['day']];
+        
         $tmp_hours = $program->free_hours;
         $id = $program->id;
+        $edited_hours = $tmp_hours;
+        $edited_hours[$request['day']] = $all_hours;
+        //dd($edited_hours);
+
         $program->update([
-            'free_hours' => $all_hours ?: null,
+            'free_hours' => $edited_hours
+            //[$request['day'] => $all_hours]
         ]);
+        
+        //dd($program->free_hours);
         $conflict = $this->test_schedule_conflict($id);
         if($conflict == "conflict") 
         {
+            //dd('conflict');
             $program->update([
                 'free_hours' => $tmp_hours ?: null,
             ]);
