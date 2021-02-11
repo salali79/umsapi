@@ -71,6 +71,28 @@ class RegistrationPlanController extends Controller
         $std = auth('student')->user();
         return $std;
     }
+    public function get_category_and_group_id_from_registered_course(Request $request)
+    {
+        $std = $this->current_student($request);
+        $registered_course = StudentRegisteredCourse::where('student_id', $std->id)
+            ->where('course_id', $request->course_id)->first();
+        $group_id = null;
+        $category_id = null;
+        if(!is_null($registered_course))
+        {
+            $group_id = $registered_course->registration_course_group_id;
+            $category_id = $registered_course->registration_course_category_id;
+            return response()->json([
+                'status' => 'success',
+                'group_id' => $group_id,
+                'category_id' => $category_id
+            ]);
+        }
+        return response()->json([
+            'status' => 'error',
+            'message' => 'course not registered'
+        ]);
+    }
     public function index(Request $request)
     {
 
@@ -165,22 +187,6 @@ class RegistrationPlanController extends Controller
         else { return []; }
 
     }
-    public function deleteStudentRegisteredCourses(Request $request){
-
-        $student = $this->current_student($request);
-        $program = $student->programSchedule;
-        $clear = StudentRegisteredCourse::where('student_id',$student->id)->forceDelete();
-        if(!is_null($program))
-        {
-            $program->forceDelete();
-        }
-        return response()->json([
-            'status' => 'success'
-        ]);
-
-    }
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     public function store(Request $request)
     {
         $std = $this->current_student($request);
@@ -208,51 +214,51 @@ class RegistrationPlanController extends Controller
         $category_hours = array();
         $group_hours = array();
 
-            if($request->group_id != null)
+        if($request->group_id != null)
+        {
+            $course_group = RegistrationCourseGroup::where('id', $request->group_id)->first();
+            //$course->courseGroups->where('id', $request->group_id)->first();
+            $check_capacity = $course_group->registered_student_count < $course_group->capacity;
+            if(!is_null($course_group) && $check_capacity)
             {
-                $course_group = RegistrationCourseGroup::where('id', $request->group_id)->first();
-                    //$course->courseGroups->where('id', $request->group_id)->first();
-                $check_capacity = $course_group->registered_student_count < $course_group->capacity;
-                if(!is_null($course_group) && $check_capacity)
-                {
-                    $group_hours = $course_group->lectures->map( function($lecture){
-                        $start_time = substr($lecture->start_time,0,-3);
-                        $end_time = substr($lecture->end_time,0,-3);
-                        $day = $this->days[$lecture->day];
-                        $id = $lecture->id;
-                        return [
-                            'id' => $id,
-                            'day' => $day,
-                            'start' => $start_time,
-                            'end' => $end_time
-                        ];
-                    });
-                    $group_hours = $group_hours->toArray();
-                }
+                $group_hours = $course_group->lectures->map( function($lecture){
+                    $start_time = substr($lecture->start_time,0,-3);
+                    $end_time = substr($lecture->end_time,0,-3);
+                    $day = $this->days[$lecture->day];
+                    $id = $lecture->id;
+                    return [
+                        'id' => $id,
+                        'day' => $day,
+                        'start' => $start_time,
+                        'end' => $end_time
+                    ];
+                });
+                $group_hours = $group_hours->toArray();
             }
-            if($request->category_id != null)
+        }
+        if($request->category_id != null)
+        {
+            $course_category = RegistrationCourseCategory::where('id', $request->category_id)->first();
+            //$course->courseCategories->where('id', $request->category_id)->first();
+            $check_capacity = $course_category->registered_student_count < $course_category->capacity;
+            if(!is_null($course_category) && $check_capacity)
             {
-                $course_category = RegistrationCourseCategory::where('id', $request->category_id)->first();
-                    //$course->courseCategories->where('id', $request->category_id)->first();
-                $check_capacity = $course_category->registered_student_count < $course_category->capacity;
-                if(!is_null($course_category) && $check_capacity)
-                {
-                    $category_hours = $course_category->lectures->map( function($lecture){
+                $category_hours = $course_category->lectures->map( function($lecture){
 
-                        $start_time = substr($lecture->start_time,0,-3);
-                        $end_time = substr($lecture->end_time,0,-3);
-                        $day = $this->days[$lecture->day];
-                        $id = $lecture->id;
-                        return [
-                            'id' => $id,
-                            'day' => $day,
-                            'start' => $start_time,
-                            'end' => $end_time
-                        ];
-                    });
-                    $category_hours = $category_hours->toArray();
-                }
+                    $start_time = substr($lecture->start_time,0,-3);
+                    $end_time = substr($lecture->end_time,0,-3);
+                    $day = $this->days[$lecture->day];
+                    $id = $lecture->id;
+                    return [
+                        'id' => $id,
+                        'day' => $day,
+                        'start' => $start_time,
+                        'end' => $end_time
+                    ];
+                });
+                $category_hours = $category_hours->toArray();
             }
+        }
         $hours = array_merge($group_hours, $category_hours);
         $ProgramController = new ProgramController();
         $conflicted_course = null;
@@ -293,7 +299,6 @@ class RegistrationPlanController extends Controller
         }
 
     }
-
     public function delete(Request $request)
     {
         $std = $this->current_student($request);
@@ -425,6 +430,55 @@ class RegistrationPlanController extends Controller
             'message' => 'update successfully'
         ]);
     }
+    public function delete_all_student_registered_courses(Request $request){
+
+        $student = $this->current_student($request);
+        $program = $student->programSchedule;
+        $clear = StudentRegisteredCourse::where('student_id',$student->id)->forceDelete();
+        if(!is_null($program))
+        {
+            $program->forceDelete();
+        }
+        return response()->json([
+            'status' => 'success'
+        ]);
+
+    }
+    public function final_add_course(Request $requests)
+    {
+        $std = current_student($requests);
+        $requests = $requests->all();
+        foreach($requests as $request)
+        {
+            $student_registered_course = StudentRegisteredCourse::where('student_id', $std->id)
+                ->where('course_id', $request['course_id'])
+                ->where('registration_course_category_id', $request['category_id'])
+                ->where('registration_course_group_id', $request['group_id'])
+                ->where('registration_plan_id', $request['registration_plan_id']);
+            $student_registered_course->update(['status' => '1']);
+        }
+        return response()->json([
+            'status' => 'success',
+            'message' => 'final register successfully',
+        ]);
+    }
+    public function get_student_program(Request $request)
+    {
+        $std = $this->current_student($request);
+        $program  = $std->programSchedule->first();
+        if(!is_null($program))
+        {
+            return response()->json([
+            'status' => 'success',
+            'program' => $program
+            ]);
+        }
+        return response()->json([
+        'status' => 'error',
+        'message' => 'program not found'
+        ]);
+    }
+
 }
 
 

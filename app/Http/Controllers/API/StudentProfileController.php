@@ -95,7 +95,7 @@ class StudentProfileController extends Controller
                 'email' => $std->email,
                 'current_address' => $std->current_address,
                 'permanent_address' => $std->premanent_address,
-            )));   
+            )));
         }
         return response()->json([
             'status' => 'success',
@@ -119,7 +119,7 @@ class StudentProfileController extends Controller
                 'name' => $std->name,
                 'relation_ship' => $std->relation_ship,
                 'address' => $std->address
-            )));  
+            )));
         }
         return response()->json([
             'status' => 'success',
@@ -132,13 +132,13 @@ class StudentProfileController extends Controller
     {
         $std = current_student($request);
         $res = '{}';
-        if(!is_null($std)) 
+        if(!is_null($std))
         {
             app()->setLocale('ar');
-            $faculty_name = $std->faculty == null?  '':$std->faculty->name; 
-            $department_name = $std->department == null?  '':$std->department->name; 
+            $faculty_name = $std->faculty == null?  '':$std->faculty->name;
+            $department_name = $std->department == null?  '':$std->department->name;
             $study_year_name = $std->StudentStudyYear($std->id) == null? '':$std->StudentStudyYear($std->id)->name;
-            $register_way = $std->studentRegisterWay == null?  '':$std->studentRegisterWay->name; 
+            $register_way = $std->studentRegisterWay == null?  '':$std->studentRegisterWay->name;
             $res = json_decode(json_encode(array(
                 'faculty' => $faculty_name,
                 'department' => $department_name,
@@ -204,7 +204,7 @@ class StudentProfileController extends Controller
         $course_hours <= $minimum ? '':$t=0 ;
 
         ///---CHECK DATE---///
-        
+
 
         if($t == 1)
         {
@@ -228,29 +228,6 @@ class StudentProfileController extends Controller
         }
     }
 
-    public function final_add_course(Request $requests)
-    {
-        $std = current_student($requests);
-        //dd($requests[0]);
-        $requests = $requests->all();
-        foreach($requests as $request)
-        {
-            $student_registered_course = StudentRegisteredCourse::where('student_id', $std->id)
-                                        ->where('course_id', $request['course_id'])
-                                        ->where('registration_course_category_id', $request['category_id'])
-                                        ->where('registration_course_group_id', $request['group_id'])
-                                        ->where('registration_plan_id', $request['registration_plan_id']);
-            $student_registered_course->update(['status' => '1']);
-        }
-        return response()->json([
-            'status' => 'success',
-            'message' => 'final register successfully',
-        ]);
-    }
 
-    public function delete_course(Request $request)
-    {
-        
-    }
 
 }

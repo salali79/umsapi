@@ -46,15 +46,12 @@ Route::group(['namespace' => 'API'], function(){
 
     Route::get('registration_plan', 'RegistrationPlanController@index');
     Route::post('register_course', 'RegistrationPlanController@store');
-    Route::post('final_register_course', 'StudentProfileController@final_add_course');
+    Route::post('final_register_course', 'RegistrationPlanController@final_add_course');
     Route::post('delete_course', 'RegistrationPlanController@delete');
-    Route::post('delete_all_registered_courses', 'RegistrationPlanController@deleteStudentRegisteredCourses');
+    Route::post('delete_all_registered_courses', 'RegistrationPlanController@delete_all_student_registered_courses');
     Route::post('edit_course', 'RegistrationPlanController@update');
-
-    Route::post('add_course_time', 'ProgramController@add_course_time');
-    Route::post('update_course_time', 'ProgramController@update_course_time');
-    Route::get('get_course_conflict', 'ProgramController@get_course_conflict');
-
+    Route::post('get_category_and_group_id', 'RegistrationPlanController@get_category_and_group_id_from_registered_course');
+    Route::get('get_student_program', 'RegistrationPlanController@get_student_program');
 });
 
 Route::group(['middleware' => ['auth:student','jwt.auth'], 'namespace' => 'API'],function ()
