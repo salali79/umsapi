@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\RegistrationCourseCategory;
+use App\Models\RegistrationCourseGroup;
 use Illuminate\Http\Request;
 use Auth;
 use Validator;
@@ -177,7 +179,6 @@ class RegistrationPlanController extends Controller
     public function store(Request $request)
     {
         $std = $this->current_student($request);
-        $plan = $std->StudentStudyPlan();
         $t = 1;
         ///---CHECK HOURS---///
         $finance_allow_hours = $std->studentFinanceAllowedHours(20, 2);
@@ -185,18 +186,19 @@ class RegistrationPlanController extends Controller
         $minimum = min($finance_allow_hours, $academic_allow_hours);
 
         $course_hours = $std->StudentCourseHours($request->course_id);
-        //$course_hours + $std->StudentRegisteredCoursesHours() <= $minimum ? '':$t=0 ;
+        $course_hours + $std->StudentRegisteredCoursesHours() <= $minimum ? '':$t=0 ;
 
         ///---CHECK DATE---///
-        $course = RegistrationCourse::where('course_id', $request->course_id)->first();
+        //$course = RegistrationCourse::where('course_id', $request->course_id)->first();
         $category_hours = array();
         $group_hours = array();
-        if(!is_null($course))
-        {
-            if(!is_null($course->courseGroups))
+
+            if(!is_null($request->group_id))
             {
-                $course_group = $course->courseGroups->where('id', $request->group_id)->first();
-                if(!is_null($course_group))
+                $course_group = RegistrationCourseGroup::where('id', $request->group_id)->first();
+                    //$course->courseGroups->where('id', $request->group_id)->first();
+                $check_capacity = $course_group->registered_student_count > $course_group->capacity;
+                if(!is_null($course_group) && $check_capacity)
                 {
                     $group_hours = $course_group->lectures->map( function($lecture){
                         $start_time = substr($lecture->start_time,0,-3);
@@ -213,10 +215,12 @@ class RegistrationPlanController extends Controller
                     $group_hours = $group_hours->toArray();
                 }
             }
-            if(!is_null($course->courseCategories))
+            if(!is_null($request->category_id))
             {
-                $course_category = $course->courseCategories->where('id', $request->category_id)->first();
-                if(!is_null($course_category))
+                $course_category = RegistrationCourseCategory::where('id', $request->group_id)->first();
+                    //$course->courseCategories->where('id', $request->category_id)->first();
+                $check_capacity = $course_category->registered_student_count > $course_category->capacity;
+                if(!is_null($course_category) && $check_capacity)
                 {
                     $category_hours = $course_category->lectures->map( function($lecture){
 
@@ -234,7 +238,6 @@ class RegistrationPlanController extends Controller
                     $category_hours = $category_hours->toArray();
                 }
             }
-        }
         $hours = array_merge($group_hours, $category_hours);
 
         $ProgramController = new ProgramController();
@@ -242,10 +245,8 @@ class RegistrationPlanController extends Controller
         foreach($hours as $hour)
         {
             //221 47 46
-            //dd($hour);
             $res = $ProgramController->add_course_time($hour, $std);
             $res = json_decode($res->getContent(), true);
-            //var_dump($res);
             if($res['status'] == 'error')
             {
                 $t=0;
@@ -269,6 +270,7 @@ class RegistrationPlanController extends Controller
                 'message' => 'register successfully',
             ]);
         } else{
+
             return response()->json([
                 'status' => 'error',
                 'message' => 'conflict dates or cross the finance or academic hours',
@@ -279,67 +281,7 @@ class RegistrationPlanController extends Controller
 
     public function delete(Request $request)
     {
-        $course = RegistrationCourse::where('course_id', $request->course_id)->first();
-        $category_hours = array();
-        $group_hours = array();
-        if(!is_null($course))
-        {
-            if(!is_null($course->courseGroups))
-            {
-                $course_group = $course->courseGroups;
-                dd($course_group->lectures);
-                if(!is_null($course_group))
-                {
-                    $group_hours = $course_group->lectures->map( function($lecture){
-                        $start_time = substr($lecture->start_time,0,-3);
-                        $end_time = substr($lecture->end_time,0,-3);
-                        $day = $this->days[$lecture->day];
-                        $id = $lecture->id;
-                        return [
-                            'id' => $id,
-                            'day' => $day,
-                            'start' => $start_time,
-                            'end' => $end_time
-                        ];
-                    });
-                    $group_hours = $group_hours->toArray();
-                }
-            }
-            if(!is_null($course->courseCategories))
-            {
-                $course_category = $course->courseCategories;
-                //->where('id', $request->category_id)->first();
-                if(!is_null($course_category))
-                {
-                    $category_hours = $course_category->lectures->map( function($lecture){
 
-                        $start_time = substr($lecture->start_time,0,-3);
-                        $end_time = substr($lecture->end_time,0,-3);
-                        $day = $this->days[$lecture->day];
-                        $id = $lecture->id;
-                        return [
-                            'id' => $id,
-                            'day' => $day,
-                            'start' => $start_time,
-                            'end' => $end_time
-                        ];
-                    });
-                    $category_hours = $category_hours->toArray();
-                }
-            }
-        }
-        $hours = array_merge($group_hours, $category_hours);
-        $std = $this->current_student($request);
-        $program = ProgramSchedule::where('student_id', $std->id)->first();
-        $object = $program->free_hours;
-        //return ($program->free_hours);
-
-        dd($hours);
-        foreach($hours as $hour)
-        {
-            dd($object[$hour['day']]);
-
-        }
     }
 }
 
