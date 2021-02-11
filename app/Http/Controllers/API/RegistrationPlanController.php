@@ -188,16 +188,26 @@ class RegistrationPlanController extends Controller
         $course_hours = $std->StudentCourseHours($request->course_id);
         $course_hours + $std->StudentRegisteredCoursesHours() <= $minimum ? '':$t=0 ;
 
+        if($t == 0)
+        {
+            $cross = "";
+            if($minimum == $finance_allow_hours) $cross = "finance";
+            else if($minimum == $academic_allow_hours) $cross = "academic";
+            return response()->json([
+                'status' => 'error',
+                'message' => 'cross the '.$cross.' hours',
+            ]);
+        }
         ///---CHECK DATE---///
         //$course = RegistrationCourse::where('course_id', $request->course_id)->first();
         $category_hours = array();
         $group_hours = array();
 
-            if(!is_null($request->group_id))
+            if($request->group_id != null)
             {
                 $course_group = RegistrationCourseGroup::where('id', $request->group_id)->first();
                     //$course->courseGroups->where('id', $request->group_id)->first();
-                $check_capacity = $course_group->registered_student_count > $course_group->capacity;
+                $check_capacity = $course_group->registered_student_count < $course_group->capacity;
                 if(!is_null($course_group) && $check_capacity)
                 {
                     $group_hours = $course_group->lectures->map( function($lecture){
@@ -215,11 +225,11 @@ class RegistrationPlanController extends Controller
                     $group_hours = $group_hours->toArray();
                 }
             }
-            if(!is_null($request->category_id))
+            if($request->category_id != null)
             {
-                $course_category = RegistrationCourseCategory::where('id', $request->group_id)->first();
+                $course_category = RegistrationCourseCategory::where('id', $request->category_id)->first();
                     //$course->courseCategories->where('id', $request->category_id)->first();
-                $check_capacity = $course_category->registered_student_count > $course_category->capacity;
+                $check_capacity = $course_category->registered_student_count < $course_category->capacity;
                 if(!is_null($course_category) && $check_capacity)
                 {
                     $category_hours = $course_category->lectures->map( function($lecture){
@@ -239,9 +249,9 @@ class RegistrationPlanController extends Controller
                 }
             }
         $hours = array_merge($group_hours, $category_hours);
-
         $ProgramController = new ProgramController();
         $conflicted_course = null;
+        $check_hours = 0;
         foreach($hours as $hour)
         {
             //221 47 46
@@ -253,9 +263,10 @@ class RegistrationPlanController extends Controller
                 //$conflicted_course = $hour->id;
                 break;
             }
+            $check_hours = 1;
         }
 
-        if($t == 1)
+        if($t == 1 && $check_hours == 1)
         {
             $student_registered_course = new StudentRegisteredCourse();
             $student_registered_course->student_id = $std->id;
@@ -270,10 +281,9 @@ class RegistrationPlanController extends Controller
                 'message' => 'register successfully',
             ]);
         } else{
-
             return response()->json([
                 'status' => 'error',
-                'message' => 'conflict dates or cross the finance or academic hours',
+                'message' => 'conflict course dates',
             ]);
         }
 
