@@ -79,6 +79,7 @@ class RegistrationPlanController extends Controller
 
         $student_finance_hours = $student->studentFinanceAllowedHours($this->current_study_year_id,$this->current_semester_id);
         $student_academic_hours = $student->studentAcademicAllowedHours($this->current_study_year_id,$this->current_semester_id);
+        $student_registered_hours = $student->StudentRegisteredCoursesHours();
 
         $registration_plan = RegistrationPlan::where('faculty_id',$student->faculty_id)
             ->where('department_id',$student->department_id)
@@ -157,6 +158,7 @@ class RegistrationPlanController extends Controller
             return [
                 'finance_allowed_hours' => $student_finance_hours,
                 'academic_allowed_hours' => $student_academic_hours ,
+                'student_registered_hours' => $student_registered_hours,
                 'registration_courses' => $registration_course_arr,
             ];}
 
@@ -297,6 +299,10 @@ class RegistrationPlanController extends Controller
         $std = $this->current_student($request);
         $course_id = $request->course_id;
         $course = StudentRegisteredCourse::where('student_id', $std->id)->where('course_id', $course_id);
+        if(!is_null($course))
+        {
+            $course->forceDelete();
+        }
 
     }
 }
