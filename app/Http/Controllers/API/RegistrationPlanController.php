@@ -58,6 +58,9 @@ class RegistrationPlanController extends Controller
         return $study_year_semester->id ;
 
     }
+    public function get_last_registration_plan_id(){
+        return RegistrationPlan::where('study_year_semester_id', $this->studyYearSemesterId())->first()->id;
+    }
     function current_student(Request $request)
     {
         if(!is_null($request->lang)) app()->setLocale($request->lang);
@@ -273,7 +276,7 @@ class RegistrationPlanController extends Controller
             $student_registered_course->course_id = $request->course_id;
             $student_registered_course->registration_course_category_id = $request->category_id;
             $student_registered_course->registration_course_group_id = $request->group_id;
-            $student_registered_course->registration_plan_id = 1;
+            $student_registered_course->registration_plan_id = $this->get_last_registration_plan_id();
             $student_registered_course->status = '0';
             $student_registered_course->save();
             return response()->json([
@@ -291,6 +294,9 @@ class RegistrationPlanController extends Controller
 
     public function delete(Request $request)
     {
+        $std = $this->current_student($request);
+        $course_id = $request->course_id;
+        $course = StudentRegisteredCourse::where('student_id', $std->id)->where('course_id', $course_id);
 
     }
 }
