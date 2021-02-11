@@ -193,6 +193,7 @@ class RegistrationPlanController extends Controller
         $course_hours = $std->StudentCourseHours($request->course_id);
         $course_hours + $std->StudentRegisteredCoursesHours() <= $minimum ? '':$t=0 ;
 
+        ////cross hours////
         if($t == 0)
         {
             $cross = "";
@@ -204,7 +205,6 @@ class RegistrationPlanController extends Controller
             ]);
         }
         ///---CHECK DATE---///
-        //$course = RegistrationCourse::where('course_id', $request->course_id)->first();
         $category_hours = array();
         $group_hours = array();
 
@@ -399,6 +399,31 @@ class RegistrationPlanController extends Controller
             ]);
         }
 
+    }
+    public function update(Request $request)
+    {
+        $res = $this->delete($request);
+        $res = json_decode($res->getContent(), true);
+        if($res['status'] == 'error')
+        {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'deleted error'
+            ]);
+        }
+        $res = $this->store($request);
+        $res = json_decode($res->getContent(), true);
+        if($res['status'] == 'error')
+        {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'store error'
+            ]);
+        }
+        return response()->json([
+            'status' => 'success',
+            'message' => 'update successfully'
+        ]);
     }
 }
 
