@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 use Exception;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -61,6 +62,43 @@ class Handler extends ExceptionHandler
             ], 422);
         }
 
+
+        if($exception instanceof \Illuminate\Auth\AuthenticationException) {
+            return response()->json
+            ([
+                'status' => 'error',
+                'message' => 'token error'
+            ]);
+        }
+
+        if($exception instanceof \UnauthorizedHttpException) {
+            return response()->json
+            ([
+                'status' => 'error',
+                'message' => 'token error'
+            ]);
+        }
+        if ($exception instanceof Tymon\JWTAuth\Exceptions\TokenInvalidException) {
+            return response()->json
+                ([
+                    'status' => 'error',
+                    'message' => 'token error'
+                ]);
+        }
+        if ($exception instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException) {
+            return response()->json
+            ([
+                'status' => 'error',
+                'message' => 'token error'
+            ]);
+        }
+        if ($exception instanceof \Tymon\JWTAuth\Exceptions\JWTException) {
+            return response()->json
+            ([
+                'status' => 'error',
+                'message' => 'token error'
+            ]);
+        }
         return parent::render($request, $exception);
     }
 }

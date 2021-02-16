@@ -1,0 +1,26 @@
+<?php
+return [
+    'module_title' => 'خطط التسجيل',
+    'single' => 'خطة تسجيل',
+    'faculty' => 'الكلية',
+    'department' => 'القسم',
+    'faculty_department' => 'الكلية/القسم',
+    'study_year' => 'العام الدراسي',
+    'semester' => ' الفصل الدراسي',
+    'course' => '  المقرر',
+    'groups' => 'المجموعات',
+    'cats' => 'الفئات',
+    'group_cat' => '  المجموعات/الفئات',
+    'version_date' => 'تاريخ الاصدار ',
+    'choose' => 'اختر...',
+    'course_code' => 'كود المقرر',
+    'next' => 'التالي',
+    'prev' => 'السابق',
+    'finish' => 'إنهاء',
+    'day' => 'اليوم',
+    'start_time' => 'من',
+    'end_time' => 'إلى',
+    'place' => 'المكان',
+    'capacity' => 'السعة:',
+
+];

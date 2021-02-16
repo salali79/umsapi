@@ -1,0 +1,20 @@
+<?php
+return [
+    'module_title' => ' طلبات الايداع',
+    'single' => 'طلب ايداع',
+    'student' => 'الطالب ',
+    'academic_number' => 'الرقم الجامعي ',
+    'bank' => 'البنك ',
+    'office' => 'المكتب ',
+    'amount' => 'المبلغ ',
+    'requested_hours' => ' عدد الساعات',
+    'study_year' => ' العام الدراسي ',
+    'semester' => ' الفصل ',
+    'request_status' => ' الحالة',
+    'hour_price' => ' سعر الساعة',
+    'current_balance' => ' الرصيد',
+    'discount_rate' => ' نسبة الحسم',
+    'discount_value' => ' مبلغ الحسم',
+    'register_fees' => ' الرسم الفصلي',
+    'coin' => '  العملة',
+];

@@ -36,7 +36,6 @@ class StudentController extends Controller
             $username = $request->username;
             $credentials = ['username' => $username , 'password' => $password];
             $std = Student::where('username',$username)->firstOrFail();
-            //if($std->password_status=='1')
             {
                 if (!$token = auth('student')->attempt($credentials)) {
                     return response()->json([
@@ -50,14 +49,6 @@ class StudentController extends Controller
                 $std = Student::where('username',$username)->firstOrFail();
                 return $this->respondWithToken($token,$std);
             }
-            /*else {
-                return response()->json([
-                    'status' => 'success',
-                    'message' => 'reset password',
-                    'action' => 'reset password',
-                    'data' => [],
-                ]);
-            }*/
         } catch (ModelNotFoundException $ex) { // User not found
             return response()->json
             ([
@@ -76,14 +67,13 @@ class StudentController extends Controller
 
     public function logout()
     {
-        auth('student')->logout();
-        Session::flush();
-        return response()->json([
-            'status'=> 'success',
-            'message'=>'successfully logged out',
-            'action' => 'logout',
-            'data' => []
-        ]);
+            auth('student')->logout();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'successfully logged out',
+                'action' => 'logout',
+                'data' => []
+            ]);
     }
 
     protected function respondWithToken($token, $std)
@@ -93,7 +83,7 @@ class StudentController extends Controller
                  'emergency', 'medicals', 'folderType',
                  'studentFiles', 'deposites', 'studentRegisterWay',
                  'registerParams',  'finance',
-                 'financeDetails', 'hourPrice', 'studentRegistration',
+                 'financeDetails', 'hourPrice',
                  'financialBalance', 'modifiedCourses'
                 );
       return response()->json([
@@ -114,7 +104,8 @@ class StudentController extends Controller
     public function reset_password_student(ResetPasswordRequest $request) {
             $validated = $request->validated();
             $std = Student::where('username', auth('student')->user()->username)->update([
-                    'password' => bcrypt($request->password)
+                    'password' => bcrypt($request->password),
+				    'password_status' => 1
             ]);
             auth('student')->attempt(['username' => auth('student')->user()->username, 'password' => $request->password], true);
             return response()->json([

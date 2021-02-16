@@ -24,8 +24,21 @@ class Student extends Authenticatable implements JWTSubject
 
     protected $guarded  =[];
 
-    protected $appends = ['image_path','image_thumb_path','full_name'];
+    protected $appends = ['image_path','image_thumb_path','full_name','registration_status'];
 
+	public function getRegistrationStatusAttribute()
+    {
+        $registration_status = 0;
+        $student_registered_course = $this->studentRegisteredCourses;
+        if($student_registered_course != null)
+        {
+            if($student_registered_course->where('status','=',1)->first() != null)
+                $registration_status = 1;
+            else
+                $registration_status = 0 ;
+        }
+        return $registration_status ;
+    }
     public function getFullNameAttribute(){
         return $this->first_name .' '.$this->middle_name .' '.$this->last_name ;
     }
@@ -177,9 +190,7 @@ class Student extends Authenticatable implements JWTSubject
     public function hourPrice(){
         return $this->hasOne(StudentHourPrice::class);
     }
-    public function studentRegistration(){
-        return $this->hasMany(StudentRegistration::class);
-    }
+
     public function financialBalance(){
         return $this->hasOne(StudentFinancialBalance::class);
     }
@@ -255,5 +266,13 @@ class Student extends Authenticatable implements JWTSubject
     public function programSchedule()
     {
         return $this->hasOne(ProgramSchedule::class);
+    }
+    public function hasOpenedCourse($course_id){
+        $opened_courses = $this->studentOpenedCourses;
+        if( count($opened_courses) > 0 ) {
+            $course_opened = $opened_courses->where('course_id', $course_id)->first();
+            return $course_opened;
+        }
+
     }
 }

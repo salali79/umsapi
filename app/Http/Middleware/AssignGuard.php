@@ -21,7 +21,7 @@ class AssignGuard
             if ($guard == "student" && !Auth::guard($guard)->check()) {
                 return Response::json(array(
                     'status'  =>  'error',
-                    'message'   =>  'unauthenticated'
+                    'message'   =>  'token error'
                 ), 401);
             }
         }

@@ -61,11 +61,12 @@ Route::group(['middleware' => ['auth:student','jwt.auth'], 'namespace' => 'API']
     Route::get('student', 'StudentController@getAuthUser');
 });
 
-Route::fallback(function(){
+//Route::get('test', 'API\RegistrationPlanController@studyYearSemesterId');
+/*Route::fallback(function(){
     return response()->json([
         'status' => 'error',
         'message' => 'Route not found',
         'data' => [],
         'action'=> ''
     ], 404);
-});
+});*/
