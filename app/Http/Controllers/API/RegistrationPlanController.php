@@ -63,13 +63,24 @@ class RegistrationPlanController extends Controller
       $this->guard = "student";
       $this->request = $request;
     }
+    //-1 study_year_semester problem
+    //-2 last_registration_plan problem
     public function studyYearSemesterId(){
+
         $study_year_semester = StudyYearSemester::where('study_year_id',$this->current_study_year_id)
             ->where('semester_id',$this->current_semester_id)->first();
-        return $study_year_semester->id ;
+
+        if($study_year_semester) return $study_year_semester->id ;
+        else return -1;
     }
     public function get_last_registration_plan_id(){
-        return RegistrationPlan::where('study_year_semester_id', $this->studyYearSemesterId())->first()->id;
+        if($this->studyYearSemesterId() != -1)
+        {
+            $reg_plan = RegistrationPlan::where('study_year_semester_id', $this->studyYearSemesterId())->first();
+            if($reg_plan) return $reg_plan->id;
+            else return -2;
+        }
+        else return -1;
     }
     function current_student(Request $request)
     {
@@ -88,7 +99,7 @@ class RegistrationPlanController extends Controller
             ->where('course_id', $request->course_id)->first();
         $group_id = null;
         $category_id = null;
-        if(!is_null($registered_course))
+        if($registered_course)
         {
             $group_id = $registered_course->registration_course_group_id;
             $category_id = $registered_course->registration_course_category_id;
@@ -118,10 +129,24 @@ class RegistrationPlanController extends Controller
         $student_registered_hours = $student->StudentRegisteredCoursesHours();
         $minimum_registered_hours = $this->minimum_registered_hours;
 
+        if($this->studyYearSemesterId() == -1)
+        {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'خطأ في العام او الفصل الدراسي'
+            ]);
+        }
         $registration_plan = RegistrationPlan::where('faculty_id',$student->faculty_id)
             ->where('department_id',$student->department_id)
             ->where('study_year_semester_id',$this->studyYearSemesterId())->first();
 
+        if(is_null($registration_plan))
+        {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'خطة التسجيل غير متاحة'
+            ]);
+        }
          if($registration_plan->status == 0){
 
              return response()->json([
@@ -139,13 +164,13 @@ class RegistrationPlanController extends Controller
              $stud_opened_courses_ids = $student_opened_courses ? $student_opened_courses->pluck('course_id') : [];
              $reg_course = [];
              $registration_course_arr = [];
-             if (count($stud_opened_courses_ids) !=0 ){
+             if (count($stud_opened_courses_ids) !=0 && count($registration_plan_courses) != 0){
 
                  $student_registration_courses = $registration_plan_courses->whereIn('course_id',$stud_opened_courses_ids) ;
 
 
                  foreach ($student_registration_courses as  $registration_course ){
-                     if ( (!$registration_course->groups_count == 0 || !$registration_course->categories_count == 0 )){
+                     if ($student_study_plan && (!$registration_course->groups_count == 0 || !$registration_course->categories_count == 0 )){
                          $course_credit_hours =  $student_study_plan->courseDetails($registration_course->course_id)->credit_hours;
 
                          $course_status = $student_opened_courses->where('course_id',$registration_course->course_id)->first()->course_status;
@@ -246,11 +271,11 @@ class RegistrationPlanController extends Controller
         if($request->group_id != null)
         {
             $course_group = RegistrationCourseGroup::where('id', $request->group_id)->first();
-            //$course->courseGroups->where('id', $request->group_id)->first();
-            $check_capacity = $course_group->registered_student_count < $course_group->capacity;
+            $check_capacity = null ;
+            if($course_group) $check_capacity = $course_group->registered_student_count < $course_group->capacity;
             if($check_capacity)
             {
-                if(!is_null($course_group))
+                if($course_group)
                 {
                     $group_hours = $course_group->lectures->map( function($lecture){
                         $start_time = substr($lecture->start_time,0,-3);
@@ -277,11 +302,11 @@ class RegistrationPlanController extends Controller
         if($request->category_id != null)
         {
             $course_category = RegistrationCourseCategory::where('id', $request->category_id)->first();
-            //$course->courseCategories->where('id', $request->category_id)->first();
-            $check_capacity = $course_category->registered_student_count < $course_category->capacity;
+            $check_capacity = null ;
+            if($course_category) $check_capacity = $course_category->registered_student_count < $course_category->capacity;
             if($check_capacity)
             {
-                if(!is_null($course_category))
+                if($course_category)
                 {
                     $category_hours = $course_category->lectures->map( function($lecture){
 
@@ -318,7 +343,6 @@ class RegistrationPlanController extends Controller
             if($res['status'] == 'error')
             {
                 $t=0;
-                //$conflicted_course = $hour->id;
                 break;
             }
             $check_hours = 1;
@@ -351,7 +375,7 @@ class RegistrationPlanController extends Controller
         $std = $this->current_student($request);
         $course_id = $request->course_id;
         $course = StudentRegisteredCourse::where('student_id', $std->id)->where('course_id', $course_id)->first();
-        if(!is_null($course))
+        if($course)
         {
             $course->forceDelete();
         }
@@ -369,7 +393,7 @@ class RegistrationPlanController extends Controller
 
         $program  = ProgramSchedule::where('student_id', $std->id)->first();
         $t = 1;
-        if(!is_null($program))
+        if($program)
         {
             $program->forceDelete();
             $category_hours = array();
@@ -379,8 +403,7 @@ class RegistrationPlanController extends Controller
             foreach($groups as $group)
             {
                 $course_group = RegistrationCourseGroup::where('id', $group)->first();
-                //$check_capacity = $course_group->registered_student_count < $course_group->capacity;
-                if(!is_null($course_group))
+                if($course_group)
                 {
                     $group_hours = $course_group->lectures->map( function($lecture){
                         $start_time = substr($lecture->start_time,0,-3);
@@ -401,8 +424,7 @@ class RegistrationPlanController extends Controller
             foreach($categories as $category)
             {
                 $course_category = RegistrationCourseCategory::where('id', $category)->first();
-                //$check_capacity = $course_category->registered_student_count < $course_category->capacity;
-                if(!is_null($course_category))
+                if($course_category)
                 {
                     $category_hours = $course_category->lectures->map( function($lecture){
 
@@ -422,7 +444,6 @@ class RegistrationPlanController extends Controller
                 }
             }
 
-            //$hours = array_merge($group_hours, $category_hours);
             $ProgramController = new ProgramController();
             $conflicted_course = null;
             $check_hours = 0;
@@ -443,11 +464,13 @@ class RegistrationPlanController extends Controller
         if($t == 1)
         {
             return response()->json([
-                'status' => 'success'
+                'status' => 'success',
+                'message' => 'تم الحذف بنجاح'
             ]);
         } else{
             return response()->json([
-                'status' => 'error'
+                'status' => 'error',
+                'message' => 'لم يتم الحذف بنجاح'
             ]);
         }
 
@@ -482,7 +505,7 @@ class RegistrationPlanController extends Controller
         $student = $this->current_student($request);
         $program = $student->programSchedule;
         $clear = StudentRegisteredCourse::where('student_id',$student->id)->forceDelete();
-        if(!is_null($program))
+        if($program)
         {
             $program->forceDelete();
         }
