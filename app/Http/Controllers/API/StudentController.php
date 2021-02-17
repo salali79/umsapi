@@ -59,12 +59,10 @@ class StudentController extends Controller
             ]);
         }
     }
-
     public function getAuthUser(Request $request)
     {
         return response()->json(auth('student')->user());
     }
-
     public function logout()
     {
             auth('student')->logout();
@@ -75,7 +73,6 @@ class StudentController extends Controller
                 'data' => []
             ]);
     }
-
     protected function respondWithToken($token, $std)
     {
       //'finalTranscript',
@@ -95,12 +92,10 @@ class StudentController extends Controller
         'action' => 'response'
       ]);
     }
-
     public function TestAuth()
     {
        return JWTAuth::parseToken()->authenticate();
     }
-
     public function reset_password_student(ResetPasswordRequest $request) {
             $validated = $request->validated();
             $std = Student::where('username', auth('student')->user()->username)->update([

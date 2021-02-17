@@ -18,10 +18,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('a', function(){
-    dd('hi');
-});
-
 Route::get('banks','API\BankController@index');
 Route::get('study_years','API\StudyYearController@index');
 Route::group(['namespace' => 'API'], function(){
@@ -61,7 +57,6 @@ Route::group(['middleware' => ['auth:student','jwt.auth'], 'namespace' => 'API']
     Route::get('student', 'StudentController@getAuthUser');
 });
 
-//Route::get('test', 'API\RegistrationPlanController@studyYearSemesterId');
 /*Route::fallback(function(){
     return response()->json([
         'status' => 'error',

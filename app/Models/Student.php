@@ -15,7 +15,7 @@ class Student extends Authenticatable implements JWTSubject
 
     protected $with = ['translations'];
 
-   protected $translatedAttributes =
+    protected $translatedAttributes =
      ['first_name','middle_name',
      'last_name','mother_name',
      'birthplace','gender',
@@ -55,12 +55,10 @@ class Student extends Authenticatable implements JWTSubject
     {
         return $this->belongsTo(Faculty::class);
     }
-
     public function department()
     {
         return $this->belongsTo(Department::class);
     }
-
     public function contact()
     {
         return $this->hasOne(StudentContact::class);
@@ -69,7 +67,6 @@ class Student extends Authenticatable implements JWTSubject
     {
         return $this->hasOne(StudentEmergency::class);
     }
-
     public function medicals()
     {
         return $this->hasMany(StudentMedical::class);
@@ -79,7 +76,7 @@ class Student extends Authenticatable implements JWTSubject
         return $this->belongsTo(FolderType::class);
     }
     // relationship to get all files required in student folder depending on student folder type
-     public function studentFolderFiles()
+    public function studentFolderFiles()
     {
         $folder = FolderType::find($this->folder_type_id)->papers;
         return $folder;
@@ -89,20 +86,17 @@ class Student extends Authenticatable implements JWTSubject
         $folder = FolderType::find($this->folder_type_id);
         return $folder;
     }
-
     public function studentFiles()
     {
         return $this->hasMany(StudentFile::class);
     }
-
     public function deposites()
     {
         return $this->hasMany(StudentDepositRequest::class)->with('bank');
     }
-     public function studentRegisterWay(){
+    public function studentRegisterWay(){
         return $this->belongsTo(RegisterWay::class,'register_way_id');
      }
-
      public function registerParams(){
         return $this->hasMany(StudentRegisterParam::class);
      }
@@ -124,7 +118,7 @@ class Student extends Authenticatable implements JWTSubject
     public function finalTranscript(){
         return $this->hasOne(StudentFinalTranscript::class);
     }
-     public function finance(){
+    public function finance(){
         return $this->hasOne(FinanceAccount::class);
      }
     public function financeDetails(){
@@ -190,7 +184,6 @@ class Student extends Authenticatable implements JWTSubject
     public function hourPrice(){
         return $this->hasOne(StudentHourPrice::class);
     }
-
     public function financialBalance(){
         return $this->hasOne(StudentFinancialBalance::class);
     }
