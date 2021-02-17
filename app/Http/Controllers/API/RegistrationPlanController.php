@@ -344,6 +344,7 @@ class RegistrationPlanController extends Controller
         $ProgramController = new ProgramController();
         $conflicted_course = null;
         $check_hours = 0;
+        $std_program = ProgramSchedule::where('student_id', $std->id)->first();
         foreach($hours as $hour)
         {
             //221 47 46
@@ -373,8 +374,13 @@ class RegistrationPlanController extends Controller
                 'message' => 'تم التسجيل بنجاح',
             ]);
         } else{
-            $std_program = ProgramSchedule::where('student_id', $std->id)->first();
-            if($std_program) $std_program->forceDelete();
+            $altered_std_program = ProgramSchedule::where('student_id', $std->id)->first();
+            if($altered_std_program)
+            {
+                $altered_std_program->update([
+                    'free_hours' => $std_program->free_hours ?: null,
+                ]);
+            }
             return response()->json([
                 'status' => 'error',
                 'message' => 'تعارض في المواعيد',
