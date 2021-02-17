@@ -240,6 +240,8 @@ class RegistrationPlanController extends Controller
     public function store(Request $request)
     {
         $std = $this->current_student($request);
+
+        //return $std;
         $t = 1;
         ///---CHECK HOURS---///
         $finance_allow_hours =  $std->studentFinanceAllowedHours($this->current_study_year_id,$this->current_semester_id) == 0 ?
@@ -249,7 +251,7 @@ class RegistrationPlanController extends Controller
         $academic_allow_hours = $std->studentAcademicAllowedHours($this->current_study_year_id , $this->previous_semester_id);
         $minimum = min($finance_allow_hours, $academic_allow_hours);
 
-        try{
+        try {
             $course_hours = $std->StudentCourseHours($request->course_id);
         } catch(\Exception $ex){
             return response()->json([
@@ -380,11 +382,17 @@ class RegistrationPlanController extends Controller
     {
         $std = $this->current_student($request);
         $course_id = $request->course_id;
+
         $course = StudentRegisteredCourse::where('student_id', $std->id)->where('course_id', $course_id)->first();
-        if($course)
+        if(is_null($course))
         {
-            $course->forceDelete();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'المقرر غير مسجل مسبقا'
+            ]);
         }
+
+        $course->forceDelete();
         ///---HANDLE HOURS---///
         $reminded_courses = StudentRegisteredCourse::where('student_id', $std->id)->get();
         $groups = array();
