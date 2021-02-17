@@ -372,7 +372,8 @@ class RegistrationPlanController extends Controller
                 'status' => 'success',
                 'message' => 'تم التسجيل بنجاح',
             ]);
-        } else{
+        }
+        else{
             $altered_std_program = ProgramSchedule::where('student_id', $std->id)->first();
             if($altered_std_program)
             {
@@ -693,7 +694,14 @@ class RegistrationPlanController extends Controller
                 'program_days' => $this->program_days,
                 'mobile_program' => $week_program
             ]);
-        }
+        } /*else{
+            return response()->json([
+                'status' => 'success',
+                'program' => [] ,
+                'program_days' => [],
+                'mobile_program' => []
+            ]);
+        }*/
 
     }
 }
