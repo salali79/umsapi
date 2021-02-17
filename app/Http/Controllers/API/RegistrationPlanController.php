@@ -339,6 +339,7 @@ class RegistrationPlanController extends Controller
                 ]);
             }
         }
+
         $hours = array_merge($group_hours, $category_hours);
         $ProgramController = new ProgramController();
         $conflicted_course = null;
@@ -353,10 +354,11 @@ class RegistrationPlanController extends Controller
                 $t=0;
                 break;
             }
-            $check_hours = 1;
+            $check_hours += 1;
         }
 
-        if($t == 1 && $check_hours == 1)
+
+        if($t == 1 && $check_hours!=0)
         {
             $student_registered_course = new StudentRegisteredCourse();
             $student_registered_course->student_id = $std->id;
@@ -371,6 +373,8 @@ class RegistrationPlanController extends Controller
                 'message' => 'تم التسجيل بنجاح',
             ]);
         } else{
+            $std_program = ProgramSchedule::where('student_id', $std->id)->first();
+            if($std_program) $std_program->forceDelete();
             return response()->json([
                 'status' => 'error',
                 'message' => 'تعارض في المواعيد',
