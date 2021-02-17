@@ -241,7 +241,6 @@ class RegistrationPlanController extends Controller
     {
         $std = $this->current_student($request);
 
-        //return $std;
         $t = 1;
         ///---CHECK HOURS---///
         $finance_allow_hours =  $std->studentFinanceAllowedHours($this->current_study_year_id,$this->current_semester_id) == 0 ?
