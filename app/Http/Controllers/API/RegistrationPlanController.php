@@ -119,7 +119,6 @@ class RegistrationPlanController extends Controller
 
         $student = $this->current_student($request);
 
-
         $student_finance_hours = $student->studentFinanceAllowedHours($this->current_study_year_id,$this->current_semester_id) == 0 ?
             $this->default_finance_hours :
             $student->studentFinanceAllowedHours($this->current_study_year_id,$this->current_semester_id)  ;
@@ -250,7 +249,14 @@ class RegistrationPlanController extends Controller
         $academic_allow_hours = $std->studentAcademicAllowedHours($this->current_study_year_id , $this->previous_semester_id);
         $minimum = min($finance_allow_hours, $academic_allow_hours);
 
-        $course_hours = $std->StudentCourseHours($request->course_id);
+        try{
+            $course_hours = $std->StudentCourseHours($request->course_id);
+        } catch(\Exception $ex){
+            return response()->json([
+                'status' => 'error',
+                'message' => 'مقرر غير متاح'
+            ]);
+        }
         $course_hours + $std->StudentRegisteredCoursesHours() <= $minimum ? '':$t=0 ;
 
         ////cross hours////
@@ -516,7 +522,8 @@ class RegistrationPlanController extends Controller
     }
     public function final_add_course(Request $requests)
     {
-        $std = current_student($requests);
+        $std = $this->current_student($requests);
+
         $required_courses = $this->required_courses_ids;
 
        if($std->StudentRegisteredCoursesHours() < $this->minimum_registered_hours)
@@ -672,8 +679,4 @@ class RegistrationPlanController extends Controller
         }
 
     }
-
 }
-
-
-
