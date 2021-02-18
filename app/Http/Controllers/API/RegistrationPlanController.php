@@ -966,7 +966,7 @@ class RegistrationPlanController extends Controller
                 $program['student_id'] = $std->id;
                 $program['status'] = $registered_courses->first()->status;
                 $old_program  = ProgramSchedule::where('student_id', $std->id)->first();
-                $program['old_program'] = $old_program;
+                $program['old_program'] = $old_program->free_hours;
                 array_push($all_programs, $program);
 
                 //return $program;
