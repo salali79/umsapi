@@ -923,6 +923,7 @@ class RegistrationPlanController extends Controller
                         });
 
                         $course_group_lectures = [
+                            'group_id' => $group->id,
                             'group_name' => $group->name,
                             'group_lectures' => $group_lectures
                         ];
@@ -946,6 +947,7 @@ class RegistrationPlanController extends Controller
                         });
 
                         $course_category_lectures = [
+                            'category_id' => $category->id,
                             'category_name' => $category->name,
                             'category_lectures' => $category_lectures
                         ];
