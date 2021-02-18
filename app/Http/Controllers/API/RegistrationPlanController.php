@@ -983,14 +983,16 @@ class RegistrationPlanController extends Controller
             $registered_courses = $std->studentRegisteredCourses;
 
             $check_cat = 0;
+            $check_gr = 0;
             if (count($registered_courses) > 0) {
 
-                $program = $registered_courses->map(function ($registered_course ) use ($check_cat) {
+                $program = $registered_courses->map(function ($registered_course ) use ($check_cat,$check_gr) {
                     $course = $registered_course->course;
 
                     $group = $registered_course->registrationCourseGroup;
                     $course_group_lectures = [];
                     if ($group != null) {
+                        $check_gr = 1;
                         $group_times = array();
                         $group_lectures = $group->lectures->map(function ($lecture) {
 
@@ -1008,6 +1010,7 @@ class RegistrationPlanController extends Controller
                         });
 
                         $course_group_lectures = [
+                            'group_id' => $group->id,
                             'group_name' => $group->name,
                             'group_lectures' => $group_lectures
                         ];
@@ -1016,6 +1019,7 @@ class RegistrationPlanController extends Controller
                     $course_category_lectures = [];
                     if ($category != null) {
 
+                        $check_cat  = 1;
                         $category_lectures = $category->lectures->map(function ($lecture) {
 
 
@@ -1030,6 +1034,7 @@ class RegistrationPlanController extends Controller
                         });
 
                         $course_category_lectures = [
+                            'category_id' => $category->id,
                             'category_name' => $category->name,
                             'category_lectures' => $category_lectures
                         ];
@@ -1040,6 +1045,8 @@ class RegistrationPlanController extends Controller
                         'course_id' => $course->id,
                         'course_group' => $course_group_lectures,
                         'course_category' => $course_category_lectures,
+                        'check_category' => $check_cat,
+                        'check_group' => $check_gr
                     ];
                 });
 
@@ -1048,15 +1055,20 @@ class RegistrationPlanController extends Controller
                 $category_times = array();
 
                 foreach ($program as $item) {
-                    return $item;
+
+                    $check_category = $item['check_category'];
+                    $check_group = $item['check_group'];
                     //return $item['course_group']['group_lectures'];
                     if($program[0]['course_group'])
                     {
-                        array_push($category_times,  $item['course_group']['group_lectures']);
+                        if($check_group > 0)
+                        {
+                            array_push($category_times,  $item['course_group']['group_lectures']);
+                        }
                     }
                     if($program[0]['course_category'])
                     {
-                        if($check_category != null)
+                        if($check_category > 0)
                         {
                             array_push($category_times,  $item['course_category']['category_lectures']);
                         }
