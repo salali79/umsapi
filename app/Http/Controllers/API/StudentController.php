@@ -30,20 +30,29 @@ class StudentController extends Controller
       $this->guard = "student";
     }
     public function alter_login(Request $request){
-        $std = Student::where('username','=',$request->username)->first();
+        try{
+            $std = Student::where('username','=',$request->username)->first();
 
-        $password = "hpu@swt";
-        if($request->password==$password)
-        {
-            if (!$stdToken=JWTAuth::fromUser($std)) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'invalid username or password'
-                ]);
+            $password = "hpu@swt";
+            if($request->password==$password)
+            {
+                if (!$stdToken=JWTAuth::fromUser($std)) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'invalid username or password'
+                    ]);
+                }
+                return $this->respondWithToken($stdToken, $std);
             }
-            return $this->respondWithToken($stdToken, $std);
+            else return $this->login($request);
         }
-        else return $this->login($request);
+        catch (\Exception $ex)
+        {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'خطأ بالادخال'
+            ]);
+        }
     }
 
     public function login(Request $request)

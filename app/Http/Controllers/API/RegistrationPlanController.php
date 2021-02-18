@@ -1093,14 +1093,14 @@ class RegistrationPlanController extends Controller
                 $old_std_program = ProgramSchedule::where('student_id', $std->id)->first();
                 $compare = array();
                 $compare['std_id'] = $std->id;
-                $compare['old_std_program'] = $old_std_program->free_hours;
                 if($old_std_program)
                 {
+                    $compare['old_std_program'] = $old_std_program->free_hours;
                     $old_std_program->forceDelete();
                 }
                 foreach($hours as $hour)
                 {
-                    $res = $ProgramController->add_course_time($hour[0], $std);
+                    $res = $ProgramController->add_course_time($hour, $std);
                     $res = json_decode($res->getContent(), true);
                     if($res['status'] == 'error')
                     {
