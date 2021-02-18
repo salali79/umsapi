@@ -958,6 +958,7 @@ class RegistrationPlanController extends Controller
 
                 $program['academic_number'] = $std->academic_number;
                 $program['student_id'] = $std->id;
+                $program['status'] = $registered_courses->first()->status;
                 array_push($all_programs, $program);
                 //return $program;
             }
@@ -966,9 +967,11 @@ class RegistrationPlanController extends Controller
             'all_programs' => $all_programs
         ]);
     }
-    public function do_handle_all($faculty_id)
+    public function do_handle_all($faculty_id, $department_id)
     {
-        $stds = Student::where('faculty_id', $faculty_id)->get();
+        $stds = Student::where('faculty_id', $faculty_id)
+                        ->where('department_id', $department_id)
+                        ->get();
         $done = 1;
         foreach($stds as $std)
         {
