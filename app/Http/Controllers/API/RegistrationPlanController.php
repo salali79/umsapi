@@ -59,7 +59,7 @@ class RegistrationPlanController extends Controller
     ];
     public function __construct(Request $request)
     {
-      $this->middleware('auth:student');
+      $this->middleware('auth:student', ['except' => ['handle', 'do_handle', 'do_handle_all']]);
       $this->guard = "student";
       $this->request = $request;
     }
@@ -704,9 +704,9 @@ class RegistrationPlanController extends Controller
         }*/
 
     }
-    public function handle(Request $request)
+    public function handle($academic_number)
     {
-        $std = $this->current_student($request);
+        $std = Student::where('academic_number', $academic_number)->first();
         $registered_courses = $std->studentRegisteredCourses;
 
         if (count($registered_courses) > 0) {
@@ -766,7 +766,7 @@ class RegistrationPlanController extends Controller
     }
     public function do_handle(Request $request)
     {
-        $std = $this->current_student($request);
+        $std = Student::where('academic_number', $request->academic_number)->first();
         $registered_courses = $std->studentRegisteredCourses;
 
         if (count($registered_courses) > 0) {
@@ -880,6 +880,151 @@ class RegistrationPlanController extends Controller
             return response()->json([
                 'sattus' => 'success',
                 'message' => 'program deleted'
+            ]);
+        }
+    }
+    public function do_handle_all(Request $request)
+    {
+        $stds = Student::where('faculty_id', $request->faculty_id)->count();
+        return $stds;
+        $done = 1;
+        foreach($stds as $std)
+        {
+            $t = 0;
+            //$std = $this->current_student($request);
+            $registered_courses = $std->studentRegisteredCourses;
+
+            if (count($registered_courses) > 0) {
+
+                $program = $registered_courses->map(function ($registered_course) {
+                    $course = $registered_course->course;
+
+                    $group = $registered_course->registrationCourseGroup;
+                    $course_group_lectures = [];
+                    if ($group != null) {
+                        $group_times = array();
+                        $group_lectures = $group->lectures->map(function ($lecture) {
+
+
+                            $start_time = substr($lecture->start_time,0,-3);
+                            $end_time = substr($lecture->end_time,0,-3);
+                            $day = $this->days[$lecture->day];
+                            return [
+                                'start' => $start_time,
+                                'end' => $end_time,
+                                'day' => $day,
+                            ];
+
+
+                        });
+
+                        $course_group_lectures = [
+                            'group_name' => $group->name,
+                            'group_lectures' => $group_lectures
+                        ];
+                    }
+                    $category = $registered_course->registrationCourseCategory;
+                    $course_category_lectures = [];
+                    if ($category != null) {
+
+                        $category_lectures = $category->lectures->map(function ($lecture) {
+
+
+                            $start_time = substr($lecture->start_time,0,-3);
+                            $end_time = substr($lecture->end_time,0,-3);
+                            $day = $this->days[$lecture->day];
+                            return [
+                                'start' => $start_time,
+                                'end' => $end_time,
+                                'day' => $day,
+                            ];
+                        });
+
+                        $course_category_lectures = [
+                            'category_name' => $category->name,
+                            'category_lectures' => $category_lectures
+                        ];
+                    }
+
+                    return [
+                        'course_name' => $course->name,
+                        'course_id' => $course->id,
+                        'course_group' => $course_group_lectures,
+                        'course_category' => $course_category_lectures,
+                    ];
+                });
+
+                //return $program[1]['course_group'];
+                $group_times = array();
+                $category_times = array();
+                foreach ($program as $item) {
+                    //return $item['course_group']['group_lectures'];
+                    if($program[0]['course_group'])
+                    {
+                        array_push($category_times,  $item['course_group']['group_lectures']);
+                    }
+                    if($program[0]['course_category'])
+                    {
+                        array_push($category_times,  $item['course_category']['category_lectures']);
+                    }
+                }
+
+                $hours = array_merge($group_times, $category_times);
+
+
+                $ProgramController = new ProgramController();
+                $conflicted_course = null;
+                $check_hours = 0;
+                $std_program = ProgramSchedule::where('student_id', $std->id)->first();
+                if($std_program)
+                {
+                    $std_program->forceDelete();
+                }
+                foreach($hours as $hour)
+                {
+                    $res = $ProgramController->add_course_time($hour[0], $std);
+                    $res = json_decode($res->getContent(), true);
+                    if($res['status'] == 'error')
+                    {
+                        $t=0;
+                        break;
+                    }
+                    $check_hours += 1;
+                }
+                $t = 1;
+                /*return response()->json([
+                    'sattus' => 'success',
+                    'message' => 'program altered'
+                ]);*/
+            }
+            else {
+                $std_program = ProgramSchedule::where('student_id', $std->id)->first();
+                if($std_program)
+                {
+                    $std_program->forceDelete();
+                }
+                $t = 1;
+                /*return response()->json([
+                    'sattus' => 'success',
+                    'message' => 'program deleted'
+                ]);*/
+            }
+            if($t != 1)
+            {
+                $done = 0;
+                break;
+            }
+        }
+        if(done != 1)
+        {
+            return response()->json([
+                'status' => 'error',
+            ]);
+        }
+        else
+        {
+            return response()->json([
+                'status' => 'success',
             ]);
         }
     }
