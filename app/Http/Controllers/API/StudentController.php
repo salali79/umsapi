@@ -25,7 +25,7 @@ class StudentController extends Controller
 {
     public function __construct()
     {
-      $this->middleware('auth:student', ['except' => ['alter_login', 'login','getToken','reset_password', 'deposite', 'student_deposite']]);
+      $this->middleware('auth:student', ['except' => ['getClientIPaddress', 'alter_login', 'login','getToken','reset_password', 'deposite', 'student_deposite']]);
       $this->guard = "student";
     }
     function current_student(Request $request)
@@ -160,4 +160,28 @@ class StudentController extends Controller
                 ]);
             }
 	}
+    public function getClientIPaddress(Request $request) {
+
+        if (isset($_SERVER["HTTP_CF_CONNECTING_IP"])) {
+            $_SERVER['REMOTE_ADDR'] = $_SERVER["HTTP_CF_CONNECTING_IP"];
+            $_SERVER['HTTP_CLIENT_IP'] = $_SERVER["HTTP_CF_CONNECTING_IP"];
+        }
+        $client  = @$_SERVER['HTTP_CLIENT_IP'];
+        $forward = @$_SERVER['HTTP_X_FORWARDED_FOR'];
+        $remote  = $_SERVER['REMOTE_ADDR'];
+    
+        if(filter_var($client, FILTER_VALIDATE_IP)){
+            $clientIp = $client;
+        }
+        elseif(filter_var($forward, FILTER_VALIDATE_IP)){
+            $clientIp = $forward;
+        }
+        else{
+            $clientIp = $remote;
+        }
+    
+        return response()->json([
+            'IP' => $clientIp
+        ]);
+     }
 }
