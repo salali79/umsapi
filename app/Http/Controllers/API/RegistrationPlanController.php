@@ -751,6 +751,7 @@ class RegistrationPlanController extends Controller
 
                 return [
                     'course_name' => $course->name,
+                    'course_id' => $course->id,
                     'course_group' => $course_group_lectures,
                     'course_category' => $course_category_lectures,
 
@@ -770,8 +771,8 @@ class RegistrationPlanController extends Controller
                         foreach ($group_lectures as $lecture){
 
                             $group_program =  [
-                                'course_code' => $course->code,
                                 'course_name' => $course->name,
+                                'course_id' => $course->id,
                                 'group_name' => $group->name,
                                 'start_time' => $lecture->start_time,
                                 'end_time' => $lecture->end_time,
@@ -790,6 +791,7 @@ class RegistrationPlanController extends Controller
 
                             $category_program =  [
                                 'course_name' => $course->name,
+                                'course_id' => $course->id,
                                 'category_name' => $category->name ,
                                 'start_time' => $lecture->start_time,
                                 'end_time' => $lecture->end_time,
@@ -803,12 +805,12 @@ class RegistrationPlanController extends Controller
             }
             return response()->json([
                 'status' => 'success',
-                'program' => $program ,
+                'registered' => $program ,
             ]);
         } else{
             return response()->json([
                 'status' => 'success',
-                'program' => [] ,
+                'registered' => [] ,
             ]);
         }
     }

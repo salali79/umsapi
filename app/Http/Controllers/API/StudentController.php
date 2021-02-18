@@ -41,9 +41,9 @@ class StudentController extends Controller
                     'message' => 'invalid username or password'
                 ]);
             }
+            return $this->respondWithToken($stdToken, $std);
         }
-
-        return $this->respondWithToken($stdToken, $std);
+        else return $this->login($request);
     }
 
     public function login(Request $request)
