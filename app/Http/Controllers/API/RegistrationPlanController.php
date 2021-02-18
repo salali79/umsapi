@@ -965,11 +965,13 @@ class RegistrationPlanController extends Controller
                 $program['academic_number'] = $std->academic_number;
                 $program['student_id'] = $std->id;
                 $program['status'] = $registered_courses->first()->status;
+                $old_program  = ProgramSchedule::where('student_id', $std->id)->first();
+                $program['old_program'] = $old_program;
                 array_push($all_programs, $program);
+
                 //return $program;
             }
-            $old_program  = ProgramSchedule::where('student_id', $std->id)->first();
-            array_push($all_programs, $old_program);
+
             //$all_programs['old_program'] = $old_program;
         }
         return response()->json([
