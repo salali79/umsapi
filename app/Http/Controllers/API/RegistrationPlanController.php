@@ -892,7 +892,6 @@ class RegistrationPlanController extends Controller
             ->where('department_id', $department_id)
             ->get();
         $all_programs = array();
-        $done = 1;
         foreach($stds as $std)
         {
             $t = 0;
@@ -1101,7 +1100,7 @@ class RegistrationPlanController extends Controller
                 break;
             }
         }
-        if(done != 1)
+        if($done != 1)
         {
             return response()->json([
                 'status' => 'error',
