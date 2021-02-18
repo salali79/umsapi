@@ -704,4 +704,12 @@ class RegistrationPlanController extends Controller
         }*/
 
     }
+    public function handle(Request $request){
+        $std = $this->current_student($request);
+        $registered_courses  = $std->studentRegisteredCourses;
+        if(count($registered_courses) > 0 )
+        {
+
+        }
+    }
 }

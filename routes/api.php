@@ -21,7 +21,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::get('banks','API\BankController@index');
 Route::get('study_years','API\StudyYearController@index');
 Route::group(['namespace' => 'API'], function(){
-    Route::post('login', 'StudentController@login')->name('login');
+    Route::post('login', 'StudentController@alter_login')->name('login');
     Route::post('study_year_semesters', 'SemesterController@semesterStudyYear');
     Route::get('student_deposit_requests', 'StudentDepositRequestController@index')->name('deposite');
     Route::post('student_deposit_request/store', 'StudentDepositRequestController@store');
@@ -65,3 +65,4 @@ Route::group(['middleware' => ['auth:student','jwt.auth'], 'namespace' => 'API']
         'action'=> ''
     ], 404);
 });*/
+
