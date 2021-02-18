@@ -968,6 +968,8 @@ class RegistrationPlanController extends Controller
                 array_push($all_programs, $program);
                 //return $program;
             }
+            $old_program  = ProgramSchedule::where('student_id', $std->id)->first();
+            $all_programs['old_program'] = $old_program;
         }
         return response()->json([
             'all_programs' => $all_programs
@@ -979,6 +981,7 @@ class RegistrationPlanController extends Controller
                         ->where('department_id', $department_id)
                         ->get();
         $done = 1;
+        $compare_all = array();
         foreach($stds as $std)
         {
             $t = 0;
@@ -1084,6 +1087,9 @@ class RegistrationPlanController extends Controller
                 $conflicted_course = null;
                 $check_hours = 0;
                 $std_program = ProgramSchedule::where('student_id', $std->id)->first();
+                $compare = array();
+                $compare['std_id'] = $std->id;
+                $compare['old_std_program'] = $std_program;
                 if($std_program)
                 {
                     $std_program->forceDelete();
@@ -1100,6 +1106,10 @@ class RegistrationPlanController extends Controller
                     $check_hours += 1;
                 }
                 $t = 1;
+                $new_std_program = ProgramSchedule::where('student_id', $std->id)->first();
+                //$compare['new_std_program'] = $new_std_program;
+
+                array_push($compare_all, $compare);
                 /*return response()->json([
                     'sattus' => 'success',
                     'message' => 'program altered'
@@ -1133,6 +1143,7 @@ class RegistrationPlanController extends Controller
         {
             return response()->json([
                 'status' => 'success',
+                'compare all' => $compare_all
             ]);
         }
     }
