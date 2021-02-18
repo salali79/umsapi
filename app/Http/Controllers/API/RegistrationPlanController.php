@@ -956,6 +956,8 @@ class RegistrationPlanController extends Controller
                     ];
                 });
 
+                $program['academic_number'] = $std->academic_number;
+                $program['student_id'] = $std->id;
                 array_push($all_programs, $program);
                 //return $program;
             }
