@@ -899,7 +899,8 @@ class RegistrationPlanController extends Controller
 
             if (count($registered_courses) > 0) {
 
-                $program = $registered_courses->map(function ($registered_course) {
+                $check_cat = 0;
+                $program = $registered_courses->map(function ($registered_course) use($check_cat) {
                     $course = $registered_course->course;
 
                     $group = $registered_course->registrationCourseGroup;
@@ -929,6 +930,7 @@ class RegistrationPlanController extends Controller
                     $category = $registered_course->registrationCourseCategory;
                     $course_category_lectures = [];
                     if ($category != null) {
+                        $check_cat  = 1;
 
                         $category_lectures = $category->lectures->map(function ($lecture) {
 
@@ -954,6 +956,7 @@ class RegistrationPlanController extends Controller
                         'course_id' => $course->id,
                         'course_group' => $course_group_lectures,
                         'course_category' => $course_category_lectures,
+                        'check category' => $check_cat
                     ];
                 });
 
@@ -979,9 +982,10 @@ class RegistrationPlanController extends Controller
             $t = 0;
             $registered_courses = $std->studentRegisteredCourses;
 
+            $check_cat = 0;
             if (count($registered_courses) > 0) {
 
-                $program = $registered_courses->map(function ($registered_course) {
+                $program = $registered_courses->map(function ($registered_course ) use ($check_cat) {
                     $course = $registered_course->course;
 
                     $group = $registered_course->registrationCourseGroup;
@@ -1042,7 +1046,9 @@ class RegistrationPlanController extends Controller
                 //return $program[1]['course_group'];
                 $group_times = array();
                 $category_times = array();
+
                 foreach ($program as $item) {
+                    return $item;
                     //return $item['course_group']['group_lectures'];
                     if($program[0]['course_group'])
                     {
@@ -1050,7 +1056,10 @@ class RegistrationPlanController extends Controller
                     }
                     if($program[0]['course_category'])
                     {
-                        array_push($category_times,  $item['course_category']['category_lectures']);
+                        if($check_category != null)
+                        {
+                            array_push($category_times,  $item['course_category']['category_lectures']);
+                        }
                     }
                 }
 
