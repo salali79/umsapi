@@ -59,7 +59,7 @@ class RegistrationPlanController extends Controller
     ];
     public function __construct(Request $request)
     {
-      $this->middleware('auth:student', ['except' => ['handle', 'do_handle', 'do_handle_all']]);
+      $this->middleware('auth:student', ['except' => ['show_student_registered', 'handle', 'do_handle', 'do_handle_all']]);
       $this->guard = "student";
       $this->request = $request;
     }
@@ -883,15 +883,89 @@ class RegistrationPlanController extends Controller
             ]);
         }
     }
-    public function do_handle_all(Request $request)
+    public function show_student_registered($faculty_id)
     {
-        $stds = Student::where('faculty_id', $request->faculty_id)->count();
-        return $stds;
+        $stds = Student::where('faculty_id', $faculty_id)->get();
+        $all_programs = array();
         $done = 1;
         foreach($stds as $std)
         {
             $t = 0;
-            //$std = $this->current_student($request);
+            $registered_courses = $std->studentRegisteredCourses;
+
+            if (count($registered_courses) > 0) {
+
+                $program = $registered_courses->map(function ($registered_course) {
+                    $course = $registered_course->course;
+
+                    $group = $registered_course->registrationCourseGroup;
+                    $course_group_lectures = [];
+                    if ($group != null) {
+                        $group_times = array();
+                        $group_lectures = $group->lectures->map(function ($lecture) {
+
+
+                            $start_time = substr($lecture->start_time,0,-3);
+                            $end_time = substr($lecture->end_time,0,-3);
+                            $day = $this->days[$lecture->day];
+                            return [
+                                'start' => $start_time,
+                                'end' => $end_time,
+                                'day' => $day,
+                            ];
+
+
+                        });
+
+                        $course_group_lectures = [
+                            'group_name' => $group->name,
+                            'group_lectures' => $group_lectures
+                        ];
+                    }
+                    $category = $registered_course->registrationCourseCategory;
+                    $course_category_lectures = [];
+                    if ($category != null) {
+
+                        $category_lectures = $category->lectures->map(function ($lecture) {
+
+
+                            $start_time = substr($lecture->start_time,0,-3);
+                            $end_time = substr($lecture->end_time,0,-3);
+                            $day = $this->days[$lecture->day];
+                            return [
+                                'start' => $start_time,
+                                'end' => $end_time,
+                                'day' => $day,
+                            ];
+                        });
+
+                        $course_category_lectures = [
+                            'category_name' => $category->name,
+                            'category_lectures' => $category_lectures
+                        ];
+                    }
+
+                    return [
+                        'course_name' => $course->name,
+                        'course_id' => $course->id,
+                        'course_group' => $course_group_lectures,
+                        'course_category' => $course_category_lectures,
+                    ];
+                });
+
+                array_push($all_programs, $program);
+                //return $program;
+            }
+        }
+        return $all_programs;
+    }
+    public function do_handle_all(Request $request)
+    {
+        $stds = Student::where('faculty_id', $request->faculty_id)->get();
+        $done = 1;
+        foreach($stds as $std)
+        {
+            $t = 0;
             $registered_courses = $std->studentRegisteredCourses;
 
             if (count($registered_courses) > 0) {
