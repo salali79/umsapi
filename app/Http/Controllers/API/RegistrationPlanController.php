@@ -1092,8 +1092,7 @@ class RegistrationPlanController extends Controller
                 $old_std_program = ProgramSchedule::where('student_id', $std->id)->first();
                 $compare = array();
                 $compare['std_id'] = $std->id;
-                $compare['old_std_program'] = $old_std_program;
-                $compare['new_program'] = $hours;
+                $compare['old_std_program'] = $old_std_program->free_hours;
                 if($old_std_program)
                 {
                     $old_std_program->forceDelete();
@@ -1110,8 +1109,8 @@ class RegistrationPlanController extends Controller
                     $check_hours += 1;
                 }
                 $t = 1;
-                //$new_std_program = ProgramSchedule::where('student_id', $std->id)->first();
-                //$compare['new_std_program'] = $new_std_program;
+                $new_std_program = ProgramSchedule::where('student_id', $std->id)->first();
+                $compare['new_std_program'] = $new_std_program->free_hours;
 
                 array_push($compare_all, $compare);
             }
