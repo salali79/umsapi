@@ -9,7 +9,6 @@ use App\Http\Resources\TokenResource as TokenResource;
 use App\Http\Resources\StudentResource as StudentResource;
 use App\Http\Requests\DepositeRequest as DepositeRequest;
 use App\Http\Requests\ResetPasswordRequest as ResetPasswordRequest;
-use App\Mail\ResetPassword;
 use Auth;
 use Validator;
 use JWTFactory;
@@ -28,6 +27,16 @@ class StudentController extends Controller
     {
       $this->middleware('auth:student', ['except' => ['alter_login', 'login','getToken','reset_password', 'deposite', 'student_deposite']]);
       $this->guard = "student";
+    }
+    function current_student(Request $request)
+    {
+        if(!is_null($request->lang)) app()->setLocale($request->lang);
+        $headers = apache_request_headers();
+        $request->headers->set('Authorization', $headers['Authorization']);
+        $token = $request->headers->get('Authorization');
+        JWTAuth::setToken($token);
+        $std = auth('student')->user();
+        return $std;
     }
     public function alter_login(Request $request){
         try{
@@ -124,16 +133,31 @@ class StudentController extends Controller
     }
     public function reset_password_student(ResetPasswordRequest $request) {
             $validated = $request->validated();
-            $std = Student::where('username', auth('student')->user()->username)->update([
+            $password = $request->password;
+            $std = $this->current_student($request);
+            $not_diff = \Hash::check($request->password , $std->password );
+            if($password == $std->academic_number || $not_diff==1)
+            {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'قم بادخال كلمة مرور مختلفة'
+                ]);
+            }
+            else 
+            {
+                $std = Student::where('username', auth('student')->user()->username)->update([
                     'password' => bcrypt($request->password),
-				    'password_status' => 1
-            ]);
-            auth('student')->attempt(['username' => auth('student')->user()->username, 'password' => $request->password], true);
-            return response()->json([
-                'status' => 'success',
-                'message' => 'reset password successfully',
-                'data' => [],
-                'action' => 'reset password'
-            ]);
+				    'password_status' => 1,
+                    'updated_by' => auth('student')->user()->id
+                ]);
+
+                auth('student')->attempt(['username' => auth('student')->user()->username, 'password' => $request->password], true);
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'reset password successfully',
+                    'data' => [],
+                    'action' => 'reset password'
+                ]);
+            }
 	}
 }

@@ -544,6 +544,13 @@ class RegistrationPlanController extends Controller
 
         $required_courses = $this->required_courses_ids;
 
+       if(is_null($std->StudentStudyPlan()))
+       {
+           return response()->json([
+               'status' => 'error',
+               'message' => 'لا يوجد خطة دراسية'
+           ]);
+       }
        if($std->StudentRegisteredCoursesHours() < $this->minimum_registered_hours)
             return response()->json([
                'status' => 'error',
@@ -575,7 +582,10 @@ class RegistrationPlanController extends Controller
                 $student_registered_course = StudentRegisteredCourse::where('student_id', $std->id);
 
                 if ($student_registered_course != null)
-                    $student_registered_course->update(['status' => '1']);
+                    $student_registered_course->update([
+                        'status' => '1',
+                        'updated_by' => $std->id
+                    ]);
 
                 return response()->json([
                     'status' => 'success',
