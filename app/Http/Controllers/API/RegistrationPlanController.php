@@ -1067,18 +1067,19 @@ class RegistrationPlanController extends Controller
                     $check_category = $item['check_category'];
                     $check_group = $item['check_group'];
                     //return $item['course_group']['group_lectures'];
-                    if($program[0]['course_group'])
+                    //if($program[0]['course_category']) if($program[0]['course_group'])
+                    if($check_group > 0)
                     {
-                        if($check_group > 0)
+                        foreach($item['course_group']['group_lectures'] as $lecture)
                         {
-                            array_push($category_times,  $item['course_group']['group_lectures']);
+                            array_push($group_times,  $lecture);
                         }
                     }
-                    if($program[0]['course_category'])
+                    if($check_category > 0)
                     {
-                        if($check_category > 0)
+                        foreach($item['course_category']['category_lectures'] as $lecture)
                         {
-                            array_push($category_times,  $item['course_category']['category_lectures']);
+                            array_push($category_times,  $lecture);
                         }
                     }
                 }
