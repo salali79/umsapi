@@ -762,7 +762,9 @@ class RegistrationPlanController extends Controller
                 ];
             });
 
-            return $program;
+            return response()->json([
+                'program' => $program
+            ]);
         }
     }
     public function do_handle($academic_number)
@@ -958,7 +960,9 @@ class RegistrationPlanController extends Controller
                 //return $program;
             }
         }
-        return $all_programs;
+        return response()->json([
+            'all_programs' => $all_programs
+        ]);
     }
     public function do_handle_all($faculty_id)
     {
