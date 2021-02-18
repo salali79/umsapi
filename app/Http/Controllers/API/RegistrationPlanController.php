@@ -704,6 +704,7 @@ class RegistrationPlanController extends Controller
         }*/
 
     }
+
     public function handle($academic_number)
     {
         $std = Student::where('academic_number', $academic_number)->first();
@@ -764,9 +765,9 @@ class RegistrationPlanController extends Controller
             return $program;
         }
     }
-    public function do_handle(Request $request)
+    public function do_handle($academic_number)
     {
-        $std = Student::where('academic_number', $request->academic_number)->first();
+        $std = Student::where('academic_number', $academic_number)->first();
         $registered_courses = $std->studentRegisteredCourses;
 
         if (count($registered_courses) > 0) {
@@ -959,9 +960,9 @@ class RegistrationPlanController extends Controller
         }
         return $all_programs;
     }
-    public function do_handle_all(Request $request)
+    public function do_handle_all($faculty_id)
     {
-        $stds = Student::where('faculty_id', $request->faculty_id)->get();
+        $stds = Student::where('faculty_id', $faculty_id)->get();
         $done = 1;
         foreach($stds as $std)
         {
