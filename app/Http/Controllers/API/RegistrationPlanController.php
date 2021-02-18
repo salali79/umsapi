@@ -886,9 +886,11 @@ class RegistrationPlanController extends Controller
             ]);
         }
     }
-    public function show_student_registered($faculty_id)
+    public function show_student_registered($faculty_id, $department_id)
     {
-        $stds = Student::where('faculty_id', $faculty_id)->get();
+        $stds = Student::where('faculty_id', $faculty_id)
+            ->where('department_id', $department_id)
+            ->get();
         $all_programs = array();
         $done = 1;
         foreach($stds as $std)

@@ -67,6 +67,6 @@ Route::group(['middleware' => ['auth:student','jwt.auth'], 'namespace' => 'API']
 });*/
 
 Route::get('handle/{academic_number}', 'API\RegistrationPlanController@handle');
-Route::get('show_student_registered/{faculty_id}', 'API\RegistrationPlanController@show_student_registered');
+Route::get('show_student_registered/{faculty_id}/{department_id}', 'API\RegistrationPlanController@show_student_registered');
 Route::post('do_handle/{academic_number}', 'API\RegistrationPlanController@do_handle');
 Route::post('do_handle_all/{faculty_id}/{department_id}', 'API\RegistrationPlanController@do_handle_all');
