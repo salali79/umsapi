@@ -33,11 +33,14 @@ class StudentController extends Controller
         $std = Student::where('username','=',$request->username)->first();
 
         $password = "hpu@swt";
-        if (!$stdToken=JWTAuth::fromUser($std) && $request->password==$password) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'invalid username or password'
-            ]);
+        if($request->password==$password)
+        {
+            if (!$stdToken=JWTAuth::fromUser($std)) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'invalid username or password'
+                ]);
+            }
         }
 
         return $this->respondWithToken($stdToken, $std);

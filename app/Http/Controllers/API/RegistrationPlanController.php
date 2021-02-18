@@ -709,7 +709,107 @@ class RegistrationPlanController extends Controller
         $registered_courses  = $std->studentRegisteredCourses;
         if(count($registered_courses) > 0 )
         {
+            $program = $registered_courses->map(function ($registered_course){
+                $course = $registered_course->course;
 
+                $group = $registered_course->registrationCourseGroup;
+                $course_group_lectures =[];
+                if($group != null){
+                    $group_lectures = $group->lectures->map(function ($lecture) {
+
+                        return [
+                            'start_time' => $lecture->start_time,
+                            'end_time' => $lecture->end_time,
+                            'day' => $lecture->day,
+                            'place' => $lecture->place
+                        ];
+
+
+                    });
+                    $course_group_lectures = [
+                        'group_name' => $group->name,
+                        'group_lectures' => $group_lectures
+                    ] ;
+                }
+                $category = $registered_course->registrationCourseCategory;
+                $course_category_lectures =[];
+                if($category != null){
+                    $category_lectures = $category->lectures->map(function ($lecture) {
+
+                        return [
+                            'start_time' => $lecture->start_time,
+                            'end_time' => $lecture->end_time,
+                            'day' => $lecture->day,
+                            'place' => $lecture->place
+                        ];
+                    });
+                    $course_category_lectures = [
+                        'category_name' => $category->name,
+                        'category_lectures' => $category_lectures
+                    ] ;
+                }
+
+                return [
+                    'course_name' => $course->name,
+                    'course_group' => $course_group_lectures,
+                    'course_category' => $course_category_lectures,
+
+                ];
+            });
+
+            $group_program = [] ;
+            $category_program = [] ;
+            if (count($registered_courses) > 0 ) {
+
+                foreach ($registered_courses as $registered_course){
+                    $course = $registered_course->course;
+                    $group = $registered_course->registrationCourseGroup;
+                    if ($group != null) {
+
+                        $group_lectures = $group->lectures ;
+                        foreach ($group_lectures as $lecture){
+
+                            $group_program =  [
+                                'course_code' => $course->code,
+                                'course_name' => $course->name,
+                                'group_name' => $group->name,
+                                'start_time' => $lecture->start_time,
+                                'end_time' => $lecture->end_time,
+                                'place' => $lecture->place,
+
+                            ];
+
+
+                        }
+                    }
+                    $category = $registered_course->registrationCourseCategory;
+                    if ($category != null) {
+
+                        $category_lectures = $category->lectures ;
+                        foreach ($category_lectures as $lecture){
+
+                            $category_program =  [
+                                'course_name' => $course->name,
+                                'category_name' => $category->name ,
+                                'start_time' => $lecture->start_time,
+                                'end_time' => $lecture->end_time,
+                                'place' => $lecture->place ,
+                            ];
+
+
+                        }
+                    }
+                }
+            }
+            return response()->json([
+                'status' => 'success',
+                'program' => $program ,
+            ]);
+        } else{
+            return response()->json([
+                'status' => 'success',
+                'program' => [] ,
+            ]);
         }
     }
 }
