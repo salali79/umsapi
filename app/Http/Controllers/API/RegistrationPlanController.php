@@ -969,7 +969,8 @@ class RegistrationPlanController extends Controller
                 //return $program;
             }
             $old_program  = ProgramSchedule::where('student_id', $std->id)->first();
-            $all_programs['old_program'] = $old_program;
+            array_push($all_programs, $old_program);
+            //$all_programs['old_program'] = $old_program;
         }
         return response()->json([
             'all_programs' => $all_programs
@@ -1086,13 +1087,14 @@ class RegistrationPlanController extends Controller
                 $ProgramController = new ProgramController();
                 $conflicted_course = null;
                 $check_hours = 0;
-                $std_program = ProgramSchedule::where('student_id', $std->id)->first();
+                $old_std_program = ProgramSchedule::where('student_id', $std->id)->first();
                 $compare = array();
                 $compare['std_id'] = $std->id;
-                $compare['old_std_program'] = $std_program;
-                if($std_program)
+                $compare['old_std_program'] = $old_std_program;
+                $compare['new_program'] = $hours;
+                if($old_std_program)
                 {
-                    $std_program->forceDelete();
+                    $old_std_program->forceDelete();
                 }
                 foreach($hours as $hour)
                 {
@@ -1106,14 +1108,10 @@ class RegistrationPlanController extends Controller
                     $check_hours += 1;
                 }
                 $t = 1;
-                $new_std_program = ProgramSchedule::where('student_id', $std->id)->first();
+                //$new_std_program = ProgramSchedule::where('student_id', $std->id)->first();
                 //$compare['new_std_program'] = $new_std_program;
 
                 array_push($compare_all, $compare);
-                /*return response()->json([
-                    'sattus' => 'success',
-                    'message' => 'program altered'
-                ]);*/
             }
             else {
                 $std_program = ProgramSchedule::where('student_id', $std->id)->first();
