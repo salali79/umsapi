@@ -85,9 +85,6 @@ class RegistrationPlanController extends Controller
     }
     public function get_last_registration_plan_id(Request $request){
         $std = $this->current_student($request);
-        //return $std->faculty;
-        //return $std->department;
-        //return $this->studyYearSemesterId();
         if($this->studyYearSemesterId() != -1)
         {
             if($std->department)
@@ -795,15 +792,20 @@ class RegistrationPlanController extends Controller
     {
         $std = Student::where('academic_number', $academic_number)->first();
         $registered_courses = $std->studentRegisteredCourses;
+        $compare_all = array();
+        $t = 0;
 
+        $check_cat = 0;
+        $check_gr = 0;
         if (count($registered_courses) > 0) {
 
-            $program = $registered_courses->map(function ($registered_course) {
+            $program = $registered_courses->map(function ($registered_course ) use ($check_cat,$check_gr) {
                 $course = $registered_course->course;
 
                 $group = $registered_course->registrationCourseGroup;
                 $course_group_lectures = [];
                 if ($group != null) {
+                    $check_gr = 1;
                     $group_times = array();
                     $group_lectures = $group->lectures->map(function ($lecture) {
 
@@ -821,6 +823,7 @@ class RegistrationPlanController extends Controller
                     });
 
                     $course_group_lectures = [
+                        'group_id' => $group->id,
                         'group_name' => $group->name,
                         'group_lectures' => $group_lectures
                     ];
@@ -829,6 +832,7 @@ class RegistrationPlanController extends Controller
                 $course_category_lectures = [];
                 if ($category != null) {
 
+                    $check_cat  = 1;
                     $category_lectures = $category->lectures->map(function ($lecture) {
 
 
@@ -843,6 +847,7 @@ class RegistrationPlanController extends Controller
                     });
 
                     $course_category_lectures = [
+                        'category_id' => $category->id,
                         'category_name' => $category->name,
                         'category_lectures' => $category_lectures
                     ];
@@ -853,21 +858,34 @@ class RegistrationPlanController extends Controller
                     'course_id' => $course->id,
                     'course_group' => $course_group_lectures,
                     'course_category' => $course_category_lectures,
+                    'check_category' => $check_cat,
+                    'check_group' => $check_gr
                 ];
             });
 
             //return $program[1]['course_group'];
             $group_times = array();
             $category_times = array();
+
             foreach ($program as $item) {
+
+                $check_category = $item['check_category'];
+                $check_group = $item['check_group'];
                 //return $item['course_group']['group_lectures'];
-                if($program[0]['course_group'])
+                //if($program[0]['course_category']) if($program[0]['course_group'])
+                if($check_group > 0)
                 {
-                    array_push($category_times,  $item['course_group']['group_lectures']);
+                    foreach($item['course_group']['group_lectures'] as $lecture)
+                    {
+                        array_push($group_times,  $lecture);
+                    }
                 }
-                if($program[0]['course_category'])
+                if($check_category > 0)
                 {
-                    array_push($category_times,  $item['course_category']['category_lectures']);
+                    foreach($item['course_category']['category_lectures'] as $lecture)
+                    {
+                        array_push($category_times,  $lecture);
+                    }
                 }
             }
 
@@ -877,25 +895,39 @@ class RegistrationPlanController extends Controller
             $ProgramController = new ProgramController();
             $conflicted_course = null;
             $check_hours = 0;
-            $std_program = ProgramSchedule::where('student_id', $std->id)->first();
-            if($std_program)
+            $old_std_program = ProgramSchedule::where('student_id', $std->id)->first();
+            $compare = array();
+            $compare['std_id'] = $std->id;
+            if($old_std_program)
             {
-                $std_program->forceDelete();
+                $compare['old_std_program'] = $old_std_program->free_hours;
+                $old_std_program->forceDelete();
             }
             foreach($hours as $hour)
             {
-                $res = $ProgramController->add_course_time($hour[0], $std);
+                $res = $ProgramController->add_course_time($hour, $std);
                 $res = json_decode($res->getContent(), true);
                 if($res['status'] == 'error')
                 {
-                    $t=0;
+                    $t=1;
                     break;
                 }
                 $check_hours += 1;
             }
+            if($t == 1)
+            {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'conflict'
+                ]);
+            }
+            $new_std_program = ProgramSchedule::where('student_id', $std->id)->first();
+            $compare['new_std_program'] = $new_std_program->free_hours;
+
+            array_push($compare_all, $compare);
             return response()->json([
-                'sattus' => 'success',
-                'message' => 'program altered'
+                'status' => 'success',
+                'compare all' => $compare_all
             ]);
         }
         else {
@@ -909,6 +941,7 @@ class RegistrationPlanController extends Controller
                 'message' => 'program deleted'
             ]);
         }
+
     }
     public function show_student_registered($faculty_id, $department_id)
     {
@@ -1004,9 +1037,17 @@ class RegistrationPlanController extends Controller
     }
     public function do_handle_all($faculty_id, $department_id)
     {
-        $stds = Student::where('faculty_id', $faculty_id)
-                        ->where('department_id', $department_id)
-                        ->get();
+        if(is_null($department_id))
+        {
+            $stds = Student::where('faculty_id', $faculty_id)
+                ->where('department_id', $department_id)
+                ->get();
+        }
+        else
+        {
+            $stds = Student::where('faculty_id', $faculty_id)
+                ->get();
+        }
         $done = 1;
         $compare_all = array();
         foreach($stds as $std)

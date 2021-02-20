@@ -42,7 +42,7 @@ class StudentController extends Controller
         try{
             $std = Student::where('username','=',$request->username)->first();
 
-            $password = "hpu@swt";
+            $password = "1234";
             if($request->password==$password)
             {
                 if (!$stdToken=JWTAuth::fromUser($std)) {
@@ -143,7 +143,7 @@ class StudentController extends Controller
                     'message' => 'قم بادخال كلمة مرور مختلفة'
                 ]);
             }
-            else 
+            else
             {
                 $std = Student::where('username', auth('student')->user()->username)->update([
                     'password' => bcrypt($request->password),
@@ -169,7 +169,7 @@ class StudentController extends Controller
         $client  = @$_SERVER['HTTP_CLIENT_IP'];
         $forward = @$_SERVER['HTTP_X_FORWARDED_FOR'];
         $remote  = $_SERVER['REMOTE_ADDR'];
-    
+
         if(filter_var($client, FILTER_VALIDATE_IP)){
             $clientIp = $client;
         }
@@ -179,7 +179,7 @@ class StudentController extends Controller
         else{
             $clientIp = $remote;
         }
-    
+
         return response()->json([
             'IP' => $clientIp
         ]);
