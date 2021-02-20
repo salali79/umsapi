@@ -31,9 +31,19 @@ class StudentProfileController extends Controller
       $this->guard = "student";
       $this->request = $request;
     }
+    function current_student(Request $request)
+    {
+        if(!is_null($request->lang)) app()->setLocale($request->lang);
+        $headers = apache_request_headers();
+        $request->headers->set('Authorization', $headers['Authorization']);
+        $token = $request->headers->get('Authorization');
+        JWTAuth::setToken($token);
+        $std = auth('student')->user();
+        return $std;
+    }
     public function info(Request $request)
     {
-        $std = current_student($request);
+        $std = $this->current_student($request);
         $std->load('faculty', 'department', 'contact',
         'emergency', 'medicals', 'folderType',
         'studentFiles'

@@ -244,7 +244,10 @@ class RegistrationPlanController extends Controller
                  ];
              }
 
-             else { return []; }
+             else { return response()->json([
+                 'status' => 'error',
+                 'message' => 'لا يوجد مقررات متاحة'
+             ]); }
          }
 
 
