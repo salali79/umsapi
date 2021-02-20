@@ -71,3 +71,5 @@ Route::get('show_student_registered/{faculty_id}/{department_id}', 'API\Registra
 Route::post('do_handle/{academic_number}', 'API\RegistrationPlanController@do_handle');
 Route::get('do_handle_all/{faculty_id}/{department_id}', 'API\RegistrationPlanController@do_handle_all');
 Route::get('get_client_ip', 'API\StudentController@getClientIPaddress');
+
+Route::get('get_last_registration_plan_id', 'API\RegistrationPlanController@get_last_registration_plan_id');

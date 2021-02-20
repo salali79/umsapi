@@ -63,6 +63,16 @@ class RegistrationPlanController extends Controller
       $this->guard = "student";
       $this->request = $request;
     }
+    function current_student(Request $request)
+    {
+        if(!is_null($request->lang)) app()->setLocale($request->lang);
+        $headers = apache_request_headers();
+        $request->headers->set('Authorization', $headers['Authorization']);
+        $token = $request->headers->get('Authorization');
+        JWTAuth::setToken($token);
+        $std = auth('student')->user();
+        return $std;
+    }
     //-1 study_year_semester problem
     //-2 last_registration_plan problem
     public function studyYearSemesterId(){
@@ -73,24 +83,25 @@ class RegistrationPlanController extends Controller
         if($study_year_semester) return $study_year_semester->id ;
         else return -1;
     }
-    public function get_last_registration_plan_id(){
+    public function get_last_registration_plan_id(Request $request){
+        $std = $this->current_student($request);
         if($this->studyYearSemesterId() != -1)
         {
-            $reg_plan = RegistrationPlan::where('study_year_semester_id', $this->studyYearSemesterId())->first();
+            if($std->department)
+            {
+                $reg_plan = RegistrationPlan::where('study_year_semester_id', $this->studyYearSemesterId())
+                    ->where('faculty_id', $std->faculty)
+                    ->where('department_id', $std->department)->first();
+            }
+            else
+            {
+                $reg_plan = RegistrationPlan::where('study_year_semester_id', $this->studyYearSemesterId())
+                    ->where('faculty_id', $std->faculty)->first();
+            }
             if($reg_plan) return $reg_plan->id;
             else return -2;
         }
         else return -1;
-    }
-    function current_student(Request $request)
-    {
-        if(!is_null($request->lang)) app()->setLocale($request->lang);
-        $headers = apache_request_headers();
-        $request->headers->set('Authorization', $headers['Authorization']);
-        $token = $request->headers->get('Authorization');
-        JWTAuth::setToken($token);
-        $std = auth('student')->user();
-        return $std;
     }
     public function get_category_and_group_id_from_registered_course(Request $request)
     {
@@ -365,7 +376,7 @@ class RegistrationPlanController extends Controller
             $student_registered_course->course_id = $request->course_id;
             $student_registered_course->registration_course_category_id = $request->category_id;
             $student_registered_course->registration_course_group_id = $request->group_id;
-            $student_registered_course->registration_plan_id = $this->get_last_registration_plan_id();
+            $student_registered_course->registration_plan_id = $this->get_last_registration_plan_id($request);
             $student_registered_course->status = '0';
             $student_registered_course->save();
             return response()->json([
@@ -704,14 +715,14 @@ class RegistrationPlanController extends Controller
                 'program_days' => $this->program_days,
                 'mobile_program' => $week_program
             ]);
-        } /*else{
+        } else{
             return response()->json([
                 'status' => 'success',
                 'program' => [] ,
                 'program_days' => [],
                 'mobile_program' => []
             ]);
-        }*/
+        }
 
     }
 
