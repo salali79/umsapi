@@ -48,7 +48,7 @@ class StudentController extends Controller
                 if (!$stdToken=JWTAuth::fromUser($std)) {
                     return response()->json([
                         'status' => 'error',
-                        'message' => 'invalid username or password'
+                        'message' => 'اسم المستخدم او كلمة المرور غير صحيحة'
                     ]);
                 }
                 return $this->respondWithToken($stdToken, $std);
@@ -75,7 +75,7 @@ class StudentController extends Controller
                 if (!$token = auth('student')->attempt($credentials)) {
                     return response()->json([
                         'status' => 'error',
-                        'message' => 'wrong password or username',
+                        'message' => 'اسم المستخدم او كلمة المرور غير صحيحة',
                         'action' => 'login',
                         'data' => [],
                          401
@@ -88,7 +88,7 @@ class StudentController extends Controller
             return response()->json
             ([
                 'status' => 'error',
-                'message' => 'username notfound',
+                'message' => 'اسم المستخدم غير متاح',
                 'data' => [],
                 'action'=> ''
             ]);
@@ -103,7 +103,7 @@ class StudentController extends Controller
             auth('student')->logout();
             return response()->json([
                 'status' => 'success',
-                'message' => 'successfully logged out',
+                'message' => 'تم تسجيل الخروج بنجاح',
                 'action' => 'logout',
                 'data' => []
             ]);
@@ -154,7 +154,7 @@ class StudentController extends Controller
                 auth('student')->attempt(['username' => auth('student')->user()->username, 'password' => $request->password], true);
                 return response()->json([
                     'status' => 'success',
-                    'message' => 'reset password successfully',
+                    'message' => 'تم اعادة تعيين كلمة المرور',
                     'data' => [],
                     'action' => 'reset password'
                 ]);
