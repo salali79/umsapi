@@ -85,18 +85,21 @@ class RegistrationPlanController extends Controller
     }
     public function get_last_registration_plan_id(Request $request){
         $std = $this->current_student($request);
+        //return $std->faculty;
+        //return $std->department;
+        //return $this->studyYearSemesterId();
         if($this->studyYearSemesterId() != -1)
         {
             if($std->department)
             {
                 $reg_plan = RegistrationPlan::where('study_year_semester_id', $this->studyYearSemesterId())
-                    ->where('faculty_id', $std->faculty)
-                    ->where('department_id', $std->department)->first();
+                    ->where('faculty_id', $std->faculty->id)
+                    ->where('department_id', $std->department->id)->first();
             }
             else
             {
                 $reg_plan = RegistrationPlan::where('study_year_semester_id', $this->studyYearSemesterId())
-                    ->where('faculty_id', $std->faculty)->first();
+                    ->where('faculty_id', $std->faculty->id)->first();
             }
             if($reg_plan) return $reg_plan->id;
             else return -2;
