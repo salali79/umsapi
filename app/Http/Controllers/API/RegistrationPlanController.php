@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\RegistrationCourseCategory;
 use App\Models\RegistrationCourseGroup;
 use Illuminate\Http\Request;
+use App\Http\Requests\finalRegisterRequest as finalRegisterRequest;
 use Auth;
 use Validator;
 use JWTFactory;
@@ -27,6 +28,7 @@ use App\Models\StudentRegisteredCourse;
 use App\Models\RegistrationCGL;
 use App\Models\RegistrationCCL;
 use App\Models\RegistrationCourse;
+use App\Models\StudentContact;
 use App\Http\Controllers\API\ProgramController as ProgramController;
 
 
@@ -553,11 +555,12 @@ class RegistrationPlanController extends Controller
         ]);
 
     }
-    public function final_add_course(Request $requests)
+    public function final_add_course(finalRegisterRequest $requests)
     {
         $std = $this->current_student($requests);
 
         $required_courses = $this->required_courses_ids;
+
 
        if(is_null($std->StudentStudyPlan()))
        {
@@ -567,11 +570,14 @@ class RegistrationPlanController extends Controller
            ]);
        }
        if($std->StudentRegisteredCoursesHours() < $this->minimum_registered_hours)
-            return response()->json([
-               'status' => 'error',
-             'message' => 'عدد الساعات المسجلة أقل من الحد الادنى ',
-         ]);
-        else{
+       {
+        return response()->json([
+            'status' => 'error',
+          'message' => 'عدد الساعات المسجلة أقل من الحد الادنى ',
+        ]);
+       }
+        else
+        {
             $student_required_course =[];
             foreach ($required_courses as $course_id){
 
@@ -592,8 +598,8 @@ class RegistrationPlanController extends Controller
                     'required_courses' => $student_required_course
                 ]);
 
-            else {
-
+            else 
+            {
                 $student_registered_course = StudentRegisteredCourse::where('student_id', $std->id);
 
                 if ($student_registered_course != null)
@@ -602,6 +608,22 @@ class RegistrationPlanController extends Controller
                         'updated_by' => $std->id
                     ]);
 
+                    $contact = StudentContact::where('student_id', $std->id)->first();
+                    if($contact)
+                    {
+                        $contact->update([
+                            'mobile_1' => $requests->mobile,
+                            'email' => $requests->email
+                        ]);
+                    }
+                    else 
+                    {
+                        StudentContact::create([
+                            'student_id' => $std->id,
+                            'mobile_1' => $requests->mobile,
+                            'email' => $requests->email
+                        ]);
+                    }
                 return response()->json([
                     'status' => 'success',
                     'message' => 'تم تثبيت التسجيل بنجاح',
