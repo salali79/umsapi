@@ -241,7 +241,8 @@ class RegistrationPlanController extends Controller
                      'student_registered_hours' => $student_registered_hours,
                      'registration_courses' => $registration_course_arr
 
-                 ];}
+                 ];
+             }
 
              else { return []; }
          }
