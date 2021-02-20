@@ -17,7 +17,7 @@ class ResetPasswordRequest extends FormRequest
                 response()->json
                 ([
                     'status' => 'error',
-                    'message' => 'password confirmation doesnot match',
+                    'message' => 'كلمة المرور غير متطابقة',
                     'data' => $errors,
                     'action'=> ''
                 ])
