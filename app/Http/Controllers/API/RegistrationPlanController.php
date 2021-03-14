@@ -711,7 +711,7 @@ class RegistrationPlanController extends Controller
                             ];
 
                             
-                            $week_program[$program_days[$lecture->day]][] = $group_program;
+                            $week_program[$this->program_days[$lecture->day]][] = $group_program;
 
                         }
                     }
@@ -730,7 +730,7 @@ class RegistrationPlanController extends Controller
                                 'place' => $lecture->place ,
                             ];
 
-                            $week_program[$program_days[$lecture->day]][] = $category_program;
+                            $week_program[$this->program_days[$lecture->day]][] = $category_program;
 
                         }
                     }
