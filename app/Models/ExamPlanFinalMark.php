@@ -34,6 +34,7 @@ class ExamPlanFinalMark extends AppModel
             return $query->where('student_id','=',$student_id);
     }
     public function coursePoints(){
+//        return 2;
         return floatval($this->points) ;
     }
     public function courseCreditHours(){

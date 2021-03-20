@@ -40,7 +40,7 @@ class finalRegisterRequest extends FormRequest
     {
         return [
             'mobile' => ['required', 'regex:/^[0][0-9]/', 'min:10', 'max:10'],
-            'email' => ['sometimes', 'email:rfc,dns']
+            'email' => ['email:rfc,dns']
         ];
     }
 }

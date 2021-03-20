@@ -48,6 +48,8 @@ Route::group(['namespace' => 'API'], function(){
     Route::post('edit_course', 'RegistrationPlanController@update');
     Route::post('get_category_and_group_id', 'RegistrationPlanController@get_category_and_group_id_from_registered_course');
     Route::get('get_student_program', 'RegistrationPlanController@get_student_program');
+
+    Route::get('exam', 'ExamController@index');
 });
 
 Route::group(['middleware' => ['auth:student','jwt.auth'], 'namespace' => 'API'],function ()

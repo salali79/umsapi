@@ -22,12 +22,24 @@ class StudentSemesterTranscript extends AppModel
         return $this->belongsTo(StudyYear::class);
     }
     public function semesterMarks(){
-      $marks = FinalMark::query()
-          ->where('study_year_id',$this->study_year_id)
+        $semester_id=$this->semester_id;
+        $study_year_id=$this->study_year_id;
+        $marks = ExamPlanFinalMark::query()
+          ->where('student_id',$this->student_id)
+          ->whereHas(
+              'examPlanCourse.examPlan.semester',function($q) use ($semester_id){
+              $q->where('id', $semester_id); })
+          ->whereHas(
+              'examPlanCourse.examPlan.studyYear',function($q) use ($study_year_id){
+              $q->where('id', $study_year_id); })
+          ->get();
+
+         /* ->where('study_year_id',$this->study_year_id)
           ->where('semester_id',$this->semester_id)
-          ->where('student_id',$this->student_id)->get();
+          ->where('student_id',$this->student_id)->get();*/
 //      $courses =  $marks->map(function ($mark){
 //          return $mark->course;
+
 //      }) ;
       return $marks ;
     }
