@@ -57,6 +57,8 @@ class ExamController extends Controller
                 'a_completed_hours' => $semesterTranscript->a_completed_hours,
                 's_registered_hours' => $semesterTranscript->s_registered_hours,
                 'a_registered_hours' => $semesterTranscript->a_registered_hours,
+                'agpa' => $semesterTranscript->agpa,
+                'gpa' => $semesterTranscript->gpa,
                 'study_year' => $semesterTranscript->studyYear->name,
                 'semester' => $semesterTranscript->semester->id,
                 'courses' => $courses
