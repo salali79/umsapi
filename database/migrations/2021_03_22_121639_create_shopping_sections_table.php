@@ -15,6 +15,11 @@ class CreateShoppingSectionsTable extends Migration
     {
         Schema::create('shopping_sections', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('store_id');
+            $table->foreign('store_id')->references('id')->on('shopping_stores')->onupdate('cascade')->ondelete('set null');
+            $table->string('title')->unique();
+            $table->string('image');
+            $table->integer('status')->default(0);
             $table->timestamps();
         });
     }

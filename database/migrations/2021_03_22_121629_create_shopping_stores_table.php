@@ -18,7 +18,7 @@ class CreateShoppingStoresTable extends Migration
             $table->string('title')->unique();
             $table->string('type');
             $table->string('image');
-            $table->integer('status')->nullable();
+            $table->integer('status')->default(0);
             $table->timestamps();
         });
     }

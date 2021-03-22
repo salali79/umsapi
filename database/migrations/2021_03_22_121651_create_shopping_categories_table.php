@@ -15,6 +15,11 @@ class CreateShoppingCategoriesTable extends Migration
     {
         Schema::create('shopping_categories', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('parent_id')->unsigned()->nullable()->default(null);
+            $table->foreign('parent_id')->references('id')->on('shopping_categories')->onupdate('cascade')->ondelete('set null');
+            $table->string('title')->unique();
+            $table->text('description')->nullable();
+            $table->integer('status')->default(0);
             $table->timestamps();
         });
     }
