@@ -3,8 +3,6 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Models\RegistrationCourseCategory;
-use App\Models\RegistrationCourseGroup;
 use Illuminate\Http\Request;
 use App\Http\Requests\finalRegisterRequest as finalRegisterRequest;
 use Auth;
@@ -29,6 +27,8 @@ use App\Models\RegistrationCGL;
 use App\Models\RegistrationCCL;
 use App\Models\RegistrationCourse;
 use App\Models\StudentContact;
+use App\Models\RegistrationCourseCategory;
+use App\Models\RegistrationCourseGroup;
 use App\Http\Controllers\API\ProgramController as ProgramController;
 
 

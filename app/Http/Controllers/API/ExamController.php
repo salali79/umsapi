@@ -8,6 +8,8 @@ use App\Models\StudentFinalTranscript;
 use App\Models\StudentSemesterTranscript;
 use App\Models\Equivalent;
 use App\Models\Student;
+use App\Models\RegistrationCourse;
+use App\Models\ExamPlanFinalMark;
 use JWTAuth;
 
 class ExamController extends Controller
@@ -47,6 +49,7 @@ class ExamController extends Controller
                     'course_credit_hours' => $semester_mark->courseCreditHours(),
                     'course_names' => $semester_mark->examPlanCourse->course->name,
                     'course_equivalents' => $course_char_points,
+                    'course_points' => $semester_mark->points,
                     'course_ids' => $semester_mark->examPlanCourse->course->id
                 ];
             });
@@ -70,5 +73,17 @@ class ExamController extends Controller
             'semester_data' => $semester,
             'final_data' => $final
         ]);
+    }
+    public function mark(Request $request)
+    {
+        $cs = RegistrationCourse::all();
+        $marks = [];
+        foreach($cs as $c)
+        {
+            $p  = ExamPlanFinalMark::where('exam_plan_course_id',$c->course_id)->first();
+            if(!is_null($p))
+            array_push($marks, $p->mark);
+        }
+        return $marks;
     }
 }
