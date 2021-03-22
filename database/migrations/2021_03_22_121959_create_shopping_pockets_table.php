@@ -14,7 +14,8 @@ class CreateShoppingPocketsTable extends Migration
     public function up()
     {
         Schema::create('shopping_pockets', function (Blueprint $table) {
-            $table->id();
+            $table->engine='InnoDB';
+            $table->BigIncrements('id');
             $table->float('total_price');
             $table->morphs('pocketable');
             $table->integer('status')->default(0);

@@ -14,7 +14,8 @@ class CreateShoppingOrdersTable extends Migration
     public function up()
     {
         Schema::create('shopping_orders', function (Blueprint $table) {
-            $table->id();
+            $table->engine='InnoDB';
+            $table->BigIncrements('id');
             $table->float('total_price');
             $table->date('date');
             $table->morphs('orderable');

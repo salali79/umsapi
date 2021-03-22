@@ -14,7 +14,8 @@ class CreateShoppingOrderItemsTable extends Migration
     public function up()
     {
         Schema::create('shopping_order_items', function (Blueprint $table) {
-            $table->id();
+            $table->engine='InnoDB';
+            $table->BigIncrements('id');
             $table->unsignedBigInteger('order_id')->unsigned()->nullable()->default(null);
             $table->foreign('order_id')->references('id')->on('shopping_orders')->onupdate('cascade')->ondelete('set null');
             $table->unsignedBigInteger('product_id')->unsigned()->nullable()->default(null);

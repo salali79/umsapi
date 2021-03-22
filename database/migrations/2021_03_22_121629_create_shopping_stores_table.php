@@ -14,7 +14,8 @@ class CreateShoppingStoresTable extends Migration
     public function up()
     {
         Schema::create('shopping_stores', function (Blueprint $table) {
-            $table->id();
+            $table->engine='InnoDB';
+            $table->BigIncrements('id');
             $table->string('title')->unique();
             $table->string('type');
             $table->string('image');

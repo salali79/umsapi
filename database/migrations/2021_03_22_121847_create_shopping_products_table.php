@@ -14,7 +14,8 @@ class CreateShoppingProductsTable extends Migration
     public function up()
     {
         Schema::create('shopping_products', function (Blueprint $table) {
-            $table->id();
+            $table->engine='InnoDB';
+            $table->BigIncrements('id');
             $table->unsignedBigInteger('category_id');
             $table->foreign('category_id')->references('id')->on('shopping_categories')->onupdate('cascade')->ondelete('set null');
             $table->unsignedBigInteger('section_id');
