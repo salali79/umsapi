@@ -15,6 +15,10 @@ class CreateShoppingOrdersTable extends Migration
     {
         Schema::create('shopping_orders', function (Blueprint $table) {
             $table->id();
+            $table->float('total_price');
+            $table->date('date');
+            $table->morphs('orderable');
+            $table->integer('status')->default(0);
             $table->timestamps();
         });
     }

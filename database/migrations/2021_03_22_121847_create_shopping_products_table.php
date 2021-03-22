@@ -17,14 +17,14 @@ class CreateShoppingProductsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('category_id');
             $table->foreign('category_id')->references('id')->on('shopping_categories')->onupdate('cascade')->ondelete('set null');
-            $table->unsignedBigInteger('store_id');
-            $table->foreign('store_id')->references('id')->on('shopping_stores')->onupdate('cascade')->ondelete('set null');
+            $table->unsignedBigInteger('section_id');
+            $table->foreign('section_id')->references('id')->on('shopping_sections')->onupdate('cascade')->ondelete('set null');
             $table->string('name')->unique();
             $table->string('barcode');
-            $table->string('p_color');
             $table->text('description');
             $table->float('price');
             $table->string('image');
+            $table->integer('status')->default(0);
             $table->timestamps();
         });
     }
