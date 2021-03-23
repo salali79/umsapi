@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateShoppingCategoriesTable extends Migration
+class CreateShoppingChargesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,13 @@ class CreateShoppingCategoriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('shopping_categories', function (Blueprint $table) {
+        Schema::create('shopping_charges', function (Blueprint $table) {
             $table->engine='InnoDB';
             $table->BigIncrements('id');
-            $table->unsignedBigInteger('parent_id')->unsigned()->nullable()->default(null);
-            $table->foreign('parent_id')->references('id')->on('shopping_categories')->onupdate('cascade')->ondelete('set null');
-            $table->string('title')->unique();
-            $table->text('description')->nullable();
+            $table->unsignedBigInteger('wallet_id');
+            $table->foreign('wallet_id')->references('id')->on('shopping_wallets')->onupdate('cascade')->ondelete('set null');
+            $table->float('value');
+            $table->date('date');
             $table->integer('status')->default(0);
             $table->timestamps();
         });
@@ -32,6 +32,6 @@ class CreateShoppingCategoriesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('shopping_categories');
+        Schema::dropIfExists('shopping_charges');
     }
 }

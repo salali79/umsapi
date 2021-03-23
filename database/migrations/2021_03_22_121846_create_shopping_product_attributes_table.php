@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateShoppingSectionsTable extends Migration
+class CreateShoppingProductAttributesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,12 @@ class CreateShoppingSectionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('shopping_sections', function (Blueprint $table) {
+        Schema::create('shopping_product_attributes', function (Blueprint $table) {
             $table->engine='InnoDB';
             $table->BigIncrements('id');
-            $table->unsignedBigInteger('store_id');
-            $table->foreign('store_id')->references('id')->on('shopping_stores')->onupdate('cascade')->ondelete('set null');
-            $table->string('title')->unique();
-            $table->string('image');
+            $table->unsignedBigInteger('department_id');
+            $table->foreign('department_id')->references('id')->on('shopping_departments')->onupdate('cascade')->ondelete('set null');
+            $table->integer('stock')->default(1);
             $table->integer('status')->default(0);
             $table->timestamps();
         });
@@ -32,6 +31,6 @@ class CreateShoppingSectionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('shopping_sections');
+        Schema::dropIfExists('shopping_product_attributes');
     }
 }

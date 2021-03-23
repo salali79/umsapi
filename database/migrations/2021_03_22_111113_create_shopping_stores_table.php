@@ -17,7 +17,8 @@ class CreateShoppingStoresTable extends Migration
             $table->engine='InnoDB';
             $table->BigIncrements('id');
             $table->string('title')->unique();
-            $table->string('type');
+            $table->unsignedBigInteger('store_type_id');
+            $table->foreign('store_type_id')->references('id')->on('shopping_store_types')->onupdate('cascade')->ondelete('set null');
             $table->string('image');
             $table->integer('status')->default(0);
             $table->timestamps();

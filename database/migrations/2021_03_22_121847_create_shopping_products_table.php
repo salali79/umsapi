@@ -16,13 +16,11 @@ class CreateShoppingProductsTable extends Migration
         Schema::create('shopping_products', function (Blueprint $table) {
             $table->engine='InnoDB';
             $table->BigIncrements('id');
-            $table->unsignedBigInteger('category_id');
-            $table->foreign('category_id')->references('id')->on('shopping_categories')->onupdate('cascade')->ondelete('set null');
-            $table->unsignedBigInteger('section_id');
-            $table->foreign('section_id')->references('id')->on('shopping_sections')->onupdate('cascade')->ondelete('set null');
+            $table->unsignedBigInteger('product_attribute_id');
+            $table->foreign('product_attribute_id')->references('id')->on('shopping_product_attributes')->onupdate('cascade')->ondelete('set null');
             $table->string('name')->unique();
             $table->string('barcode');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->float('price');
             $table->string('image');
             $table->integer('status')->default(0);

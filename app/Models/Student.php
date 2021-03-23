@@ -268,4 +268,15 @@ class Student extends Authenticatable implements JWTSubject
         }
 
     }
+
+    /// Polymorph ///
+    public function wallet() 
+    { 
+        return $this->morphOne(ShoppingWallet::class, 'walletable'); 
+    }
+    public function order() 
+    { 
+        return $this->morphOne(ShoppingOrder::class, 'orderable'); 
+    }
+
 }

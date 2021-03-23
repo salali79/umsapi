@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateShoppingPocketsTable extends Migration
+class CreateShoppingWalletsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,11 @@ class CreateShoppingPocketsTable extends Migration
      */
     public function up()
     {
-        Schema::create('shopping_pockets', function (Blueprint $table) {
+        Schema::create('shopping_wallets', function (Blueprint $table) {
             $table->engine='InnoDB';
             $table->BigIncrements('id');
-            $table->float('total_price');
-            $table->morphs('pocketable');
+            $table->float('total_money');
+            $table->morphs('walletable');
             $table->integer('status')->default(0);
             $table->timestamps();
         });
@@ -30,6 +30,6 @@ class CreateShoppingPocketsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('shopping_pockets');
+        Schema::dropIfExists('shopping_wallets');
     }
 }

@@ -50,7 +50,8 @@ Route::group(['namespace' => 'API'], function(){
     Route::get('get_student_program', 'RegistrationPlanController@get_student_program');
 
     Route::get('exam', 'ExamController@index');
-    Route::get('mark', 'ExamController@mark');
+    //Route::get('mark', 'ExamController@mark');
+    Route::get('all_products', 'ShoppingController@all_products');
 });
 
 Route::group(['middleware' => ['auth:student','jwt.auth'], 'namespace' => 'API'],function ()
