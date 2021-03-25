@@ -16,15 +16,18 @@ class CreateShoppingProductsTable extends Migration
         Schema::create('shopping_products', function (Blueprint $table) {
             $table->engine='InnoDB';
             $table->BigIncrements('id');
-            $table->unsignedBigInteger('product_attribute_id');
-            $table->foreign('product_attribute_id')->references('id')->on('shopping_product_attributes')->onupdate('cascade')->ondelete('set null');
             $table->string('name')->unique();
             $table->string('barcode');
             $table->text('description')->nullable();
             $table->float('price');
             $table->string('image');
+            $table->integer('item_order')->nullable();
             $table->integer('status')->default(0);
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
+            $table->integer('deleted_by')->nullable();
+            $table->softDeletes();
         });
     }
 

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateShoppingWalletsTable extends Migration
+class CreateStudentsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,18 @@ class CreateShoppingWalletsTable extends Migration
      */
     public function up()
     {
-        Schema::create('shopping_wallets', function (Blueprint $table) {
-            $table->engine='InnoDB';
-            $table->BigIncrements('id');
-            $table->float('total_money');
-            $table->morphs('walletable');
+
+        Schema::create('students', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('image')->nullable();
+            $table->text('cart_num')->nullable();
+            $table->text('pincode')->nullable();
+
+            $table->string('username')->nullable();
+            $table->string('password')->nullable();
+            $table->integer('password_status')->default(0);
             $table->integer('item_order')->nullable();
-            $table->integer('status')->default(0);
+            $table->integer('status')->default(1);
             $table->integer('created_by')->nullable();
             $table->integer('updated_by')->nullable();
             $table->timestamps();
@@ -35,6 +40,6 @@ class CreateShoppingWalletsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('shopping_wallets');
+        Schema::dropIfExists('students');
     }
 }

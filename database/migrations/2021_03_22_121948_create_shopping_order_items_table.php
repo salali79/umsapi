@@ -20,8 +20,15 @@ class CreateShoppingOrderItemsTable extends Migration
             $table->foreign('order_id')->references('id')->on('shopping_orders')->onupdate('cascade')->ondelete('set null');
             $table->unsignedBigInteger('product_id')->unsigned()->nullable()->default(null);
             $table->foreign('product_id')->references('id')->on('shopping_products')->onupdate('cascade')->ondelete('set null');
+            $table->unsignedBigInteger('wallet_id')->unsigned()->nullable()->default(null);
+            $table->foreign('wallet_id')->references('id')->on('shopping_wallets')->onupdate('cascade')->ondelete('set null');
+            $table->integer('item_order')->nullable();
             $table->integer('status')->default(0);
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
+            $table->integer('deleted_by')->nullable();
+            $table->softDeletes();
         });
     }
 

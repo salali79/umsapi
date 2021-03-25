@@ -4,19 +4,21 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ShoppingProduct extends Model
+class ShoppingProduct extends AppModel
 {
     protected $table='shopping_products';
     protected $primaryKey='id';
-    protected $fillable=['product_attribute_id', 'name', 'barcode',
-     'name', 'description', 'price', 'image', 'status'];
+    protected $fillable=['name', 'barcode',
+     'name', 'description', 'price', 'image', 'status'
+     ,'created_by','updated_by','deleted_by'];
 
-    public function product_attribute()
+
+    public function order_items()
     {
-        return $this->belongsTo(ShoppingProductAttribute::class,'product_attribute_id','id');
+        return $this->hasMany(ShoppingOrderItem::class,'product_id','id');
     }
-    public function store()
+    public function attributes()
     {
-        return $this->hasOneThrough(ShoppingStore::class, ShoppingDepartment::class);
+        return $this->hasMany(ShoppingProductAttribute::class,'product_id','id');
     }
 }

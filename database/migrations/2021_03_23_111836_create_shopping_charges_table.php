@@ -20,8 +20,13 @@ class CreateShoppingChargesTable extends Migration
             $table->foreign('wallet_id')->references('id')->on('shopping_wallets')->onupdate('cascade')->ondelete('set null');
             $table->float('value');
             $table->date('date');
+            $table->integer('item_order')->nullable();
             $table->integer('status')->default(0);
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
+            $table->integer('deleted_by')->nullable();
+            $table->softDeletes();
         });
     }
 

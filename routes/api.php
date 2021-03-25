@@ -51,7 +51,6 @@ Route::group(['namespace' => 'API'], function(){
 
     Route::get('exam', 'ExamController@index');
     //Route::get('mark', 'ExamController@mark');
-    Route::get('all_products', 'ShoppingController@all_products');
 });
 
 Route::group(['middleware' => ['auth:student','jwt.auth'], 'namespace' => 'API'],function ()
@@ -61,15 +60,6 @@ Route::group(['middleware' => ['auth:student','jwt.auth'], 'namespace' => 'API']
     Route::get('student', 'StudentController@getAuthUser');
 });
 
-/*Route::fallback(function(){
-    return response()->json([
-        'status' => 'error',
-        'message' => 'Route not found',
-        'data' => [],
-        'action'=> ''
-    ], 404);
-});*/
-
 Route::get('handle/{academic_number}', 'API\RegistrationPlanController@handle');
 Route::get('show_student_registered/{faculty_id}/{department_id}', 'API\RegistrationPlanController@show_student_registered');
 Route::post('do_handle/{academic_number}', 'API\RegistrationPlanController@do_handle');
@@ -77,3 +67,18 @@ Route::get('do_handle_all/{faculty_id}/{department_id}', 'API\RegistrationPlanCo
 Route::get('get_client_ip', 'API\StudentController@getClientIPaddress');
 
 Route::get('get_last_registration_plan_id', 'API\RegistrationPlanController@get_last_registration_plan_id');
+
+
+/////////////////////--- DIGITAL WALLET ---/////////////////////
+Route::post('saler_login', 'API\SalesOfficerController@login');
+Route::group(['middleware' => ['auth:sales_officer','jwt.auth'], 'namespace' => 'API'],function ()
+{
+    Route::get('saler_logout', 'API\SalesOfficerController@logout');
+});
+
+Route::get('all_products', 'API\ShoppingController@all_products');
+Route::get('products', 'API\ShoppingController@products');
+Route::post('checkout', 'API\ShoppingController@checkout');
+Route::post('add_order_item', 'API\ShoppingController@add_order_item');
+Route::post('delete_order_item', 'API\ShoppingController@delete_order_item');
+Route::post('charge_wallet' , 'API\ShoppingController@charge_wallet');

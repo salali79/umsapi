@@ -52,6 +52,12 @@ return [
             'provider' => 'students',
             'hash' => false,
         ],
+
+        'sales_officer' => [
+            'driver' => 'jwt',
+            'provider' => 'sales_officers',
+            'hash' => false,
+        ],
     ],
 
     /*
@@ -82,6 +88,11 @@ return [
             'model' => App\Models\Student::class,
         ],
 
+        'sales_officers' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\SalesOfficer::class,
+        ],
+        
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',
@@ -112,6 +123,12 @@ return [
         ],
         'students' => [
             'provider' => 'students',
+            'table' => 'password_resets',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+        'sales_officers' => [
+            'provider' => 'sales_officers',
             'table' => 'password_resets',
             'expire' => 60,
             'throttle' => 60,

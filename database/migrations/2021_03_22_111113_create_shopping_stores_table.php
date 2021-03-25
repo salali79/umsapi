@@ -20,8 +20,13 @@ class CreateShoppingStoresTable extends Migration
             $table->unsignedBigInteger('store_type_id');
             $table->foreign('store_type_id')->references('id')->on('shopping_store_types')->onupdate('cascade')->ondelete('set null');
             $table->string('image');
+            $table->integer('item_order')->nullable();
             $table->integer('status')->default(0);
+            $table->integer('created_by')->nullable();
+            $table->integer('updated_by')->nullable();
             $table->timestamps();
+            $table->integer('deleted_by')->nullable();
+            $table->softDeletes();
         });
     }
 

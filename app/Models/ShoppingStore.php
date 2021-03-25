@@ -4,18 +4,26 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ShoppingStore extends Model
+class ShoppingStore extends AppModel
 {
     protected $table='shopping_stores';
     protected $primaryKey='id';
-    protected $fillable=['title','type','image', 'status', 'store_type_id'];
+    protected $fillable=['title','store_type_id', 'image', 'status'
+    ,'created_by','updated_by','deleted_by'];
 
 
-    public function departments(){
-        return $this->hasMany(ShoppingDepartment::class,'store_id','id');
+    public function store_type()
+    {
+        return $this->belongsTo(ShoppingStoreType::class,'store_type_id','id');
     }
 
-    public function type(){
-        return $this->belongsTo(ShoppingStoreType::class,'store_type_id','id');
+    public function product_attributes()
+    {
+        return $this->hasMany(ShoppingProductAttribute::class,'store_id','id');
+    }
+
+    public function sallers()
+    {
+        return $this->hasMany(SalesOfficer::class,'store_id','id');
     }
 }
