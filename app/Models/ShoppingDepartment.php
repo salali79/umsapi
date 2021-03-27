@@ -21,4 +21,8 @@ class ShoppingDepartment extends AppModel
         return $this->hasMany(ShoppingProductAttribute::class,'department_id','id');
     }
 
+    /*public function products()
+    {
+        return $this->hasMany(ShoppingProduct::class, ShoppingProductAttribute::class,'department_id', 'product_id', 'id','id');
+    }*/
 }

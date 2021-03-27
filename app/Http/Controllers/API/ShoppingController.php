@@ -37,7 +37,7 @@ class ShoppingController extends Controller
     public function products(Request $request)
     {
         $saller = $this->current_sales_officer($request);
-        if($request->has('department_id'))
+        /*if($request->has('department_id'))
         {
             $products_attributes = $saller->store->product_attributes;
             $filtered_products = $products_attributes->filter(function ($product_attribute) use($request){
@@ -53,15 +53,27 @@ class ShoppingController extends Controller
             $products = $saller->store->product_attributes->map( function($product_attribute){
                 return $product_attribute->product;
             });
-        }
+        }*/
 
-        $products->map( function($product){
-            $product->image = public_path('images\\'.$product->image);
-        });
+        $departments = $saller->store->store_type->departments;
+        foreach($departments as $department)
+        {
+            $product_attributes = $department->product_attributes;
+            $department_products = $product_attributes->map( function($product_attribute){
+                    return $product_attribute->product;
+            });
+            $department_products->map( function($product){
+                $product->image = public_path('images\\'.$product->image);
+            });
+
+            $department['products'] = $department_products;
+
+            unset($department['product_attributes']);
+        }
 
         return response()->json([
             'status' => 'success',
-            'products' => $products
+            'departments' => $departments
         ]);
     }
     public function get_std_by_cart(Request $request)
@@ -175,7 +187,7 @@ class ShoppingController extends Controller
                     }
                     $old_price = $curr_order->total_price;
                     $curr_order->update([
-                        'total_price' => $old_price-$prev_item->product->price*$quantity
+                        'total_price' => $old_price-$prev_item->product->price * $quantity
                     ]);
                     if($curr_order->total_price <= 0)
                     {
@@ -293,6 +305,40 @@ class ShoppingController extends Controller
                 'message' => 'لا يوجد مال كافي بالبطاقة'
             ]);
         }
+    }
+    public function delete_order(Request $request)
+    {
+        $res = $this->get_std_by_cart($request);
+        $res = json_decode($res->getContent(), true);
+        if($res['status'] == 'error')
+        {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'تأكد من صحة الارقام المدخلة'
+            ]);
+        }
+        else             
+        {
+            $std = Student::where('cart_num', $request->cart_num)
+            ->where('pincode', $request->pincode)
+            ->first();
+        }
+
+        try {
+            $wallet = $std->walletable;
+            $curr_order = ShoppingOrder::findOrFail($request->order_id);
+        } catch (ModelNotFoundException $ex) 
+        {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'الطلبية غير متوفرة'
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'تم حذف الطلبية'
+        ]);
     }
     public function checkout(Request $request)
     {
