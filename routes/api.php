@@ -70,10 +70,10 @@ Route::get('get_last_registration_plan_id', 'API\RegistrationPlanController@get_
 
 
 /////////////////////--- DIGITAL WALLET ---/////////////////////
-Route::post('saler_login', 'API\SalesOfficerController@login');
+Route::post('seller_login', 'API\SalesOfficerController@login');
 Route::group(['middleware' => ['auth:sales_officer','jwt.auth'], 'namespace' => 'API'],function ()
 {
-    Route::get('saler_logout', 'API\SalesOfficerController@logout');
+    Route::get('seller_logout', 'SalesOfficerController@logout');
 });
 
 
@@ -82,3 +82,4 @@ Route::post('checkout', 'API\ShoppingController@checkout');
 Route::post('add_order_item', 'API\ShoppingController@add_order_item');
 Route::post('delete_order_item', 'API\ShoppingController@delete_order_item');
 Route::post('charge_wallet' , 'API\ShoppingController@charge_wallet');
+Route::get('wallet_info', 'API\StudentProfileController@wallet_info');

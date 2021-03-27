@@ -11,6 +11,7 @@ use App\Models\ShoppingOrderItem;
 use App\Models\ShoppingOrder;
 use App\Models\Student;
 use App\Models\ShoppingWallet;
+use App\Models\ShoppingCharge;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Carbon;
 use JWTAuth;
@@ -76,7 +77,7 @@ class ShoppingController extends Controller
         {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Cart number or pincode is wrong'
+                'message' => 'تأكد من صحة الارقام المدخلة'
             ]);
         }
         else             
@@ -99,6 +100,16 @@ class ShoppingController extends Controller
                 'total_money' => $old_money + $request->total_money
             ]);
         }
+        $charge = new ShoppingCharge([
+            'wallet_id' => $w->id,
+            'value' => $request->total_money,
+            'date' => \Carbon\Carbon::now()
+        ]);
+        $charge->save();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'تم شحن البطاقة بنجاح'
+        ]);
     }
     public function delete_order_item(Request $request)
     {
@@ -108,7 +119,7 @@ class ShoppingController extends Controller
         {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Cart number or pincode is wrong'
+                'message' => 'تأكد من صحة الارقام المدخلة'
             ]);
         }
         else             
@@ -150,20 +161,20 @@ class ShoppingController extends Controller
                     $prev_item->forceDelete();
                     return response()->json([
                         'status' => 'success',
-                        'message' => 'item order deleted successfully'
+                        'message' => 'تم حذف المنتج من الطلبية'
                     ]);
                 }
             }
             return response()->json([
                 'status' => 'error',
-                'message' => 'item order doesn\'t exist'
+                'message' => 'المنتج غير موجود ضمن الطلبية'
             ]);
         }
         else
         {
             return response()->json([
                 'status' => 'error',
-                'message' => 'the user deosn\'t have any active order'
+                'message' => 'المستخدم لا يملك اي طلبية'
             ]);
         }
     }
@@ -175,7 +186,7 @@ class ShoppingController extends Controller
         {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Cart number or pincode is wrong'
+                'message' => 'تأكد من صحة الارقام المدخلة'
             ]);
         }
         else             
@@ -233,14 +244,14 @@ class ShoppingController extends Controller
             ]);
             return response()->json([
                 'status' => 'success',
-                'message' => 'add item order'
+                'message' => 'تم اضافة المنتج للطلبية'
             ]);
         }
         else
         {
             return response()->json([
                 'status' => 'error',
-                'message' => 'the user\'s wallet don\'t have enough money'
+                'message' => 'لا يوجد مال كافي بالبطاقة'
             ]);
         }
     }
@@ -252,7 +263,7 @@ class ShoppingController extends Controller
         {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Cart number or pincode is wrong'
+                'message' => 'تأكد من صحة الارقام المدخلة'
             ]);
         }
         else             
@@ -278,7 +289,7 @@ class ShoppingController extends Controller
         {
             return response()->json([
                 'status' => 'error',
-                'message' => 'the user deosn\'t have any active order'
+                'message' => 'المستخدم لا يملك اي طلبية'
             ]);
         }
 
@@ -306,7 +317,7 @@ class ShoppingController extends Controller
             ]);
             return response()->json([
                 'status' => 'success',
-                'message' => 'checkout order'
+                'message' => 'تمت عملية الدفع بنجاح'
             ]);
         }
         else{
@@ -314,7 +325,7 @@ class ShoppingController extends Controller
             $curr_order->forceDelete();
             return response()->json([
                 'status' => 'error',
-                'message' => 'the user\'s wallet doesn\'t have enough money so we delete the order'
+                'message' => 'لا يوجد مال كافي وتم حذف الطلبية'
             ]);
         }
     }
