@@ -76,7 +76,7 @@ Route::group(['middleware' => ['auth:sales_officer','jwt.auth'], 'namespace' => 
     Route::get('saler_logout', 'API\SalesOfficerController@logout');
 });
 
-Route::get('all_products', 'API\ShoppingController@all_products');
+
 Route::get('products', 'API\ShoppingController@products');
 Route::post('checkout', 'API\ShoppingController@checkout');
 Route::post('add_order_item', 'API\ShoppingController@add_order_item');

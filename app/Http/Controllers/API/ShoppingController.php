@@ -33,58 +33,16 @@ class ShoppingController extends Controller
         $sales_officer = auth('sales_officer')->user();
         return $sales_officer;
     }
-    public function all_products(Request $request){
-
-        $stores = ShoppingStore::where('status','1')->paginate(10);
-        $departments = ShoppingDepartment::where('status','1')->paginate(10);
-        $products = ShoppingProduct::with(['attributes'])->paginate(10);
-        
-        $res = [];
-        if($request->has('department_id'))
-        {
-            foreach($products as $product)
-            {
-                foreach($product->attributes as $attribute)
-                {
-                    if($attribute->department_id == $request->department_id)
-                    {
-                        array_push($res, $product);
-                        break;
-                    }
-                }
-            }
-            $products = $res;
-        }
-        if($request->has('store_id'))
-        {
-            foreach($products as $product)
-            {
-                foreach($product->attributes as $attribute)
-                {
-                    if($attribute->store_id == $request->store_id)
-                    {
-                        array_push($res, $product);
-                        break;
-                    }
-                }
-            }
-            $products = $res;
-        }
-
-        return response()->json([
-            'status' => 'success',
-            'stores' => $stores,
-            'departments' => $departments,
-            'products' => $products
-        ]);
-    }
     public function products(Request $request)
     {
         $saller = $this->current_sales_officer($request);
         $products = $saller->store->product_attributes->map( function($product_attribute){
-            return $product_attribute->product->name;
+            return $product_attribute->product;
         });
-        
+        $products->map( function($product){
+            $product->image = public_path('images\\'.$product->image);
+        });
+
         return response()->json([
             'status' => 'success',
             'products' => $products
@@ -181,14 +139,11 @@ class ShoppingController extends Controller
                 if($prev_item->product_id == $request->product_id)
                 {
                     //$curr_order->order_items()->delete($prev_item);
-                    //$id = $curr_order->id;
                     $old_price = $curr_order->total_price;
-                    //$curr_order = ShoppingOrder::find($id);
                     $curr_order->update([
                         'total_price' => $old_price-$prev_item->product->price
                     ]);
-                    //$curr_order->total_price -= $prev_item->product->price;
-                    if($curr_order->$total_price <= 0)
+                    if($curr_order->total_price <= 0)
                     {
                         $curr_order->forceDelete();
                     }
@@ -245,7 +200,7 @@ class ShoppingController extends Controller
         ///--- Check if the product already chosen ---///
         if(!is_null($curr_order))
         {
-            $prev_items = $curr_order->order_items;
+            /*$prev_items = $curr_order->order_items;
             foreach($prev_items as $prev_item)
             {
                 if($prev_item->product_id == $request->product_id)
@@ -255,7 +210,8 @@ class ShoppingController extends Controller
                         'message' => 'item order added already'
                     ]);
                 }
-            }
+            }*/
+
         }
         else
         {

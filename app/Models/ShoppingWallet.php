@@ -26,4 +26,8 @@ class ShoppingWallet extends AppModel
         return $this->hasMany(ShoppingOrder::class,'wallet_id','id');
     }
 
+    public function active_orders()
+    {
+        return $this->hasMany(ShoppingOrder::class,'wallet_id','id')->where('status', '0');
+    }
 }
