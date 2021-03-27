@@ -56,6 +56,9 @@ class ShoppingController extends Controller
         }*/
 
         $departments = $saller->store->store_type->departments;
+        $departments->map( function($department){
+            $department->image = public_path('images\\'.$department->image);
+        });
         foreach($departments as $department)
         {
             $product_attributes = $department->product_attributes;
