@@ -37,9 +37,24 @@ class ShoppingController extends Controller
     public function products(Request $request)
     {
         $saller = $this->current_sales_officer($request);
-        $products = $saller->store->product_attributes->map( function($product_attribute){
-            return $product_attribute->product;
-        });
+        if($request->has('department_id'))
+        {
+            $products_attributes = $saller->store->product_attributes;
+            $filtered_products = $products_attributes->filter(function ($product_attribute) use($request){
+                return $product_attribute->department_id == $request->department_id;
+            });
+            $filtered_products->all();
+            $products = $filtered_products->map( function($product_attribute) use($request){
+                return $product_attribute->product;
+            });
+        }
+        else
+        {
+            $products = $saller->store->product_attributes->map( function($product_attribute){
+                return $product_attribute->product;
+            });
+        }
+
         $products->map( function($product){
             $product->image = public_path('images\\'.$product->image);
         });
@@ -113,6 +128,7 @@ class ShoppingController extends Controller
     }
     public function delete_order_item(Request $request)
     {
+        $quantity = $request->has('quantity') ? $request->quantity : 1;
         $res = $this->get_std_by_cart($request);
         $res = json_decode($res->getContent(), true);
         if($res['status'] == 'error')
@@ -150,15 +166,29 @@ class ShoppingController extends Controller
                 if($prev_item->product_id == $request->product_id)
                 {
                     //$curr_order->order_items()->delete($prev_item);
+                    if($prev_item->quantity < $quantity)
+                    {
+                        return response()->json([
+                            'status' => 'error',
+                            'message' => 'الطلبية لا تحوي هذه الكمية من المنتج'
+                        ]);
+                    }
                     $old_price = $curr_order->total_price;
                     $curr_order->update([
-                        'total_price' => $old_price-$prev_item->product->price
+                        'total_price' => $old_price-$prev_item->product->price*$quantity
                     ]);
                     if($curr_order->total_price <= 0)
                     {
                         $curr_order->forceDelete();
                     }
-                    $prev_item->forceDelete();
+                    if($prev_item->quantity == 1)
+                    {
+                        $prev_item->forceDelete();
+                    }
+                    else
+                    {
+                        $prev_item->decrement('quantity', $quantity);
+                    }
                     return response()->json([
                         'status' => 'success',
                         'message' => 'تم حذف المنتج من الطلبية'
@@ -180,6 +210,7 @@ class ShoppingController extends Controller
     }
     public function add_order_item(Request $request)
     {
+        $quantity = $request->has('quantity') ? $request->quantity : 1;
         $res = $this->get_std_by_cart($request);
         $res = json_decode($res->getContent(), true);
         if($res['status'] == 'error')
@@ -208,20 +239,20 @@ class ShoppingController extends Controller
             }
         }
 
+        $already_exist = null;
         ///--- Check if the product already chosen ---///
         if(!is_null($curr_order))
         {
-            /*$prev_items = $curr_order->order_items;
+            $prev_items = $curr_order->order_items;
             foreach($prev_items as $prev_item)
             {
                 if($prev_item->product_id == $request->product_id)
                 {
-                    return response()->json([
-                        'status' => 'error',
-                        'message' => 'item order added already'
-                    ]);
+                    $item = $prev_item;
+                    $already_exist = 1;
+                    break;
                 }
-            }*/
+            }
 
         }
         else
@@ -231,13 +262,21 @@ class ShoppingController extends Controller
         }
 
         $product = ShoppingProduct::where('id', $request->product_id)->first();
-        $item = new ShoppingOrderItem([
-            'product_id' => $product->id
-        ]);
-        $product_price = $product->price;
+        if(is_null($already_exist))
+        {
+            $item = new ShoppingOrderItem([
+                'product_id' => $product->id,
+                'quantity' => $quantity
+            ]);
+        }
+        $product_price = $product->price * $quantity;
         $order_price = $curr_order->total_price;
         if(($wallet->total_money - ($order_price + $product_price)) >= 0)
         {
+            if(!is_null($already_exist))
+            {
+                $item->increment('quantity',$quantity);
+            }
             $curr_order->order_items()->save($item);
             $curr_order->update([
                 'total_price' => $order_price + $product_price
@@ -297,7 +336,8 @@ class ShoppingController extends Controller
         $items = $curr_order->order_items;
         foreach($items as $item)
         {
-            $total_price += ShoppingProduct::where('id', $item->product_id)->first()->price;
+            $total_price += 
+            $item->quantity * ShoppingProduct::where('id', $item->product_id)->first()->price;
         }
 
         $curr_order->update([

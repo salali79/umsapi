@@ -10,12 +10,12 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class Student extends Authenticatable implements JWTSubject
 {
-    //use Translatable ;
+    use Translatable ;
     use Notifiable;
 
-    //protected $with = ['translations'];
+    protected $with = ['translations'];
 
-    /*protected $translatedAttributes =
+    protected $translatedAttributes =
      ['first_name','middle_name',
      'last_name','mother_name',
      'birthplace','gender',
@@ -102,7 +102,7 @@ class Student extends Authenticatable implements JWTSubject
      }
      public function getBirthday(){
         /*birthday->format('Y/m/d')*/
-    /*     $date = new Carbon ($this->birthday);
+         $date = new Carbon ($this->birthday);
          return $date->day.'/'.$date->month.'/'.$date->year;
      }
      public function semesterTranscript(){
@@ -191,7 +191,7 @@ class Student extends Authenticatable implements JWTSubject
         return $this->hasMany(StudentModifiedCourse::class);
     }
     /*return sum of modified courses hours */
-    /*public function modifiedCoursesHours(){
+    public function modifiedCoursesHours(){
        return $mod_hours = array_sum($this->modifiedCourses->map(function ($m_courses){
             $hours = $this->StudentStudyPlan()->courseDetails($m_courses->course_id)->credit_hours;
             return $hours ;
@@ -224,7 +224,7 @@ class Student extends Authenticatable implements JWTSubject
         $student_finance_hours = $student_finance ? $student_finance->hours : 0 ;
         return $student_finance_hours;
 
-    }*/
+    }
     public function getJWTIdentifier()
     {
         return $this->getKey();

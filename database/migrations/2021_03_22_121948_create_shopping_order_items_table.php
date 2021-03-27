@@ -22,6 +22,7 @@ class CreateShoppingOrderItemsTable extends Migration
             $table->foreign('product_id')->references('id')->on('shopping_products')->onupdate('cascade')->ondelete('set null');
             $table->unsignedBigInteger('wallet_id')->unsigned()->nullable()->default(null);
             $table->foreign('wallet_id')->references('id')->on('shopping_wallets')->onupdate('cascade')->ondelete('set null');
+            $table->integer('quantity')->default(1);
             $table->integer('item_order')->nullable();
             $table->integer('status')->default(0);
             $table->integer('created_by')->nullable();

@@ -8,8 +8,8 @@ class ShoppingOrderItem extends AppModel
 {
     protected $table='shopping_order_items';
     protected $primaryKey='id';
-    protected $fillable=['order_id', 'product_id', 'wallet_id','status'
-    ,'created_by','updated_by','deleted_by'];
+    protected $fillable=['order_id', 'product_id', 'wallet_id', 'quantity'
+    ,'status','created_by','updated_by','deleted_by'];
 
     public function product()
     {
