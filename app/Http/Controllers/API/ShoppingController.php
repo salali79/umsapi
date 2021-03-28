@@ -55,7 +55,7 @@ class ShoppingController extends Controller
             });
         }*/
 
-        $departments = $saller->store->store_type->departments;
+        $departments = $saller->store->departments;
         $departments->map( function($department){
             $department->image = public_path('images\\'.$department->image);
         });

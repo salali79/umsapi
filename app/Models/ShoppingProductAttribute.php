@@ -8,7 +8,7 @@ class ShoppingProductAttribute extends AppModel
 {
     protected $table='shopping_product_attributes';
     protected $primaryKey='id';
-    protected $fillable=['product_id', 'department_id', 'store_id', 'stock', 'status'
+    protected $fillable=['product_id', 'department_id', 'store_type_id', 'stock', 'status'
     ,'created_by','updated_by','deleted_by'];
 
 
@@ -22,7 +22,7 @@ class ShoppingProductAttribute extends AppModel
     }
     public function store()
     {
-        return $this->belongsTo(ShoppingStore::class,'store_id','id');
+        return $this->belongsTo(ShoppingStoreType::class,'store_type_id','id');
     }
 
 }

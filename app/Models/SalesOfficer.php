@@ -14,7 +14,7 @@ class SalesOfficer extends Authenticatable implements JWTSubject
 
     protected $table='sales_officers';
     protected $primaryKey='id';
-    protected $fillable=['name', 'username', 'password', 'store_id', 'status'
+    protected $fillable=['name', 'username', 'password', 'store_type_id', 'status'
                         ,'created_by','updated_by','deleted_by'];
 
     protected $hidden = [
@@ -31,7 +31,7 @@ class SalesOfficer extends Authenticatable implements JWTSubject
     }
     public function store()
     {
-        return $this->belongsTo(ShoppingStore::class,'store_id','id');
+        return $this->belongsTo(ShoppingStoreType::class,'store_type_id','id');
     }
 }
 

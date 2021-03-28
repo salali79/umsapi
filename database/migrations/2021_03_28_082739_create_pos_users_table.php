@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSalesOfficersTable extends Migration
+class CreatePosUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,17 +13,17 @@ class CreateSalesOfficersTable extends Migration
      */
     public function up()
     {
-        Schema::create('sales_officers', function (Blueprint $table) {
-            $table->engine='InnoDB';
-            $table->BigIncrements('id');
+        Schema::create('pos_users', function (Blueprint $table) {
+            $table->id();
             $table->string('name');
             $table->string('username')->unique();
+            $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->unsignedBigInteger('store_type_id');
-            $table->foreign('store_type_id')->references('id')->on('shopping_store_types')->onupdate('cascade')->ondelete('set null');
             $table->rememberToken();
-            $table->integer('item_order')->nullable();
-            $table->integer('status')->default(0);
+            $table->integer('status')->default(1);
+            $table->integer('role_id')->nullable();
+            $table->integer('store_id')->nullable();
             $table->integer('created_by')->nullable();
             $table->integer('updated_by')->nullable();
             $table->timestamps();
@@ -39,6 +39,6 @@ class CreateSalesOfficersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sales_officers');
+        Schema::dropIfExists('pos_users');
     }
 }

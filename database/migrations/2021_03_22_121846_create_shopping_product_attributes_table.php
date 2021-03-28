@@ -20,8 +20,8 @@ class CreateShoppingProductAttributesTable extends Migration
             $table->foreign('product_id')->references('id')->on('shopping_products')->onupdate('cascade')->ondelete('set null');
             $table->unsignedBigInteger('department_id');
             $table->foreign('department_id')->references('id')->on('shopping_departments')->onupdate('cascade')->ondelete('set null');
-            $table->unsignedBigInteger('store_id');
-            $table->foreign('store_id')->references('id')->on('shopping_stores')->onupdate('cascade')->ondelete('set null');
+            $table->unsignedBigInteger('store_type_id');
+            $table->foreign('store_type_id')->references('id')->on('shopping_store_types')->onupdate('cascade')->ondelete('set null');
             $table->integer('stock')->default(1);
             $table->integer('item_order')->nullable();
             $table->integer('status')->default(0);
