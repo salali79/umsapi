@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\ShoppingSalesOfficer;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Http\Requests\ResetPasswordRequest as ResetPasswordRequest;
+use JWTAuth;
 
 class SalesOfficerController extends Controller
 {
@@ -76,4 +78,30 @@ class SalesOfficerController extends Controller
         'action' => 'response'
       ]);
     }
+    public function reset_password(ResetPasswordRequest $request) {
+        $validated = $request->validated();
+        $password = $request->password;
+        $sales_officer = $this->current_sales_officer($request);
+        $not_diff = \Hash::check($request->password , $sales_officer->password );
+        if($not_diff==1)
+        {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'قم بادخال كلمة مرور مختلفة'
+            ]);
+        }
+        else
+        {
+            $sales_officer = ShoppingSalesOfficer::where('username', auth('sales_officer')->user()->username)->update([
+                'password' => bcrypt($request->password),
+                'updated_by' => auth('sales_officer')->user()->id
+            ]);
+
+            auth('sales_officer')->attempt(['username' => auth('sales_officer')->user()->username, 'password' => $request->password], true);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'تم اعادة تعيين كلمة المرور',
+            ]);
+        }
+}
 }
