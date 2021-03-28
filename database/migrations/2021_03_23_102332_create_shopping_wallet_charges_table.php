@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSalesOfficersTable extends Migration
+class CreateShoppingWalletChargesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,13 @@ class CreateSalesOfficersTable extends Migration
      */
     public function up()
     {
-        Schema::create('sales_officers', function (Blueprint $table) {
+        Schema::create('shopping_wallet_charges', function (Blueprint $table) {
             $table->engine='InnoDB';
             $table->BigIncrements('id');
-            $table->string('name');
-            $table->string('username')->unique();
-            $table->string('password');
-            $table->unsignedBigInteger('store_type_id');
-            $table->foreign('store_type_id')->references('id')->on('shopping_store_types')->onupdate('cascade')->ondelete('set null');
-            $table->rememberToken();
+            $table->unsignedBigInteger('wallet_id');
+            $table->foreign('wallet_id')->references('id')->on('shopping_wallets')->onupdate('cascade')->ondelete('set null');
+            $table->float('value');
+            $table->date('date');
             $table->integer('item_order')->nullable();
             $table->integer('status')->default(0);
             $table->integer('created_by')->nullable();
@@ -39,6 +37,6 @@ class CreateSalesOfficersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sales_officers');
+        Schema::dropIfExists('shopping_wallet_charges');
     }
 }

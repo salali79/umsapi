@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ShoppingCharge extends AppModel
+class ShoppingWalletCharge extends Model
 {
-    protected $table='shopping_charges';
+    protected $table='shopping_wallet_charges';
     protected $primaryKey='id';
     protected $fillable=['wallet_id', 'value', 'date', 'status'
     ,'created_by','updated_by','deleted_by'];

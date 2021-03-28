@@ -90,7 +90,7 @@ return [
 
         'sales_officers' => [
             'driver' => 'eloquent',
-            'model' => App\Models\SalesOfficer::class,
+            'model' => App\Models\ShoppingSalesOfficer::class,
         ],
         
         // 'users' => [

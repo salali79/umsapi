@@ -18,7 +18,7 @@ class ShoppingWallet extends AppModel
 
     public function charges()
     {
-        return $this->hasMany(ShoppingCharge::class,'wallet_id','id');
+        return $this->hasMany(ShoppingWalletCharge::class,'wallet_id','id');
     }
 
     public function orders()

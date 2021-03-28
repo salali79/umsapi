@@ -21,6 +21,8 @@ class CreateShoppingProductsTable extends Migration
             $table->text('description')->nullable();
             $table->float('price');
             $table->string('image');
+            $table->unsignedBigInteger('department_id');
+            $table->foreign('department_id')->references('id')->on('shopping_departments')->onupdate('cascade')->ondelete('set null');
             $table->integer('item_order')->nullable();
             $table->integer('status')->default(0);
             $table->integer('created_by')->nullable();

@@ -8,13 +8,13 @@ use Astrotomic\Translatable\Translatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class SalesOfficer extends Authenticatable implements JWTSubject
+class ShoppingSalesOfficer extends Authenticatable implements JWTSubject
 {
     use Notifiable;
 
-    protected $table='sales_officers';
+    protected $table='shopping_sales_officers';
     protected $primaryKey='id';
-    protected $fillable=['name', 'username', 'password', 'store_type_id', 'status'
+    protected $fillable=['name', 'username', 'password', 'store_id', 'status'
                         ,'created_by','updated_by','deleted_by'];
 
     protected $hidden = [
@@ -31,7 +31,7 @@ class SalesOfficer extends Authenticatable implements JWTSubject
     }
     public function store()
     {
-        return $this->belongsTo(ShoppingStoreType::class,'store_type_id','id');
+        return $this->belongsTo(ShoppingStore::class,'store_id','id');
     }
 }
 

@@ -16,6 +16,9 @@ class ShoppingStore extends AppModel
     {
         return $this->belongsTo(ShoppingStoreType::class,'store_type_id','id');
     }
-
+    public function sallers()
+    {
+        return $this->hasMany(ShoppingSalesOfficer::class,'store_id','id');
+    }
 
 }

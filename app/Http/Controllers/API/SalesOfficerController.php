@@ -4,7 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\SalesOfficer;
+use App\Models\ShoppingSalesOfficer;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class SalesOfficerController extends Controller
@@ -31,7 +31,7 @@ class SalesOfficerController extends Controller
             $password = $request->password;
             $username = $request->username;
             $credentials = ['username' => $username , 'password' => $password];
-            $sales_officer = SalesOfficer::where('username',$username)->firstOrFail();
+            $sales_officer = ShoppingSalesOfficer::where('username',$username)->firstOrFail();
             {
                 if (!$token = auth('sales_officer')->attempt($credentials)) {
                     return response()->json([
@@ -42,7 +42,7 @@ class SalesOfficerController extends Controller
                          401
                     ]);
                 }
-                $sales_officer = SalesOfficer::where('username',$username)->firstOrFail();
+                $sales_officer = ShoppingSalesOfficer::where('username',$username)->firstOrFail();
                 return $this->respondWithToken($token,$sales_officer);
             }
         } catch (ModelNotFoundException $ex) { 

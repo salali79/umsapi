@@ -55,11 +55,15 @@ class ShoppingController extends Controller
             });
         }*/
 
-        $departments = $saller->store->departments;
+        $departments = $saller->store->store_type->departments;
         $departments->map( function($department){
             $department->image = public_path('images\\'.$department->image);
         });
-        foreach($departments as $department)
+        $departments->map( function($department){
+            $department->with(['products']);
+        });
+
+        /*foreach($departments as $department)
         {
             $product_attributes = $department->product_attributes;
             $department_products = $product_attributes->map( function($product_attribute){
@@ -72,7 +76,7 @@ class ShoppingController extends Controller
             $department['products'] = $department_products;
 
             unset($department['product_attributes']);
-        }
+        }*/
 
         return response()->json([
             'status' => 'success',
