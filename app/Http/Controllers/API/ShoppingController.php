@@ -11,7 +11,7 @@ use App\Models\ShoppingOrderItem;
 use App\Models\ShoppingOrder;
 use App\Models\Student;
 use App\Models\ShoppingWallet;
-use App\Models\ShoppingCharge;
+use App\Models\ShoppingWalletCharge;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Carbon;
 use JWTAuth;
@@ -58,9 +58,6 @@ class ShoppingController extends Controller
         $departments = $saller->store->store_type->departments;
         $departments->map( function($department){
             $department->image = public_path('images\\'.$department->image);
-        });
-        $departments->map( function($department){
-            $department->with(['products']);
         });
 
         /*foreach($departments as $department)
@@ -134,7 +131,7 @@ class ShoppingController extends Controller
                 'total_money' => $old_money + $request->total_money
             ]);
         }
-        $charge = new ShoppingCharge([
+        $charge = new ShoppingWalletCharge([
             'wallet_id' => $w->id,
             'value' => $request->total_money,
             'date' => \Carbon\Carbon::now()
@@ -333,7 +330,12 @@ class ShoppingController extends Controller
 
         try {
             $wallet = $std->walletable;
-            $curr_order = ShoppingOrder::findOrFail($request->order_id);
+            $order = ShoppingOrder::findOrFail($request->order_id);
+            foreach($order->order_items as $item)
+            {
+                $item->forceDelete();
+            }
+            $order->forceDelete();
         } catch (ModelNotFoundException $ex) 
         {
             return response()->json([

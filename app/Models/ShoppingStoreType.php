@@ -16,7 +16,7 @@ class ShoppingStoreType extends AppModel
     }
 
     public function departments(){
-        return $this->hasMany(ShoppingDepartment::class,'store_type_id','id');
+        return $this->hasMany(ShoppingDepartment::class,'store_type_id','id')->with(['products']);
     }
 
     public function product_attributes()
