@@ -83,3 +83,4 @@ Route::post('delete_order_item', 'API\ShoppingController@delete_order_item');
 Route::post('delete_order', 'API\ShoppingController@delete_order');
 Route::post('charge_wallet' , 'API\ShoppingController@charge_wallet');
 Route::get('wallet_info', 'API\StudentProfileController@wallet_info');
+Route::post('get_customer_by_card', 'API\ShoppingController@get_std_by_card');

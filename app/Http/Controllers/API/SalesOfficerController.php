@@ -78,12 +78,21 @@ class SalesOfficerController extends Controller
         'action' => 'response'
       ]);
     }
-    public function reset_password(ResetPasswordRequest $request) {
+    public function reset_password(ResetPasswordRequest $request) 
+    {
         $validated = $request->validated();
         $password = $request->password;
         $sales_officer = $this->current_sales_officer($request);
+        $old_diff = \Hash::check($request->old_password , $sales_officer->password );
         $not_diff = \Hash::check($request->password , $sales_officer->password );
-        if($not_diff==1)
+        if($old_diff != 1)
+        {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'كلمة المرور القديمة غير متطابقة'
+            ]);
+        }
+        else if($not_diff==1)
         {
             return response()->json([
                 'status' => 'error',
@@ -103,5 +112,5 @@ class SalesOfficerController extends Controller
                 'message' => 'تم اعادة تعيين كلمة المرور',
             ]);
         }
-}
+    }
 }

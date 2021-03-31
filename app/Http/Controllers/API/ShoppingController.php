@@ -83,7 +83,8 @@ class ShoppingController extends Controller
     public function get_std_by_card(Request $request)
     {
         try{
-            $std = Student::where('card_num', $request->card_num)
+            $std = Student::with('walletable')
+                            ->where('card_num', $request->card_num)
                             ->where('pincode', $request->pincode)
                             ->first();
             return response()->json
@@ -145,20 +146,14 @@ class ShoppingController extends Controller
     public function delete_order_item(Request $request)
     {
         $quantity = $request->has('quantity') ? $request->quantity : 1;
-        $res = $this->get_std_by_card($request);
-        $res = json_decode($res->getContent(), true);
-        if($res['status'] == 'error')
+        $std = Student::where('card_num', $request->card_num)
+        ->first();
+        if(is_null($std))
         {
             return response()->json([
                 'status' => 'error',
                 'message' => 'تأكد من صحة الارقام المدخلة'
             ]);
-        }
-        else             
-        {
-            $std = Student::where('card_num', $request->card_num)
-            ->where('pincode', $request->pincode)
-            ->first();
         }
 
         ///--- Get the old unfinish order ---///
@@ -227,20 +222,14 @@ class ShoppingController extends Controller
     public function add_order_item(Request $request)
     {
         $quantity = $request->has('quantity') ? $request->quantity : 1;
-        $res = $this->get_std_by_card($request);
-        $res = json_decode($res->getContent(), true);
-        if($res['status'] == 'error')
+        $std = Student::where('card_num', $request->card_num)
+        ->first();
+        if(is_null($std))
         {
             return response()->json([
                 'status' => 'error',
                 'message' => 'تأكد من صحة الارقام المدخلة'
             ]);
-        }
-        else             
-        {
-            $std = Student::where('card_num', $request->card_num)
-            ->where('pincode', $request->pincode)
-            ->first();
         }
 
         ///--- Get the old unfinish order ---///
@@ -312,20 +301,14 @@ class ShoppingController extends Controller
     }
     public function delete_order(Request $request)
     {
-        $res = $this->get_std_by_card($request);
-        $res = json_decode($res->getContent(), true);
-        if($res['status'] == 'error')
+        $std = where('card_num', $request->card_num)
+        ->first();
+        if(is_null($std))
         {
             return response()->json([
                 'status' => 'error',
                 'message' => 'تأكد من صحة الارقام المدخلة'
             ]);
-        }
-        else             
-        {
-            $std = Student::where('card_num', $request->card_num)
-            ->where('pincode', $request->pincode)
-            ->first();
         }
 
         try {
