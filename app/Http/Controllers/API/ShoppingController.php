@@ -80,10 +80,10 @@ class ShoppingController extends Controller
             'departments' => $departments
         ]);
     }
-    public function get_std_by_cart(Request $request)
+    public function get_std_by_card(Request $request)
     {
         try{
-            $std = Student::where('cart_num', $request->cart_num)
+            $std = Student::where('card_num', $request->card_num)
                             ->where('pincode', $request->pincode)
                             ->first();
             return response()->json
@@ -96,13 +96,13 @@ class ShoppingController extends Controller
             return response()->json
             ([
                 'status' => 'error',
-                'message' => 'student doesnot have available cart',
+                'message' => 'student doesnot have available card',
             ]);
         }
     }
     public function charge_wallet(Request $request)
     {
-        $res = $this->get_std_by_cart($request);
+        $res = $this->get_std_by_card($request);
         $res = json_decode($res->getContent(), true);
         if($res['status'] == 'error')
         {
@@ -113,7 +113,7 @@ class ShoppingController extends Controller
         }
         else             
         {
-            $std = Student::where('cart_num', $request->cart_num)
+            $std = Student::where('card_num', $request->card_num)
             ->where('pincode', $request->pincode)
             ->first();
         }
@@ -145,7 +145,7 @@ class ShoppingController extends Controller
     public function delete_order_item(Request $request)
     {
         $quantity = $request->has('quantity') ? $request->quantity : 1;
-        $res = $this->get_std_by_cart($request);
+        $res = $this->get_std_by_card($request);
         $res = json_decode($res->getContent(), true);
         if($res['status'] == 'error')
         {
@@ -156,7 +156,7 @@ class ShoppingController extends Controller
         }
         else             
         {
-            $std = Student::where('cart_num', $request->cart_num)
+            $std = Student::where('card_num', $request->card_num)
             ->where('pincode', $request->pincode)
             ->first();
         }
@@ -227,7 +227,7 @@ class ShoppingController extends Controller
     public function add_order_item(Request $request)
     {
         $quantity = $request->has('quantity') ? $request->quantity : 1;
-        $res = $this->get_std_by_cart($request);
+        $res = $this->get_std_by_card($request);
         $res = json_decode($res->getContent(), true);
         if($res['status'] == 'error')
         {
@@ -238,7 +238,7 @@ class ShoppingController extends Controller
         }
         else             
         {
-            $std = Student::where('cart_num', $request->cart_num)
+            $std = Student::where('card_num', $request->card_num)
             ->where('pincode', $request->pincode)
             ->first();
         }
@@ -312,7 +312,7 @@ class ShoppingController extends Controller
     }
     public function delete_order(Request $request)
     {
-        $res = $this->get_std_by_cart($request);
+        $res = $this->get_std_by_card($request);
         $res = json_decode($res->getContent(), true);
         if($res['status'] == 'error')
         {
@@ -323,7 +323,7 @@ class ShoppingController extends Controller
         }
         else             
         {
-            $std = Student::where('cart_num', $request->cart_num)
+            $std = Student::where('card_num', $request->card_num)
             ->where('pincode', $request->pincode)
             ->first();
         }
@@ -351,7 +351,7 @@ class ShoppingController extends Controller
     }
     public function checkout(Request $request)
     {
-        $res = $this->get_std_by_cart($request);
+        $res = $this->get_std_by_card($request);
         $res = json_decode($res->getContent(), true);
         if($res['status'] == 'error')
         {
@@ -362,7 +362,7 @@ class ShoppingController extends Controller
         }
         else             
         {
-            $std = Student::where('cart_num', $request->cart_num)
+            $std = Student::where('card_num', $request->card_num)
             ->where('pincode', $request->pincode)
             ->first();
         }
