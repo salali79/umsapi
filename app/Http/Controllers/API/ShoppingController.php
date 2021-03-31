@@ -80,6 +80,15 @@ class ShoppingController extends Controller
             'departments' => $departments
         ]);
     }
+    public function orders(Request $request)
+    {
+        $saller = $this->current_sales_officer($request);
+        $orders = ShoppingOrder::all();
+        return response()->json([
+            'status' => 'success',
+            'orders' => $orders
+        ]);
+    }
     public function get_std_by_card(Request $request)
     {
         try{
