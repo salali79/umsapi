@@ -83,7 +83,8 @@ class ShoppingController extends Controller
     public function orders(Request $request)
     {
         $saller = $this->current_sales_officer($request);
-        $orders = ShoppingOrder::all();
+        $store = $saller->store;
+        $orders = ShoppingOrder::where('store_id', $store->id)->get();
         return response()->json([
             'status' => 'success',
             'orders' => $orders
@@ -253,6 +254,8 @@ class ShoppingController extends Controller
             }
         }
 
+        $saller = $this->current_sales_officer($request);
+        $store = $saller->store;
         $already_exist = null;
         ///--- Check if the product already chosen ---///
         if(!is_null($curr_order))
@@ -272,6 +275,7 @@ class ShoppingController extends Controller
         else
         {
             $curr_order = new ShoppingOrder();
+            $curr_order->store_id = $store->id;
             $wallet->orders()->save($curr_order);
         }
 
