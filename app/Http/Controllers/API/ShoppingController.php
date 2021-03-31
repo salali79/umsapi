@@ -301,8 +301,7 @@ class ShoppingController extends Controller
     }
     public function delete_order(Request $request)
     {
-        $std = where('card_num', $request->card_num)
-        ->first();
+        $std = Student::where('card_num', $request->card_num)->first();
         if(is_null($std))
         {
             return response()->json([
