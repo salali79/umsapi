@@ -26,7 +26,6 @@ class SalesOfficerController extends Controller
         $sales_officer = auth('sales_officer')->user();
         return $sales_officer;
     }
-
     public function login(Request $request)
     {
         try{

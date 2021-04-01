@@ -80,11 +80,39 @@ class ShoppingController extends Controller
             'departments' => $departments
         ]);
     }
+    public function active_orders(Request $request)
+    {
+        $saller = $this->current_sales_officer($request);
+        $store = $saller->store;
+        $orders = ShoppingOrder::where('store_id', $store->id)
+                                ->where('status', 0)
+                                ->with(['order_items'])
+                                ->get();
+        foreach($orders as $order)
+        {
+            $customer = $order->wallet->walletable;
+            $order['customer'] = $customer;
+            unset($order['wallet']);
+        }
+        return response()->json([
+            'status' => 'success',
+            'orders' => $orders
+        ]);
+    }
     public function orders(Request $request)
     {
         $saller = $this->current_sales_officer($request);
         $store = $saller->store;
-        $orders = ShoppingOrder::where('store_id', $store->id)->get();
+        $orders = ShoppingOrder::where('store_id', $store->id)
+                                ->where('status', 1)
+                                ->with(['order_items'])
+                                ->get();
+        foreach($orders as $order)
+        {
+            $customer = $order->wallet->walletable;
+            $order['customer'] = $customer;
+            unset($order['wallet']);
+        }
         return response()->json([
             'status' => 'success',
             'orders' => $orders
@@ -95,8 +123,15 @@ class ShoppingController extends Controller
         try{
             $std = Student::with('walletable')
                             ->where('card_num', $request->card_num)
-                            ->where('pincode', $request->pincode)
                             ->first();
+            if(is_null($std))
+            {
+                return response()->json
+                ([
+                    'status' => 'error',
+                    'message' => 'تأكد من صحة الارقام المدخلة'
+                ]);
+            }
             return response()->json
             ([
                 'status' => 'success',
@@ -107,7 +142,7 @@ class ShoppingController extends Controller
             return response()->json
             ([
                 'status' => 'error',
-                'message' => 'student doesnot have available card',
+                'message' => 'تأكد من صحة الارقام المدخلة'
             ]);
         }
     }
@@ -127,6 +162,13 @@ class ShoppingController extends Controller
             $std = Student::where('card_num', $request->card_num)
             ->where('pincode', $request->pincode)
             ->first();
+        }
+        if(is_null($std))
+        {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'تأكد من صحة الارقام المدخلة'
+            ]);
         }
         $w = $std->walletable;
         if(is_null($w))
@@ -362,6 +404,13 @@ class ShoppingController extends Controller
             ->first();
         }
 
+        if(is_null($std))
+        {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'تأكد من صحة الارقام المدخلة'
+            ]);
+        }
         $wallet = $std->walletable;
         $orders = $wallet->orders;
         $curr_order = null;
