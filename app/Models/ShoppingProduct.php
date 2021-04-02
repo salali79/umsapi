@@ -25,4 +25,5 @@ class ShoppingProduct extends AppModel
     {
         return $this->belongsTo(ShoppingDepartment::class,'department_id','id');
     }
+
 }

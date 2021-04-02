@@ -11,6 +11,7 @@ class AppModel extends Model
 
     use SoftDeletes;
     protected $dates = ['deleted_at'];
+    protected $uploads_path = 'http://ums.demo.hpuhospital.sy/uploads';
 
     public function getImagePathAttribute()
     {
@@ -47,7 +48,7 @@ class AppModel extends Model
 
     public function getDomainImagePathAttribute()
     {
-        return $this->image ? ('http://ums.demo.hpuhospital.sy/uploads/'.$this->table.'/'.$this->image): null;
+        return $this->image ? $this->uploads_path.'/'.$this->table.'/'.$this->image: null;
     }
 
 }

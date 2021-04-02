@@ -57,14 +57,14 @@ class ShoppingController extends Controller
 
         $departments = $saller->store->store_type->departments;
         $departments->map( function($department){
-            $department->image = $department->DomainImagePath;
+            $department->image = $department->domain_image_path;
         });
 
         foreach($departments as $department)
         {
             $products = $department->products;
             $products->map( function($product){
-                $product->image = $product->DomainImagePath;
+                $product->image = $product->domain_image_path;
             });
         }
 

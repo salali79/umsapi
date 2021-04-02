@@ -25,4 +25,5 @@ class ShoppingDepartment extends AppModel
     {
         return $this->hasMany(ShoppingProduct::class,'department_id','id');
     }
+
 }
