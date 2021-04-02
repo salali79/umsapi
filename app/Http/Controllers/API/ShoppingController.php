@@ -98,7 +98,9 @@ class ShoppingController extends Controller
                 $quantity = $item->quantity;
                 $price = $item->product->price;
                 $product = $item->product->name;
+                $product_id = $item->product->id;
                 return [
+                    'product_id' => $product_id,
                     'product' => $product,
                     'quantity' => $quantity,
                     'price' => $price,
@@ -130,7 +132,9 @@ class ShoppingController extends Controller
                 $quantity = $item->quantity;
                 $price = $item->product->price;
                 $product = $item->product->name;
+                $product_id = $item->product->id;
                 return [
+                    'product_id' => $product_id,
                     'product' => $product,
                     'quantity' => $quantity,
                     'price' => $price,
