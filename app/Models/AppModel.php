@@ -45,6 +45,9 @@ class AppModel extends Model
         return $query->where('status', 1);
     }
 
-
+    public function getDomainImagePathAttribute()
+    {
+        return $this->image ? ('http://ums.demo.hpuhospital.sy/uploads/'.$this->table.'/'.$this->image): null;
+    }
 
 }

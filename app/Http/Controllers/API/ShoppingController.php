@@ -57,23 +57,16 @@ class ShoppingController extends Controller
 
         $departments = $saller->store->store_type->departments;
         $departments->map( function($department){
-            $department->image = public_path('images\\'.$department->image);
+            $department->image = $department->DomainImagePath;
         });
 
-        /*foreach($departments as $department)
+        foreach($departments as $department)
         {
-            $product_attributes = $department->product_attributes;
-            $department_products = $product_attributes->map( function($product_attribute){
-                    return $product_attribute->product;
+            $products = $department->products;
+            $products->map( function($product){
+                $product->image = $product->DomainImagePath;
             });
-            $department_products->map( function($product){
-                $product->image = public_path('images\\'.$product->image);
-            });
-
-            $department['products'] = $department_products;
-
-            unset($department['product_attributes']);
-        }*/
+        }
 
         return response()->json([
             'status' => 'success',
