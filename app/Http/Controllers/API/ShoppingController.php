@@ -92,9 +92,20 @@ class ShoppingController extends Controller
         {
             $customer = $order->wallet->walletable;
             $order['customer'] = $customer;
-            $order['items'] = $order->order_items;
-            unset($order['order_items']);
             unset($order['wallet']);
+
+            $items = $order->order_items->map( function($item){
+                $quantity = $item->quantity;
+                $price = $item->product->price;
+                $product = $item->product->name;
+                return [
+                    'product' => $product,
+                    'quantity' => $quantity,
+                    'price' => $price,
+                ];
+            });
+            $order['items'] = $items;
+            unset($order['order_items']);
         }
         return response()->json([
             'status' => 'success',
@@ -113,9 +124,20 @@ class ShoppingController extends Controller
         {
             $customer = $order->wallet->walletable;
             $order['customer'] = $customer;
-            $order['items'] = $order->order_items;
-            unset($order['order_items']);
             unset($order['wallet']);
+
+            $items = $order->order_items->map( function($item){
+                $quantity = $item->quantity;
+                $price = $item->product->price;
+                $product = $item->product->name;
+                return [
+                    'product' => $product,
+                    'quantity' => $quantity,
+                    'price' => $price,
+                ];
+            });
+            $order['items'] = $items;
+            unset($order['order_items']);
         }
         return response()->json([
             'status' => 'success',
