@@ -181,7 +181,7 @@ class ShoppingController extends Controller
                     return response()->json
                     ([
                         'status' => 'error',
-                        'student' => 'يوجد طلبية غير منتهية'
+                        'message' => 'يوجد طلبية غير منتهية'
                     ]);
                 }
             }
@@ -215,7 +215,7 @@ class ShoppingController extends Controller
         {
             return response()->json([
                 'status' => 'error',
-                'message' => 'رقم البطاقة المدخلة غير صحيح'
+                'message' => 'رقم الكود المدخل غير صحيح'
             ]);
         }
         $w = $std->walletable;
@@ -472,7 +472,7 @@ class ShoppingController extends Controller
         {
             return response()->json([
                 'status' => 'error',
-                'message' => 'رقم البطاقة المدخلة غير صحيح'
+                'message' => 'رقم الكود المدخل غير صحيح'
             ]);
         }
         $wallet = $std->walletable;
