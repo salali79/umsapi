@@ -141,6 +141,52 @@ class ShoppingController extends Controller
             'orders' => $orders
         ]);
     }
+    public function get_std_by_card_for_checkout(Request $request)
+    {
+        try{
+            $std = Student::with('walletable')
+                            ->where('card_num', $request->card_num)
+                            ->first();
+            if(is_null($std))
+            {
+                return response()->json
+                ([
+                    'status' => 'error',
+                    'message' => 'رقم البطاقة المدخلة غير صحيح'
+                ]);
+            }
+            else
+            {
+                $wallet = $std->walletable;
+                $order = ShoppingOrder::where('wallet_id',$wallet->id)
+                                        ->where('status', 0)
+                                        ->first();
+                if(is_null($order))
+                {
+                    return response()->json
+                    ([
+                        'status' => 'error',
+                        'message' => 'المستخدم لا يملك اي طلبية'
+                    ]);
+                }
+                else 
+                {
+                    return response()->json
+                    ([
+                        'status' => 'success',
+                        'student' => $std
+                    ]);
+                }
+            }
+        }
+        catch (ModelNotFoundException $ex) {
+            return response()->json
+            ([
+                'status' => 'error',
+                'message' => 'رقم البطاقة المدخلة غير صحيح'
+            ]);
+        }
+    }
     public function get_std_by_card(Request $request)
     {
         try{
@@ -445,7 +491,7 @@ class ShoppingController extends Controller
     }
     public function checkout(Request $request)
     {
-        $res = $this->get_std_by_card($request);
+        $res = $this->get_std_by_card_for_checkout($request);
         $res = json_decode($res->getContent(), true);
         if($res['status'] == 'error')
         {
