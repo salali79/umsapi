@@ -92,6 +92,8 @@ class ShoppingController extends Controller
         {
             $customer = $order->wallet->walletable;
             $order['customer'] = $customer;
+            $order['items'] = $order->order_items;
+            unset($order['order_items']);
             unset($order['wallet']);
         }
         return response()->json([
@@ -111,6 +113,8 @@ class ShoppingController extends Controller
         {
             $customer = $order->wallet->walletable;
             $order['customer'] = $customer;
+            $order['items'] = $order->order_items;
+            unset($order['order_items']);
             unset($order['wallet']);
         }
         return response()->json([
@@ -129,7 +133,7 @@ class ShoppingController extends Controller
                 return response()->json
                 ([
                     'status' => 'error',
-                    'message' => 'تأكد من صحة الارقام المدخلة'
+                    'message' => 'رقم البطاقة المدخلة غير صحيح'
                 ]);
             }
             return response()->json
@@ -142,7 +146,7 @@ class ShoppingController extends Controller
             return response()->json
             ([
                 'status' => 'error',
-                'message' => 'تأكد من صحة الارقام المدخلة'
+                'message' => 'رقم البطاقة المدخلة غير صحيح'
             ]);
         }
     }
@@ -154,7 +158,7 @@ class ShoppingController extends Controller
         {
             return response()->json([
                 'status' => 'error',
-                'message' => 'تأكد من صحة الارقام المدخلة'
+                'message' => 'رقم البطاقة المدخلة غير صحيح'
             ]);
         }
         else             
@@ -167,7 +171,7 @@ class ShoppingController extends Controller
         {
             return response()->json([
                 'status' => 'error',
-                'message' => 'تأكد من صحة الارقام المدخلة'
+                'message' => 'رقم البطاقة المدخلة غير صحيح'
             ]);
         }
         $w = $std->walletable;
@@ -204,7 +208,7 @@ class ShoppingController extends Controller
         {
             return response()->json([
                 'status' => 'error',
-                'message' => 'تأكد من صحة الارقام المدخلة'
+                'message' => 'رقم البطاقة المدخلة غير صحيح'
             ]);
         }
 
@@ -242,15 +246,22 @@ class ShoppingController extends Controller
                     ]);
                     if($curr_order->total_price <= 0)
                     {
+                        foreach($curr_order->order_items as $curr_order->order_item)
+                        {
+                            $curr_order->order_item->forceDelete();
+                        }
                         $curr_order->forceDelete();
-                    }
-                    if($prev_item->quantity == 1)
-                    {
-                        $prev_item->forceDelete();
                     }
                     else
                     {
-                        $prev_item->decrement('quantity', $quantity);
+                        if($prev_item->quantity == 1)
+                        {
+                            $prev_item->forceDelete();
+                        }
+                        else
+                        {
+                            $prev_item->decrement('quantity', $quantity);
+                        }
                     }
                     return response()->json([
                         'status' => 'success',
@@ -280,7 +291,7 @@ class ShoppingController extends Controller
         {
             return response()->json([
                 'status' => 'error',
-                'message' => 'تأكد من صحة الارقام المدخلة'
+                'message' => 'رقم البطاقة المدخلة غير صحيح'
             ]);
         }
 
@@ -361,7 +372,7 @@ class ShoppingController extends Controller
         {
             return response()->json([
                 'status' => 'error',
-                'message' => 'تأكد من صحة الارقام المدخلة'
+                'message' => 'رقم البطاقة المدخلة غير صحيح'
             ]);
         }
 
@@ -394,7 +405,7 @@ class ShoppingController extends Controller
         {
             return response()->json([
                 'status' => 'error',
-                'message' => 'تأكد من صحة الارقام المدخلة'
+                'message' => 'رقم البطاقة المدخلة غير صحيح'
             ]);
         }
         else             
@@ -408,7 +419,7 @@ class ShoppingController extends Controller
         {
             return response()->json([
                 'status' => 'error',
-                'message' => 'تأكد من صحة الارقام المدخلة'
+                'message' => 'رقم البطاقة المدخلة غير صحيح'
             ]);
         }
         $wallet = $std->walletable;
