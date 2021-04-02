@@ -162,11 +162,29 @@ class ShoppingController extends Controller
                     'message' => 'رقم البطاقة المدخلة غير صحيح'
                 ]);
             }
-            return response()->json
-            ([
-                'status' => 'success',
-                'student' => $std
-            ]);
+            else
+            {
+                $wallet = $std->walletable;
+                $order = ShoppingOrder::where('wallet_id',$wallet->id)
+                                        ->where('status', 0)
+                                        ->first();
+                if(is_null($order))
+                {
+                    return response()->json
+                    ([
+                        'status' => 'success',
+                        'student' => $std
+                    ]);
+                }
+                else 
+                {
+                    return response()->json
+                    ([
+                        'status' => 'error',
+                        'student' => 'يوجد طلبية غير منتهية'
+                    ]);
+                }
+            }
         }
         catch (ModelNotFoundException $ex) {
             return response()->json
