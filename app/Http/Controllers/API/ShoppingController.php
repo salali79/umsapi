@@ -276,7 +276,7 @@ class ShoppingController extends Controller
                         {
                             $curr_order->order_item->forceDelete();
                         }
-                        $curr_order->forceDelete();
+                        //$curr_order->forceDelete();
                     }
                     else
                     {
@@ -404,7 +404,16 @@ class ShoppingController extends Controller
 
         try {
             $wallet = $std->walletable;
-            $order = ShoppingOrder::findOrFail($request->order_id);
+            $order = ShoppingOrder::where('wallet_id',$wallet->id)
+                                    ->where('status', 0)
+                                    ->first();
+            if(is_null($order))
+            {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'لا يوجد طلبيات متاحة للمستخدم'
+                ]);
+            }
             foreach($order->order_items as $item)
             {
                 $item->forceDelete();
