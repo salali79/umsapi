@@ -159,6 +159,13 @@ class ShoppingController extends Controller
             else
             {
                 $wallet = $std->walletable;
+                if(is_null($wallet))
+                {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => 'الزبون لا يملك محفظة'
+                    ]);
+                }
                 $order = ShoppingOrder::where('wallet_id',$wallet->id)
                                         ->where('status', 0)
                                         ->first();
@@ -314,6 +321,13 @@ class ShoppingController extends Controller
 
         ///--- Get the old unfinish order ---///
         $wallet = $std->walletable;
+        if(is_null($wallet))
+        {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'الزبون لا يملك محفظة'
+            ]);
+        }
         $curr_order = null;
         foreach($wallet->orders as $order)
         {
@@ -397,6 +411,13 @@ class ShoppingController extends Controller
 
         ///--- Get the old unfinish order ---///
         $wallet = $std->walletable;
+        if(is_null($wallet))
+        {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'الزبون لا يملك محفظة'
+            ]);
+        }
         $curr_order = null;
         foreach($wallet->orders as $order)
         {
@@ -478,6 +499,13 @@ class ShoppingController extends Controller
 
         try {
             $wallet = $std->walletable;
+            if(is_null($wallet))
+            {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'الزبون لا يملك محفظة'
+                ]);
+            }
             $order = ShoppingOrder::where('wallet_id',$wallet->id)
                                     ->where('status', 0)
                                     ->first();
@@ -532,6 +560,13 @@ class ShoppingController extends Controller
             ]);
         }
         $wallet = $std->walletable;
+        if(is_null($wallet))
+        {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'الزبون لا يملك محفظة'
+            ]);
+        }
         $orders = $wallet->orders;
         $curr_order = null;
         foreach($orders as $order)
