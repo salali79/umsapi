@@ -204,6 +204,13 @@ class ShoppingController extends Controller
             }
 
             $wallet = $std->walletable;
+            if(is_null($wallet))
+            {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'الزبون لا يملك محفظة'
+                ]);
+            }
             $order = ShoppingOrder::where('wallet_id',$wallet->id)
                                     ->where('status', 0)
                                     ->first();
