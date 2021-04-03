@@ -15,13 +15,14 @@ use App\Models\ShoppingWalletCharge;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Carbon;
 use JWTAuth;
+use Crypt;
 
 
 class ShoppingController extends Controller
 {
     public function __construct()
     {
-      $this->middleware('auth:sales_officer', ['except' => ['all_products']]);
+      $this->middleware('auth:sales_officer', ['except' => ['all_products', 'test']]);
       $this->guard = "sales_officer";
     }
     function current_sales_officer(Request $request)
@@ -201,28 +202,37 @@ class ShoppingController extends Controller
                     'message' => 'رقم البطاقة المدخلة غير صحيح'
                 ]);
             }
-            else
+
+            $wallet = $std->walletable;
+            $order = ShoppingOrder::where('wallet_id',$wallet->id)
+                                    ->where('status', 0)
+                                    ->first();
+            if(is_null($order))
             {
-                $wallet = $std->walletable;
-                $order = ShoppingOrder::where('wallet_id',$wallet->id)
-                                        ->where('status', 0)
-                                        ->first();
-                if(is_null($order))
-                {
-                    return response()->json
-                    ([
-                        'status' => 'success',
-                        'student' => $std
-                    ]);
-                }
-                else 
-                {
+                $saller = $this->current_sales_officer($request);
+                $store = $saller->store;
+                $new_order = new ShoppingOrder([
+                    'store_id' => $store->id,
+                    'status' => '0',
+                ]);
+                $wallet->orders()->save($new_order);
+                $new_order['customer'] = $std;
+                unset($order['wallet']);
+                $new_order['items'] = [];
+
+                return response()->json
+                ([
+                    'status' => 'success',
+                    'order' => $new_order,
+                ]);
+            }
+            else 
+            {
                     return response()->json
                     ([
                         'status' => 'error',
                         'message' => 'يوجد طلبية غير منتهية'
                     ]);
-                }
             }
         }
         catch (ModelNotFoundException $ex) {
@@ -572,4 +582,11 @@ class ShoppingController extends Controller
         }
     }
 
+    public function test()
+    {
+        $mySecret = "encypt string";
+        $encrypted = Crypt::encrypt($mySecret);
+        return response()->json($encrypted);
+        return $encrypted;
+    }
 }

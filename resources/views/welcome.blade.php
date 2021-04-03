@@ -4,6 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
       
+        <script type="module" src="{{ asset('js/app.js') }}"></script>
         <script src="{{ URL::asset('/js/myAjax.js') }}"></script>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
@@ -100,12 +101,39 @@
                     <a href="https://vapor.laravel.com">Vapor</a>
                     <a href="https://github.com/laravel/laravel">GitHub</a>
                 </div>
-                <button type="button" class="btn btn-primary" id="modal-save">TEST</button>
             </div>
         </div>
-    </body>
-    <script>
-        var url_deposite = '{{ route('deposite') }}';
-        var token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9sb2dpbiIsImlhdCI6MTYxMTMwNDY0MiwiZXhwIjoxNjExMzA4MjQyLCJuYmYiOjE2MTEzMDQ2NDIsImp0aSI6IlN0ODJUZThaMndyNUhrdHoiLCJzdWIiOjkwMDAsInBydiI6IjljNDI5ZTZhNjBjZDUyODU0NzNmMmM4YmM3MDFlYzA5NDhkZjRkOGMifQ.eTGcGj9I0eFpHPgfidtojP3_Q0SWVUgrNl087NQJVa4'  </script>
+<!----------------------------------------------------->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
 
-        </html>
+  
+  <strong><label>Original String:</label></strong>
+  <span id="demo0"></span>
+
+  <br>
+  <br>
+  
+  <strong><label>Encrypted:</label></strong>
+  <span id="demo1"></span>
+
+  <br>
+  <br>
+  
+  <strong><label>Decrypted:</label></strong>
+  <span id="demo2"></span>
+
+  <br> 
+  <br>
+
+  <strong><label>String after Decryption:</label></strong>
+  <span id="demo3"></span>
+
+  
+  <br />
+  <br />
+ 
+    </body>
+ <script src="https://cdn.jsdelivr.net/npm/js-base64@2.5.1/base64.js"></script>
+
+
+</html>
