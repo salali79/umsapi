@@ -279,8 +279,9 @@ class ShoppingController extends Controller
         }
         else             
         {
+            $pincode = Crypt::decrypt($request->pincode);
             $std = Student::where('card_num', $request->card_num)
-            ->where('pincode', $request->pincode)
+            ->where('pincode', $pincode)
             ->first();
         }
         if(is_null($std))
@@ -572,8 +573,9 @@ class ShoppingController extends Controller
         }
         else             
         {
+            $pincode = Crypt::decrypt($request->pincode);
             $std = Student::where('card_num', $request->card_num)
-            ->where('pincode', $request->pincode)
+            ->where('pincode', $pincode)
             ->first();
         }
 
@@ -648,14 +650,11 @@ class ShoppingController extends Controller
             ]);
         }
     }
-
     public function test()
     {
 
         $encrypt = Crypt::encrypt("test");
         $test = "eyJpdiI6InBVRGhjTVNXNFNBVVIwTjdyUGY1UVE9PSIsInZhbHVlIjoiQ3NRV0JjMStyK3FaMkNIRDJ4dFErZz09IiwibWFjIjoiMGFmMzgxZWJkYTQ3ODA3NDMwMGJmNWM5Yjc0MGZlMWExMjRiMjFkODgxNTEwNTdiNDM0ODE2ZDc2N2NlYzc2NCJ9";
-        //return $encrypt;
-        //return strlen($encrypt);
         return Crypt::decrypt($test);
         return base64_decode("MTIzNA==");
     }
