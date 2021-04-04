@@ -227,6 +227,7 @@ class ShoppingController extends Controller
                 $store = $saller->store;
                 $new_order = new ShoppingOrder([
                     'store_id' => $store->id,
+                    'total_price' => '0',
                     'status' => '0',
                 ]);
                 $wallet->orders()->save($new_order);
@@ -450,6 +451,7 @@ class ShoppingController extends Controller
         {
             $curr_order = new ShoppingOrder();
             $curr_order->store_id = $store->id;
+            $curr_order->total_price = 0;
             $wallet->orders()->save($curr_order);
         }
 
@@ -626,9 +628,12 @@ class ShoppingController extends Controller
 
     public function test()
     {
-        $mySecret = "encypt string";
-        $encrypted = Crypt::encrypt($mySecret);
-        return response()->json($encrypted);
-        return $encrypted;
+        /*$id = 1;
+        $timestamp = 125346164;
+        $randomKey = "base64:ZIEOZBtU/S9LPJZTHuRyiZ6q47pv+SvwwnLmB0vvfCI=";
+
+        $key = base64_encode($timestamp . $randomKey . $id);*/
+
+        return base64_decode("MTIzNDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ=");
     }
 }

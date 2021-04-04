@@ -1,14 +1,10 @@
 require('./bootstrap');
+var crypto = require('crypto');
+var Base64 = require('js-base64').Base64;
+var serialize = require('php-serialize');
 
 
-/*window.decrypt = (encrypted) => {
-    let key = process.env.MIX_APP_KEY.substr(7);
-    var encrypted_json = JSON.parse(atob(encrypted));
-    return CryptoJS.AES.decrypt(encrypted_json.value, CryptoJS.enc.Base64.parse(key), {
-        iv: CryptoJS.enc.Base64.parse(encrypted_json.iv)
-    }).toString(CryptoJS.enc.Utf8);
-};
-*/
+
 ////////////////////////////////////////////////
 /*
 import crypto from 'crypto-js';
@@ -23,38 +19,63 @@ console.log({ info2 });
 const info3 = JSON.parse(info2);
 console.log({ str: info3.str });
 */ /////////////////////////////////////////////////
-import crypto from 'crypto-js';
+
+/*
+const data = "test";
+
+import CryptoJS from "crypto-js";
 
 
-var encrypted = 'eyJpdiI6IlRxWjJlRDdXVW1MZys3NzYwQnIwZmc9PSIsInZhbHVlIjoiMy9pdGtzZ01YVUlCcDVSbm5SSE5ra1NaNkE1dGxDQnNZd1ZwU2dDdVRRND0iLCJtYWMiOiI2MDk5ZjNjYjE2ZWNlZGZjN2M5ZDdjM2ExNWJiM2FmMTZlNzI5MTUzOTM2ZTc3MzJiZWRlNGMzMDBlZjUwNDRlIn0=';
-var key = "base64:7LN6K6PbrCuZtvJvvCWTH3YrBttz0Mul5Tad5wgaf8s=";
-
-//var encrypted_json = JSON.parse(Base64.decode(encrypted));
-
-const str = "test";
-var encrypted_json2 = crypto.AES.encrypt(JSON.stringify({ str }), key).toString();
-//console.log(encrypted_json2);
-const info2 = crypto.AES.decrypt(encrypted_json2, key).toString(crypto.enc.Utf8);
-//console.log({ info2 });
-const info3 = JSON.parse(info2);
-//console.log({ info2 });
-// Now I try to decrypt it.
-/*var decrypted = CryptoJS.AES.decrypt(encrypted_json.value, CryptoJS.enc.Base64.parse(key), {
-    iv: CryptoJS.enc.Base64.parse(encrypted_json.iv)
-});
-
-console.log(decrypted.toString(CryptoJS.enc.Utf8));*/
-
-this.key = key;
-var encryptStr = "eyJpdiI6IlRxWjJlRDdXVW1MZys3NzYwQnIwZmc9PSIsInZhbHVlIjoiMy9pdGtzZ01YVUlCcDVSbm5SSE5ra1NaNkE1dGxDQnNZd1ZwU2dDdVRRND0iLCJtYWMiOiI2MDk5ZjNjYjE2ZWNlZGZjN2M5ZDdjM2ExNWJiM2FmMTZlNzI5MTUzOTM2ZTc3MzJiZWRlNGMzMDBlZjUwNDRlIn0=";
-encryptStr = CryptoJS.enc.Base64.parse(encryptStr);
-let encryptData = encryptStr.toString(CryptoJS.enc.Utf8);
-encryptData = JSON.parse(encryptData);
-let iv = CryptoJS.enc.Base64.parse(encryptData.iv);
-var decrypted = CryptoJS.AES.decrypt(encryptData.value, CryptoJS.enc.Utf8.parse(this.key), {
+let iv = CryptoJS.lib.WordArray.random(16),
+    key = CryptoJS.enc.Utf8.parse(key1);
+console.log(key1);
+let options = {
     iv: iv,
     mode: CryptoJS.mode.CBC,
     padding: CryptoJS.pad.Pkcs7
-});
-decrypted = CryptoJS.enc.Utf8.stringify(decrypted);
-console.log(decrypted);
+};
+let encrypted = CryptoJS.AES.encrypt(data, key1);
+encrypted = encrypted.toString();
+iv = CryptoJS.enc.Base64.stringify(iv);
+let result = {
+    iv: iv,
+    value: encrypted,
+    mac: CryptoJS.SHA1(iv + encrypted, key1).toString()
+}
+result = JSON.stringify(result);
+result = CryptoJS.enc.Utf8.parse(result);
+var js_encrypt = CryptoJS.enc.Base64.stringify(result);
+
+
+
+console.log(js_encrypt);
+
+
+var CryptoJS = require("crypto-js"); //replace thie with script tag in browser env
+
+//encrypt
+
+
+var parsedWordArray = CryptoJS.enc.Base64.parse(base64);
+var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);
+console.log("parsed:", parsedStr);
+
+var rawStr = "test";
+var wordArray = CryptoJS.enc.Utf8.parse(rawStr);
+var base64 = CryptoJS.enc.Base64.stringify(wordArray, key1);
+console.log('encrypted:', base64);
+*/
+
+
+const key1 = "base64:ZIEOZBtU/S9LPJZTHuRyiZ6q47pv+SvwwnLmB0vvfCI=";
+var rawStr = "1234";
+var test = CryptoJS.AES.encrypt(rawStr, key1);
+test = test.toString();
+var res = CryptoJS.SHA1(test);
+res = JSON.stringify(res);
+res = CryptoJS.enc.Utf8.parse(res);
+var js_encrypt = CryptoJS.enc.Base64.stringify(res);
+console.log(js_encrypt);
+var wordArray = CryptoJS.enc.Utf8.parse(rawStr);
+var base64 = CryptoJS.enc.Base64.stringify(wordArray, key1);
+console.log('encrypted:', base64);

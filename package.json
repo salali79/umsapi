@@ -21,6 +21,7 @@
     },
     "dependencies": {
         "crypto-js": "^4.0.0",
-        "js-base64": "^3.6.0"
+        "js-base64": "^3.6.0",
+        "php-serialize": "^4.0.2"
     }
 }
