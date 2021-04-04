@@ -85,6 +85,8 @@ class ShoppingController extends Controller
         foreach($orders as $order)
         {
             $customer = $order->wallet->walletable;
+            $customer['wallet'] = $customer->walletable->total_money;
+            unset($customer['walletable']);
             $order['customer'] = $customer;
             unset($order['wallet']);
 
@@ -119,6 +121,8 @@ class ShoppingController extends Controller
         foreach($orders as $order)
         {
             $customer = $order->wallet->walletable;
+            $customer['wallet'] = $customer->walletable->total_money;
+            unset($customer['walletable']);
             $order['customer'] = $customer;
             unset($order['wallet']);
 
@@ -162,7 +166,7 @@ class ShoppingController extends Controller
                 if(is_null($wallet))
                 {
                     return response()->json([
-                        'status' => 'error',
+                        'status' => 'wallet_error',
                         'message' => 'الزبون لا يملك محفظة'
                     ]);
                 }
@@ -173,12 +177,14 @@ class ShoppingController extends Controller
                 {
                     return response()->json
                     ([
-                        'status' => 'error',
-                        'message' => 'المستخدم لا يملك اي طلبية'
+                        'status' => 'order_error',
+                        'message' => 'الزبون لا يملك اي طلبية'
                     ]);
                 }
                 else 
                 {
+                    $std['wallet'] = $std->walletable->total_money;
+                    unset($std['walletable']);
                     return response()->json
                     ([
                         'status' => 'success',
@@ -232,6 +238,8 @@ class ShoppingController extends Controller
                 ]);
                 $wallet->orders()->save($new_order);
                 $new_order['customer'] = $std;
+                $std['wallet'] = $std->walletable->total_money;
+                unset($std['walletable']);
                 unset($order['wallet']);
                 $new_order['items'] = [];
 
@@ -393,7 +401,7 @@ class ShoppingController extends Controller
         {
             return response()->json([
                 'status' => 'error',
-                'message' => 'المستخدم لا يملك اي طلبية'
+                'message' => 'الزبون لا يملك اي طلبية'
             ]);
         }
     }
@@ -515,7 +523,7 @@ class ShoppingController extends Controller
             {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'لا يوجد طلبيات متاحة للمستخدم'
+                    'message' => 'لا يوجد طلبيات متاحة للزبون'
                 ]);
             }
             foreach($order->order_items as $item)
@@ -545,6 +553,21 @@ class ShoppingController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'رقم البطاقة المدخلة غير صحيح'
+            ]);
+        }
+        else if($res['status'] == 'wallet_error')
+        {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'الزبون لا يملك محفظة'
+            ]);
+        }
+        else if($res['status'] == 'order_error')
+        {
+            return response()->json
+            ([
+                'status' => 'error',
+                'message' => 'الزبون لا يملك اي طلبية'
             ]);
         }
         else             
@@ -584,7 +607,7 @@ class ShoppingController extends Controller
         {
             return response()->json([
                 'status' => 'error',
-                'message' => 'المستخدم لا يملك اي طلبية'
+                'message' => 'الزبون لا يملك اي طلبية'
             ]);
         }
 
@@ -628,12 +651,12 @@ class ShoppingController extends Controller
 
     public function test()
     {
-        /*$id = 1;
-        $timestamp = 125346164;
-        $randomKey = "base64:ZIEOZBtU/S9LPJZTHuRyiZ6q47pv+SvwwnLmB0vvfCI=";
 
-        $key = base64_encode($timestamp . $randomKey . $id);*/
-
-        return base64_decode("MTIzNDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ=");
+        $encrypt = Crypt::encrypt("test");
+        $test = "eyJpdiI6InBVRGhjTVNXNFNBVVIwTjdyUGY1UVE9PSIsInZhbHVlIjoiQ3NRV0JjMStyK3FaMkNIRDJ4dFErZz09IiwibWFjIjoiMGFmMzgxZWJkYTQ3ODA3NDMwMGJmNWM5Yjc0MGZlMWExMjRiMjFkODgxNTEwNTdiNDM0ODE2ZDc2N2NlYzc2NCJ9";
+        //return $encrypt;
+        //return strlen($encrypt);
+        return Crypt::decrypt($test);
+        return base64_decode("MTIzNA==");
     }
 }

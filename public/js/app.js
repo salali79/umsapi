@@ -72457,88 +72457,36 @@ module.exports = function(module) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
-
-var crypto = __webpack_require__(/*! crypto */ "./node_modules/crypto-browserify/index.js");
+/* WEBPACK VAR INJECTION */(function(Buffer) {__webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 var Base64 = __webpack_require__(/*! js-base64 */ "./node_modules/js-base64/base64.mjs").Base64;
 
-var serialize = __webpack_require__(/*! php-serialize */ "./node_modules/php-serialize/lib/esm/index.js"); ////////////////////////////////////////////////
+var crypto = __webpack_require__(/*! crypto */ "./node_modules/crypto-browserify/index.js");
 
-/*
-import crypto from 'crypto-js';
+var php = __webpack_require__(/*! php-serialize */ "./node_modules/php-serialize/lib/esm/index.js");
 
-const str = "test";
-const cryptoInfo = crypto.AES.encrypt(JSON.stringify({ str }), 'secret').toString();
-console.log({ cryptoInfo });
+var BASE_64_PREFIX = 'base64:';
+var apiKey = "base64:ZIEOZBtU/S9LPJZTHuRyiZ6q47pv+SvwwnLmB0vvfCI=";
+var value = "12345";
 
-const info2 = crypto.AES.decrypt(cryptoInfo, 'secret').toString(crypto.enc.Utf8);
-console.log({ info2 });
-
-const info3 = JSON.parse(info2);
-console.log({ str: info3.str });
-*/
-/////////////////////////////////////////////////
-
-/*
-const data = "test";
-
-import CryptoJS from "crypto-js";
-
-
-let iv = CryptoJS.lib.WordArray.random(16),
-    key = CryptoJS.enc.Utf8.parse(key1);
-console.log(key1);
-let options = {
-    iv: iv,
-    mode: CryptoJS.mode.CBC,
-    padding: CryptoJS.pad.Pkcs7
-};
-let encrypted = CryptoJS.AES.encrypt(data, key1);
-encrypted = encrypted.toString();
-iv = CryptoJS.enc.Base64.stringify(iv);
-let result = {
-    iv: iv,
-    value: encrypted,
-    mac: CryptoJS.SHA1(iv + encrypted, key1).toString()
+if (typeof apiKey === 'string' && apiKey.startsWith(BASE_64_PREFIX)) {
+  apiKey = Buffer.from(apiKey.replace(BASE_64_PREFIX, ''), 'base64');
 }
-result = JSON.stringify(result);
-result = CryptoJS.enc.Utf8.parse(result);
-var js_encrypt = CryptoJS.enc.Base64.stringify(result);
 
-
-
-console.log(js_encrypt);
-
-
-var CryptoJS = require("crypto-js"); //replace thie with script tag in browser env
-
-//encrypt
-
-
-var parsedWordArray = CryptoJS.enc.Base64.parse(base64);
-var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);
-console.log("parsed:", parsedStr);
-
-var rawStr = "test";
-var wordArray = CryptoJS.enc.Utf8.parse(rawStr);
-var base64 = CryptoJS.enc.Base64.stringify(wordArray, key1);
-console.log('encrypted:', base64);
-*/
-
-
-var key1 = "base64:ZIEOZBtU/S9LPJZTHuRyiZ6q47pv+SvwwnLmB0vvfCI=";
-var rawStr = "1234";
-var test = CryptoJS.AES.encrypt(rawStr, key1);
-test = test.toString();
-var res = CryptoJS.SHA1(test);
-res = JSON.stringify(res);
-res = CryptoJS.enc.Utf8.parse(res);
-var js_encrypt = CryptoJS.enc.Base64.stringify(res);
-console.log(js_encrypt);
-var wordArray = CryptoJS.enc.Utf8.parse(rawStr);
-var base64 = CryptoJS.enc.Base64.stringify(wordArray, key1);
-console.log('encrypted:', base64);
+var iv = crypto.randomBytes(16);
+var cipher = crypto.createCipheriv('AES-256-CBC', apiKey, iv);
+var payloadValue = cipher.update(php.serialize(value), 'utf8', 'base64');
+payloadValue += cipher["final"]('base64');
+var ivStr = new Buffer(iv).toString('base64');
+var hmac = crypto.createHmac('sha256', apiKey);
+var mac = hmac.update(ivStr + payloadValue).digest('hex');
+var res1 = new Buffer(JSON.stringify({
+  iv: ivStr,
+  value: payloadValue,
+  mac: mac
+})).toString('base64');
+console.log(res1);
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../node_modules/buffer/index.js */ "./node_modules/buffer/index.js").Buffer))
 
 /***/ }),
 
