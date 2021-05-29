@@ -103,11 +103,14 @@ class ExamController extends Controller
         $semesters_marks = $std_semester->semesterMarks()->map(function ($semester_mark) {
             $course_char_points = Equivalent::where('point_equivalent',$semester_mark->points)->first();
             if(!is_null($course_char_points)) $course_char_points = $course_char_points->char_equivalent;
+            $course_name = "";
+            $course  = Course::find($semester_mark->course_id);
+            if(!is_null($course)) $course_name = $course->name;
             return 
             [
                 'point' => $semester_mark->points,
                 'char_point' => $course_char_points,
-                'course' => Course::find($semester_mark->course_id)->name
+                'course' => $course_name
             ];
         });
 
