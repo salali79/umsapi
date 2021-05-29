@@ -1,0 +1,21 @@
+<?php
+
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+
+class SqlRegistrationCoursesSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('registration_courses')->truncate();
+        $path = public_path('sql_data/ums_table_registration_courses.sql');
+        $sql = file_get_contents($path);
+        DB::unprepared($sql);
+    }
+}

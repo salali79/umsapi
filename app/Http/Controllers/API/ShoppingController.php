@@ -266,56 +266,6 @@ class ShoppingController extends Controller
             ]);
         }
     }
-    public function charge_wallet(Request $request)
-    {
-        $res = $this->get_std_by_card($request);
-        $res = json_decode($res->getContent(), true);
-        if($res['status'] == 'error')
-        {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'رقم البطاقة المدخلة غير صحيح'
-            ]);
-        }
-        else             
-        {
-            $pincode = Crypt::decrypt($request->pincode);
-            $std = Student::where('card_num', $request->card_num)
-            ->where('pincode', $pincode)
-            ->first();
-        }
-        if(is_null($std))
-        {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'رقم الكود المدخل غير صحيح'
-            ]);
-        }
-        $w = $std->walletable;
-        if(is_null($w))
-        {
-            $w = new ShoppingWallet();
-            $w->total->money = $request->total_money;
-            $std->walletable()->save($w);
-        }
-        else 
-        {
-            $old_money = $std->walletable->total_money;
-            $std->walletable()->update([
-                'total_money' => $old_money + $request->total_money
-            ]);
-        }
-        $charge = new ShoppingWalletCharge([
-            'wallet_id' => $w->id,
-            'value' => $request->total_money,
-            'date' => \Carbon\Carbon::now()
-        ]);
-        $charge->save();
-        return response()->json([
-            'status' => 'success',
-            'message' => 'تم شحن البطاقة بنجاح'
-        ]);
-    }
     public function delete_order_item(Request $request)
     {
         $quantity = $request->has('quantity') ? $request->quantity : 1;

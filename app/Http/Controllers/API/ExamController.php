@@ -10,14 +10,19 @@ use App\Models\Equivalent;
 use App\Models\Student;
 use App\Models\RegistrationCourse;
 use App\Models\ExamPlanFinalMark;
+use App\Models\Course;
 use JWTAuth;
 
 class ExamController extends Controller
 {
+    protected $study_year_id;
+    protected $semester_id;
     public function __construct(Request $request)
     {
       $this->middleware('auth:student',);
       $this->guard = "student";
+      $this->study_year_id = "20";
+      $this->semester_id = "1";
     }
     public function current_student(Request $request)
     {
@@ -31,6 +36,7 @@ class ExamController extends Controller
     }
     public function index(Request $request)
     {
+
         $std = $this->current_student($request);
 
         $final = [];
@@ -85,5 +91,29 @@ class ExamController extends Controller
             array_push($marks, $p->mark);
         }
         return $marks;
+    }
+    public function final_marks(Request $request)
+    {
+        $std = $this->current_student($request);
+        $std_semester =  $std->studentSemesterTranscript
+        ->where('study_year_id', $this->study_year_id)
+        ->where('semester_id', $this->semester_id)
+        ->first();
+
+        $semesters_marks = $std_semester->semesterMarks()->map(function ($semester_mark) {
+            $course_char_points = Equivalent::where('point_equivalent',$semester_mark->points)->first();
+            if(!is_null($course_char_points)) $course_char_points = $course_char_points->char_equivalent;
+            return 
+            [
+                'point' => $semester_mark->points,
+                'char_point' => $course_char_points,
+                'course' => Course::find($semester_mark->course_id)->name
+            ];
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'marks' => $semesters_marks,
+        ]);
     }
 }
