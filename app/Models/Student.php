@@ -191,12 +191,12 @@ class Student extends Authenticatable implements JWTSubject
         return $this->hasMany(StudentModifiedCourse::class);
     }
     /*return sum of modified courses hours */
-    public function modifiedCoursesHours(){
+    /*public function modifiedCoursesHours(){
        return $mod_hours = array_sum($this->modifiedCourses->map(function ($m_courses){
             $hours = $this->StudentStudyPlan()->courseDetails($m_courses->course_id)->credit_hours;
             return $hours ;
             })->toArray());
-    }
+    }*/
     public function getRegisteredHours(){
         return 'R2021';
     }

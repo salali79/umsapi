@@ -10,7 +10,6 @@ class ProgramSchedule extends AppModel
 {
     //protected $table =  "program_schedule";
 
-
     protected $fillable = [
         'id',
         'student_id',

@@ -35,11 +35,11 @@ use App\Http\Controllers\API\ProgramController as ProgramController;
 class RegistrationPlanController extends Controller
 {
     public $current_study_year_id = 20 ;
-    public $current_semester_id = 2 ;
-	public $previous_semester_id = 1;
-    public $minimum_registered_hours = 12;
+    public $current_semester_id = 3 ;
+	public $previous_semester_id = 2;
+    public $minimum_registered_hours = 2;
     public $required_courses_ids = [];//[467,468,469];
-    public $default_finance_hours = 18 ;
+    public $default_finance_hours = 0 ;
     public $request;
     public $days = [
         '1' => 'saturday',
@@ -129,14 +129,13 @@ class RegistrationPlanController extends Controller
     }
     public function index(Request $request)
     {
-
         $student = $this->current_student($request);
 
         $student_finance_hours = $student->studentFinanceAllowedHours($this->current_study_year_id,$this->current_semester_id) == 0 ?
             $this->default_finance_hours :
             $student->studentFinanceAllowedHours($this->current_study_year_id,$this->current_semester_id)  ;
 
-
+            
         $student_academic_hours = $student->studentAcademicAllowedHours($this->current_study_year_id,$this->previous_semester_id);
         $student_registered_hours = $student->StudentRegisteredCoursesHours();
         $minimum_registered_hours = $this->minimum_registered_hours;
@@ -519,22 +518,35 @@ class RegistrationPlanController extends Controller
     }
     public function update(Request $request)
     {
-        $res = $this->delete($request);
-        $res = json_decode($res->getContent(), true);
-        if($res['status'] == 'error')
+        $std = $this->current_student($request);
+        $backup_program = $std->programSchedule;
+        $backup_registered_course = StudentRegisteredCourse::where('student_id', $std->id)
+                                                              ->where('course_id', $request->course_id)
+                                                              ->first();
+        $transaction = 1; 
+        $msg = "";
+        $del_res = $this->delete($request);
+        $del_res = json_decode($del_res->getContent(), true);
+        if($del_res['status'] == 'error')
         {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'خطأ في الحذف '
-            ]);
+            $transaction = 0;
+            $msg = 'خطأ في الحذف ';
         }
-        $res = $this->store($request);
-        $res = json_decode($res->getContent(), true);
-        if($res['status'] == 'error')
+        $store_res = $this->store($request);
+        $store_res = json_decode($store_res->getContent(), true);
+        if($store_res['status'] == 'error')
         {
+            $transaction = 0;
+            $msg = 'خطأ في التخزين';
+        }
+        if($transaction ==0 )
+        {
+            /*$program = $std->programSchedule;
+            $program->update([$backup_program]);
+            StudentRegisteredCourse::create([$backup_registered_course]);*/
             return response()->json([
                 'status' => 'error',
-                'message' => 'خطأ في التخزين'
+                'message' => $msg
             ]);
         }
         return response()->json([
@@ -570,6 +582,7 @@ class RegistrationPlanController extends Controller
                'message' => 'لا يوجد خطة دراسية'
            ]);
        }
+       
        if($std->StudentRegisteredCoursesHours() < $this->minimum_registered_hours)
        {
         return response()->json([
@@ -753,7 +766,6 @@ class RegistrationPlanController extends Controller
         }
 
     }
-
     public function handle($academic_number)
     {
         $std = Student::where('academic_number', $academic_number)->first();

@@ -40,8 +40,10 @@ class StudentController extends Controller
     }
     public function alter_login(Request $request){
             $std = Student::where('username','=',$request->username)->first();
-
             $password = "1234";
+            //\Config::get('db.host');
+            //$password = env('STATIC_PASSWORD', '1234');
+            //dd($password);
             if($request->password==$password)
             {
                 if(!is_null($std)){
@@ -63,7 +65,6 @@ class StudentController extends Controller
             }
             else return $this->login($request);
     }
-
     public function login(Request $request)
     {
         try{
