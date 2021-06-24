@@ -34,7 +34,7 @@ use App\Http\Controllers\API\ProgramController as ProgramController;
 
 class RegistrationPlanController extends Controller
 {
-    public $current_study_year_id = 20 ;
+    public $current_study_year_id = 20;
     public $current_semester_id = 3;//2
 	public $previous_semester_id = 2;//1
     public $minimum_registered_hours = 2;
@@ -78,7 +78,8 @@ class RegistrationPlanController extends Controller
     }
     //-1 study_year_semester problem
     //-2 last_registration_plan problem
-    public function studyYearSemesterId(){
+    public function studyYearSemesterId()
+    {
 
         $study_year_semester = StudyYearSemester::where('study_year_id',$this->current_study_year_id)
             ->where('semester_id',$this->current_semester_id)->first();
@@ -86,7 +87,8 @@ class RegistrationPlanController extends Controller
         if($study_year_semester) return $study_year_semester->id ;
         else return -1;
     }
-    public function get_last_registration_plan_id(Request $request){
+    public function get_last_registration_plan_id(Request $request)
+    {
         $std = $this->current_student($request);
         if($this->studyYearSemesterId() != -1)
         {
@@ -160,14 +162,14 @@ class RegistrationPlanController extends Controller
                 'message' => 'لا يوجد خطة تسجيل ضمن الكلية لهذا العام'
             ]);
         }
-        if($registration_plan->status != 1){
-
-             return response()->json([
+        if($registration_plan->status != 1)
+        {
+            return response()->json([
                 'status' => 'error',
                 'message' => 'التسجيل مغلق الآن ',
-             ]);
+            ]);
         }
-         else {
+        else {
             $registration_plan_courses =  $registration_plan->registrationCourses;
 
             $student_study_plan = $student->StudentStudyPlan();
@@ -199,15 +201,15 @@ class RegistrationPlanController extends Controller
                             'chosen' => $chosen ]  ;
 
                         $groups =  $registration_course->courseGroups->map(function ($group){
-
                             $lectures = $group->lectures->map(function ($lecture){
                                 return [
                                     'day' => $lecture->day,
                                     'start_time' => $lecture->start_time,
                                     'end_time' => $lecture->end_time,
                                     'place' => $lecture->place,
-                                 ];});
-                             return [
+                                ];
+                            });
+                            return [
                                 'id' => $group->id ,
                                 'name' => $group->name ,
                                 'capacity' => $group->capacity ,
@@ -221,7 +223,8 @@ class RegistrationPlanController extends Controller
                                     'start_time' => $lecture->start_time,
                                     'end_time' => $lecture->end_time,
                                     'place' => $lecture->place,
-                                ];});
+                                ];
+                            });
                             return [
                                 'id' => $category->id ,
                                 'name' => $category->name ,
@@ -246,16 +249,13 @@ class RegistrationPlanController extends Controller
 
                 ];
             }
-
             else { 
                 return response()->json([
                     'status' => 'error',
                     'message' => 'لا يوجد مقررات متاحة'
                 ]);
             }
-         }
-
-
+        }
     }
     public function store(Request $request)
     {
@@ -601,27 +601,27 @@ class RegistrationPlanController extends Controller
         $required_courses = $this->required_courses_ids;
 
 
-       if(is_null($std->StudentStudyPlan()))
-       {
+        if(is_null($std->StudentStudyPlan()))
+        {
            return response()->json([
                'status' => 'error',
                'message' => 'لا يوجد خطة دراسية'
            ]);
-       }
-       if($std->StudentRegisteredCoursesHours() < $this->minimum_registered_hours)
-       {
-        return response()->json([
-            'status' => 'error',
-            'message' => 'عدد الساعات المسجلة أقل من الحد الادنى ',
-        ]);
-       }
+        }
+        if($std->StudentRegisteredCoursesHours() < $this->minimum_registered_hours)
+        {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'عدد الساعات المسجلة أقل من الحد الادنى ',
+            ]);
+        }
         else
         {
             $student_required_course =[];
             foreach ($required_courses as $course_id){
 
                 $opened_course = $std->hasOpenedCourse($course_id);
-                if ( $opened_course != null){
+                if($opened_course != null){
                     if(($opened_course->course_status == 3 || $opened_course->course_status == 2 ) && $std->studentRegisteredCourses->where('course_id',$course_id)->first() == null)
                     {
                         $required = $opened_course->course->name ;
