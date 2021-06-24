@@ -157,16 +157,16 @@ class RegistrationPlanController extends Controller
         {
             return response()->json([
                 'status' => 'error',
-                'message' => 'خطة التسجيل غير متاحة'
+                'message' => 'لا يوجد خطة تسجيل ضمن الكلية لهذا العام'
             ]);
         }
-         if($registration_plan->status == 0){
+        if($registration_plan->status != 1){
 
              return response()->json([
                 'status' => 'error',
                 'message' => 'التسجيل مغلق الآن ',
              ]);
-         }
+        }
          else {
             $registration_plan_courses =  $registration_plan->registrationCourses;
 
@@ -404,8 +404,7 @@ class RegistrationPlanController extends Controller
             $student_registered_course->course_id = $request->course_id;
             $student_registered_course->registration_course_category_id = $request->category_id;
             $student_registered_course->registration_course_group_id = $request->group_id;
-            $student_registered_course->registration_plan_id = 1;
-            //$this->get_last_registration_plan_id($request);
+            $student_registered_course->registration_plan_id = $this->get_last_registration_plan_id($request);
             $student_registered_course->status = '0';
             $student_registered_course->save();
             return response()->json([
@@ -609,7 +608,6 @@ class RegistrationPlanController extends Controller
                'message' => 'لا يوجد خطة دراسية'
            ]);
        }
-       
        if($std->StudentRegisteredCoursesHours() < $this->minimum_registered_hours)
        {
         return response()->json([
