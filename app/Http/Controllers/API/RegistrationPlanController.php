@@ -35,11 +35,12 @@ use App\Http\Controllers\API\ProgramController as ProgramController;
 class RegistrationPlanController extends Controller
 {
     public $current_study_year_id = 20 ;
-    public $current_semester_id = 3;//2
-	public $previous_semester_id = 2;//1
+    public $current_semester_id = 2;//2
+	public $previous_semester_id = 1;//1
     public $minimum_registered_hours = 2;
     public $required_courses_ids = [];//[467,468,469];
     public $default_finance_hours = 9;//18
+    public $default_academic_hours = 9;
     public $request;
     public $days = [
         '1' => 'saturday',
@@ -137,7 +138,7 @@ class RegistrationPlanController extends Controller
 
             
         $student_academic_hours = $student->studentAcademicAllowedHours($this->current_study_year_id,$this->previous_semester_id) 
-        ? $student->studentAcademicAllowedHours($this->current_study_year_id,$this->previous_semester_id) : $this->default_finance_hours;
+        ? $student->studentAcademicAllowedHours($this->current_study_year_id,$this->previous_semester_id) : $this->default_academic_hours;
         $student_registered_hours = $student->StudentRegisteredCoursesHours();
         $minimum_registered_hours = $this->minimum_registered_hours;
 
@@ -267,7 +268,7 @@ class RegistrationPlanController extends Controller
             $std->studentFinanceAllowedHours($this->current_study_year_id,$this->current_semester_id)  ;
 
         $academic_allow_hours = $std->studentAcademicAllowedHours($this->current_study_year_id , $this->previous_semester_id)
-        ? $std->studentAcademicAllowedHours($this->current_study_year_id , $this->previous_semester_id) : $this->default_finance_hours;
+        ? $std->studentAcademicAllowedHours($this->current_study_year_id , $this->previous_semester_id) : $this->default_academic_hours;
         $minimum = min($finance_allow_hours, $academic_allow_hours);
 
         try {
