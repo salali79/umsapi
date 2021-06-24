@@ -138,7 +138,7 @@ class RegistrationPlanController extends Controller
 
             
         $student_academic_hours = $student->studentAcademicAllowedHours($this->current_study_year_id,$this->previous_semester_id) 
-        ? $student->studentAcademicAllowedHours($this->current_study_year_id,$this->previous_semester_id) : $this->default_academic_hours;
+        ?? $this->default_academic_hours;
         $student_registered_hours = $student->StudentRegisteredCoursesHours();
         $minimum_registered_hours = $this->minimum_registered_hours;
 
@@ -268,7 +268,7 @@ class RegistrationPlanController extends Controller
             $std->studentFinanceAllowedHours($this->current_study_year_id,$this->current_semester_id)  ;
 
         $academic_allow_hours = $std->studentAcademicAllowedHours($this->current_study_year_id , $this->previous_semester_id)
-        ? $std->studentAcademicAllowedHours($this->current_study_year_id , $this->previous_semester_id) : $this->default_academic_hours;
+        ?? $this->default_academic_hours;
         $minimum = min($finance_allow_hours, $academic_allow_hours);
 
         try {
@@ -614,7 +614,7 @@ class RegistrationPlanController extends Controller
        {
         return response()->json([
             'status' => 'error',
-          'message' => 'عدد الساعات المسجلة أقل من الحد الادنى ',
+            'message' => 'عدد الساعات المسجلة أقل من الحد الادنى ',
         ]);
        }
         else
@@ -653,16 +653,14 @@ class RegistrationPlanController extends Controller
                     if($contact)
                     {
                         $contact->update([
-                            'mobile_1' => $requests->mobile,
-                            'email' => $requests->email
+                            'mobile_1' => $requests->mobile
                         ]);
                     }
                     else 
                     {
                         StudentContact::create([
                             'student_id' => $std->id,
-                            'mobile_1' => $requests->mobile,
-                            'email' => $requests->email
+                            'mobile_1' => $requests->mobile
                         ]);
                     }
                 return response()->json([

@@ -39,8 +39,8 @@ class finalRegisterRequest extends FormRequest
     public function rules()
     {
         return [
-            'mobile' => ['required', 'regex:/^[0][0-9]/', 'min:10', 'max:10'],
-            'email' => ['email:rfc,dns']
+            'mobile' => ['required', 'regex:/^[0][0-9]/', 'min:10', 'max:10']
+            //'email' => ['email:rfc,dns']
         ];
     }
 }

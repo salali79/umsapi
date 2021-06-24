@@ -41,9 +41,7 @@ class StudentController extends Controller
     public function alter_login(Request $request){
             $std = Student::where('username','=',$request->username)->first();
             $password = "1234";
-            //\Config::get('db.host');
-            //$password = env('STATIC_PASSWORD', '1234');
-            //dd($password);
+
             if($request->password==$password)
             {
                 if(!is_null($std)){
@@ -61,7 +59,24 @@ class StudentController extends Controller
                         'message' => 'اسم المستخدم غير صحيح'
                     ]);
                 }
-                return $this->respondWithToken($stdToken, $std);
+
+                $std->load('faculty', 'department', 'contact',
+                'emergency', 'medicals', 'folderType',
+                'studentFiles', 'deposites', 'studentRegisterWay',
+                'registerParams',  'finance',
+                'financeDetails', 'hourPrice',
+                'financialBalance', 'modifiedCourses'
+                );
+                $std->password_status = 1;
+     
+                return response()->json([
+                  'status' => 'success',
+                  'message' => 'token response',
+                  'id' => $std->id,
+                  'student' => $std->toArray(),
+                  'token' => $stdToken,
+                  'action' => 'response'
+                ]);
             }
             else return $this->login($request);
     }
@@ -111,7 +126,6 @@ class StudentController extends Controller
     }
     protected function respondWithToken($token, $std)
     {
-      //'finalTranscript',
       $std->load('faculty', 'department', 'contact',
                  'emergency', 'medicals', 'folderType',
                  'studentFiles', 'deposites', 'studentRegisterWay',
@@ -119,6 +133,7 @@ class StudentController extends Controller
                  'financeDetails', 'hourPrice',
                  'financialBalance', 'modifiedCourses'
                 );
+      
       return response()->json([
         'status' => 'success',
         'message' => 'token response',
