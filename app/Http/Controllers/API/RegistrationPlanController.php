@@ -35,11 +35,11 @@ use App\Http\Controllers\API\ProgramController as ProgramController;
 class RegistrationPlanController extends Controller
 {
     public $current_study_year_id = 20;
-    public $current_semester_id = 3;//2
-	public $previous_semester_id = 2;//1
+    public $current_semester_id = 2;//2
+	public $previous_semester_id = 1;//1
     public $minimum_registered_hours = 2;
     public $required_courses_ids = [];//[467,468,469];
-    public $default_finance_hours = 9;//18
+    public $default_finance_hours = 18;//9
     public $default_academic_hours = 9;
     public $request;
     public $days = [
@@ -406,6 +406,7 @@ class RegistrationPlanController extends Controller
             $student_registered_course->registration_course_group_id = $request->group_id;
             $student_registered_course->registration_plan_id = $this->get_last_registration_plan_id($request);
             $student_registered_course->status = '0';
+            $student_registered_course->created_by = $std->id;
             $student_registered_course->save();
             return response()->json([
                 'status' => 'success',
@@ -568,6 +569,7 @@ class RegistrationPlanController extends Controller
             $deleted_course->registration_plan_id = $backup_registered_course->registration_plan_id;
             $deleted_course->registration_course_category_id = $backup_registered_course->registration_course_category_id;
             $deleted_course->registration_course_group_id = $backup_registered_course->registration_course_group_id;
+            $deleted_course->created_by = $std->id;
             $deleted_course->save();
             $this->do_handle($std->academic_number);
             return response()->json([

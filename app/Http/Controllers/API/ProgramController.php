@@ -76,6 +76,7 @@ class ProgramController extends Controller
             $program->free_hours =[
                 $request['day'] => [$request['start'].'-'.$request['end']]
             ];
+            $program->created_by = $std->id;
             $program->save();
             $id = $program->id;
             //$this->test_schedule_conflict($id);
@@ -83,6 +84,7 @@ class ProgramController extends Controller
             {
                 $program->update([
                     'free_hours' => $tmp_hours ?: null,
+                    'updated_by' => $std->id
                 ]);
                 return response()->json([
                     'status' => 'error',
@@ -118,7 +120,8 @@ class ProgramController extends Controller
         //dd($edited_hours);
 
         $program->update([
-            'free_hours' => $edited_hours
+            'free_hours' => $edited_hours,
+            'updated_by' => $std->id
             //[$request['day'] => $all_hours]
         ]);
 
@@ -129,6 +132,7 @@ class ProgramController extends Controller
             //dd('conflict');
             $program->update([
                 'free_hours' => $tmp_hours ?: null,
+                'updated_by' => $std->id
             ]);
             return response()->json([
                 'status' => 'error',
@@ -144,13 +148,3 @@ class ProgramController extends Controller
 }
 
 
-/*
-        return $d->OpeningHoursForDay;
-        return $d->nextOpen('sunday');
-        return $d->forDay('sunday');
-        return $d->exceptions();
-        $t = $d->isOpenOn('sunday');
-        $t = $d->isOpenAt(new \DateTime('2021-12-02 10:00'));
-        return $t;
-        dd($t);
-*/
