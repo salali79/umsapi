@@ -35,11 +35,11 @@ use App\Http\Controllers\API\ProgramController as ProgramController;
 class RegistrationPlanController extends Controller
 {
     public $current_study_year_id = 20;
-    public $current_semester_id = 2;//2
-	public $previous_semester_id = 1;//1
+    public $current_semester_id = 3;//2
+	public $previous_semester_id = 2;//1
     public $minimum_registered_hours = 2;
     public $required_courses_ids = [];//[467,468,469];
-    public $default_finance_hours = 18;//9
+    public $default_finance_hours = 9;//18
     public $default_academic_hours = 9;
     public $request;
     public $days = [
