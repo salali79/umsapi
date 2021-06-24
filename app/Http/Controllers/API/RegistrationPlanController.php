@@ -35,11 +35,11 @@ use App\Http\Controllers\API\ProgramController as ProgramController;
 class RegistrationPlanController extends Controller
 {
     public $current_study_year_id = 20 ;
-    public $current_semester_id = 3 ;
-	public $previous_semester_id = 2;
+    public $current_semester_id = 3;//2
+	public $previous_semester_id = 2;//1
     public $minimum_registered_hours = 2;
     public $required_courses_ids = [];//[467,468,469];
-    public $default_finance_hours = 0 ;
+    public $default_finance_hours = 0;//18
     public $request;
     public $days = [
         '1' => 'saturday',
@@ -287,6 +287,17 @@ class RegistrationPlanController extends Controller
                 'message' => 'تم تجاوز الساعات '.$cross,
             ]);
         }
+        ///---COURSE ALREADY REGISTERED---///
+        $already_registered = StudentRegisteredCourse::where('student_id', $std->id)
+        ->where('course_id', $request->course_id)->first();
+        if($already_registered)
+        {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'تم تسجيل الكورس مسبقا '
+            ]);
+        }
+
         ///---CHECK DATE---///
         $category_hours = array();
         $group_hours = array();
@@ -519,7 +530,6 @@ class RegistrationPlanController extends Controller
     public function update(Request $request)
     {
         $std = $this->current_student($request);
-        $backup_program = $std->programSchedule;
         $backup_registered_course = StudentRegisteredCourse::where('student_id', $std->id)
                                                               ->where('course_id', $request->course_id)
                                                               ->first();
@@ -530,20 +540,25 @@ class RegistrationPlanController extends Controller
         if($del_res['status'] == 'error')
         {
             $transaction = 0;
-            $msg = 'خطأ في الحذف ';
+            $msg = $del_res['message'];
         }
         $store_res = $this->store($request);
         $store_res = json_decode($store_res->getContent(), true);
         if($store_res['status'] == 'error')
         {
             $transaction = 0;
-            $msg = 'خطأ في التخزين';
+            $msg = $store_res['message'];
         }
         if($transaction ==0 )
         {
-            /*$program = $std->programSchedule;
-            $program->update([$backup_program]);
-            StudentRegisteredCourse::create([$backup_registered_course]);*/
+            $deleted_course = new StudentRegisteredCourse();
+            $deleted_course->student_id = $backup_registered_course->student_id;
+            $deleted_course->course_id = $backup_registered_course->course_id;
+            $deleted_course->registration_plan_id = $backup_registered_course->registration_plan_id;
+            $deleted_course->registration_course_category_id = $backup_registered_course->registration_course_category_id;
+            $deleted_course->registration_course_group_id = $backup_registered_course->registration_course_group_id;
+            $deleted_course->save();
+            $this->do_handle($std->academic_number);
             return response()->json([
                 'status' => 'error',
                 'message' => $msg
