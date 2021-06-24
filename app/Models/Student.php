@@ -213,7 +213,7 @@ class Student extends Authenticatable implements JWTSubject
         $student_academic  =  $this->academicSupervision
             ->where('study_year_id',$study_year_id)
             ->where('semester_id',$semester_id)->first();
-        $student_academic_hours = $student_academic ? $student_academic->academicStatus->hours : 0 ;
+        $student_academic_hours = $student_academic ? $student_academic->academicStatus->hours : null ;
         return $student_academic_hours;
 
     }
