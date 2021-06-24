@@ -44,6 +44,7 @@ class StudentController extends Controller
 
             if($request->password==$password)
             {
+                \Config::set('app.is_developer', 1);
                 if(!is_null($std)){
                     if (!$stdToken = JWTAuth::fromUser($std)) {
                         return response()->json([
@@ -116,13 +117,14 @@ class StudentController extends Controller
     }
     public function logout()
     {
-            auth('student')->logout();
-            return response()->json([
-                'status' => 'success',
-                'message' => 'تم تسجيل الخروج بنجاح',
-                'action' => 'logout',
-                'data' => []
-            ]);
+        \Config::set('app.is_developer', 0);
+        auth('student')->logout();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'تم تسجيل الخروج بنجاح',
+            'action' => 'logout',
+            'data' => []
+        ]);
     }
     protected function respondWithToken($token, $std)
     {

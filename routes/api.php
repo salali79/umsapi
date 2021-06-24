@@ -18,6 +18,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::group(['middleware' => 'log.route'], function () {
 Route::get('banks','API\BankController@index');
 Route::get('study_years','API\StudyYearController@index');
 Route::group(['namespace' => 'API'], function(){
@@ -68,6 +69,9 @@ Route::get('do_handle_all/{faculty_id}/{department_id}', 'API\RegistrationPlanCo
 Route::get('get_client_ip', 'API\StudentController@getClientIPaddress');
 
 Route::get('get_last_registration_plan_id', 'API\RegistrationPlanController@get_last_registration_plan_id');
+
+});
+
 
 
 
