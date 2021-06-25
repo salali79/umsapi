@@ -84,6 +84,7 @@ class StudentController extends Controller
     public function login(Request $request)
     {
         try{
+            \Config::set('app.is_developer', 0);
             $password = $request->password;
             $username = $request->username;
             $credentials = ['username' => $username , 'password' => $password];

@@ -13,7 +13,6 @@ return [
     |
     */
 
-    'is_developer' => 0,
     'name' => env('APP_NAME', 'Laravel'),
 
     /*

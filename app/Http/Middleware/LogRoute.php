@@ -26,12 +26,15 @@ class LogRoute
             $user_id = auth('student')->user() ? auth('student')->user()->id : 'GUEST';
         }
 
+        $response_message = json_decode($response->getContent(), true);
+        $response_message = $response_message['message'];           
+        
         $log = [
             'url' => $request->getUri(),
             'user_id' => $user_id,
             'method' => $request->getMethod(),
             'request_body' => $request->all(),
-            'response' => $response->getContent(),
+            'response' => $response_message,
         ];
         Log::create($log);
 

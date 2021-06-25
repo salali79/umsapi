@@ -121,6 +121,7 @@ class RegistrationPlanController extends Controller
             $category_id = $registered_course->registration_course_category_id;
             return response()->json([
                 'status' => 'success',
+                'message' => 'المجموعة والفئة',
                 'group_id' => $group_id,
                 'category_id' => $category_id
             ]);
@@ -592,7 +593,8 @@ class RegistrationPlanController extends Controller
             $program->forceDelete();
         }
         return response()->json([
-            'status' => 'success'
+            'status' => 'success',
+            'message' => 'تم الحذف',
         ]);
 
     }
@@ -777,6 +779,7 @@ class RegistrationPlanController extends Controller
             }
             return response()->json([
                 'status' => 'success',
+                'message' => 'البرنامج',
                 'program' => $program ,
                 'program_days' => $this->program_days,
                 'mobile_program' => $week_program
@@ -784,6 +787,7 @@ class RegistrationPlanController extends Controller
         } else{
             return response()->json([
                 'status' => 'success',
+                'message' => 'البرنامج',
                 'program' => [] ,
                 'program_days' => [],
                 'mobile_program' => []
@@ -849,7 +853,8 @@ class RegistrationPlanController extends Controller
             });
 
             return response()->json([
-                'program' => $program
+                'program' => $program,
+                'message' => 'البرنامج'
             ]);
         }
     }
@@ -992,6 +997,7 @@ class RegistrationPlanController extends Controller
             array_push($compare_all, $compare);
             return response()->json([
                 'status' => 'success',
+                'message' => 'البرنامج',
                 'compare all' => $compare_all
             ]);
         }
@@ -1097,7 +1103,8 @@ class RegistrationPlanController extends Controller
             //$all_programs['old_program'] = $old_program;
         }
         return response()->json([
-            'all_programs' => $all_programs
+            'all_programs' => $all_programs,
+            'message' => 'البرنامج'
         ]);
     }
     public function do_handle_all($faculty_id, $department_id)
@@ -1267,12 +1274,14 @@ class RegistrationPlanController extends Controller
         {
             return response()->json([
                 'status' => 'error',
+                'message' => 'خطأ ما'
             ]);
         }
         else
         {
             return response()->json([
                 'status' => 'success',
+                'message' => 'خطأ ما',
                 'compare all' => $compare_all
             ]);
         }
