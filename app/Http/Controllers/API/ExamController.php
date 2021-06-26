@@ -117,7 +117,7 @@ class ExamController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'العلامات',
+            //'message' => 'العلامات',
             'marks' => $semesters_marks,
         ], JSON_UNESCAPED_UNICODE);
     }
