@@ -27,10 +27,10 @@ class LogRoute
         }
 
         $response_message = json_decode($response->getContent(), true);
-        if (property_exists($response->getContent(), 'message')) {
+        if(array_key_exists('message',$response_message)) {
             $response_message = $response_message['message'];    
         }         
-        else $response_message = ""; 
+        else {$response_message = ""; }
         
         $log = [
             'url' => $request->getUri(),
